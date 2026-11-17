@@ -1,6 +1,7 @@
 # ============================================================
 # render.yaml — Render Cloud Deployment Configuration
 # Joash Portfolio Management System
+# Database: Azure Database for MySQL OR Azure SQL Database
 # Docs: https://render.com/docs/yaml-spec
 # ============================================================
 
@@ -13,35 +14,34 @@ services:
     dockerContext: ./backend
     plan: free
 
-    # Render sets the PORT env var automatically — Spring Boot reads ${PORT:8080}
     healthCheckPath: /actuator/health
-
-    # Auto-deploy whenever the main branch is pushed
     autoDeploy: true
 
     envVars:
-      # Spring profile: use MySQL (Aiven / Clever Cloud free tier)
+      # ── Spring Profile ──────────────────────────────────────
+      # Use 'azure-mysql' for Azure Database for MySQL
+      # Use 'azure-sql'   for Azure SQL Database (SQL Server)
       - key: SPRING_PROFILES_ACTIVE
-        value: mysql
+        value: azure-mysql     # Change to azure-sql if using Azure SQL
 
-      # ── Database (set these in Render Dashboard → Environment) ──
+      # ── Azure Database Credentials ──────────────────────────
+      # Set all of these in Render Dashboard → Environment
       - key: DB_HOST
-        sync: false   # filled in Render dashboard
+        sync: false   # e.g. joash-portfolio.mysql.database.azure.com
       - key: DB_PORT
-        value: "3306"
+        value: "3306" # 3306 for MySQL | 1433 for Azure SQL
       - key: DB_NAME
         value: PortfolioDB
       - key: DB_USER
-        sync: false
+        sync: false   # e.g. portfolioadmin   (NOT the full user@host format)
       - key: DB_PASSWORD
         sync: false
 
       # ── Security ────────────────────────────────────────────
       - key: JWT_SECRET
-        sync: false   # 64-char random hex — set in dashboard
+        sync: false   # 64-char hex: openssl rand -hex 32
 
-      # ── WebAuthn / FIDO2 — MUST match your production domain ─
-      # Example: if frontend is at https://joash-portfolio.vercel.app
+      # ── WebAuthn — set AFTER you know your Vercel domain ────
       - key: WEBAUTHN_RP_ID
         sync: false   # e.g. joash-portfolio.vercel.app
       - key: WEBAUTHN_RP_NAME
@@ -49,28 +49,25 @@ services:
       - key: WEBAUTHN_ALLOWED_ORIGINS
         sync: false   # e.g. https://joash-portfolio.vercel.app
 
-      # ── File uploads (local volume on Render free tier) ──────
+      # ── File uploads ────────────────────────────────────────
       - key: UPLOAD_DIR
         value: /app/uploads
 
-      # ── CORS origins (frontend URLs) ─────────────────────────
-      - key: ALLOWED_ORIGINS
-        sync: false   # set to your Vercel URL
+      # ── JPA DDL ─────────────────────────────────────────────
+      - key: JPA_DDL_AUTO
+        value: update
 
-      # ── Optional email notifications ─────────────────────────
+      # ── Optional email ──────────────────────────────────────
       - key: SMTP_USERNAME
         sync: false
       - key: SMTP_PASSWORD
         sync: false
       - key: NOTIFICATION_EMAIL
         sync: false
+      - key: ENABLE_EMAIL_NOTIFICATIONS
+        value: "false"
 
-      # ── JPA DDL (update = safe migrations; never use create-drop in prod) ──
-      - key: JPA_DDL_AUTO
-        value: update
-
-    # Persistent disk for uploaded files (1 GB free on paid plans)
-    # Note: Free tier has ephemeral storage — use Cloudinary for persistent uploads
+    # Persistent disk for uploaded files
     disk:
       name: portfolio-uploads
       mountPath: /app/uploads

@@ -1,0 +1,33 @@
+spring:
+  # ============================================================
+  # Azure Database for MySQL Flexible Server
+  # Azure requires SSL — useSSL=true is mandatory
+  # ============================================================
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/${DB_NAME:PortfolioDB}?useSSL=true&requireSSL=true&sslMode=REQUIRED&allowPublicKeyRetrieval=false&serverTimezone=UTC&characterEncoding=UTF-8&connectTimeout=30000&socketTimeout=60000
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: AzureMySQLPool
+      maximum-pool-size: 5     # Azure free tier has connection limits
+      minimum-idle: 1
+      idle-timeout: 300000     # 5 min — Azure drops idle connections at ~10 min
+      connection-timeout: 30000
+      max-lifetime: 600000     # 10 min — well under Azure's 30 min limit
+      keepalive-time: 60000    # Ping every 60s to keep connection alive
+      connection-test-query: SELECT 1
+
+  # JPA / Hibernate for Azure MySQL
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          batch_size: 10       # Lower batch size for free tier limits
+        order_inserts: true
+        order_updates: true
