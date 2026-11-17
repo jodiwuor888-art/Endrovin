@@ -1,0 +1,33 @@
+spring:
+  # ============================================================
+  # AWS RDS MySQL Database
+  # Free tier eligible: db.t3.micro / db.t4g.micro (750 hrs/month)
+  # ============================================================
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/${DB_NAME:PortfolioDB}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8&connectTimeout=30000&socketTimeout=60000
+    username: ${DB_USER:admin}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: AwsRdsMySQLPool
+      maximum-pool-size: 5
+      minimum-idle: 1
+      idle-timeout: 300000
+      connection-timeout: 30000
+      max-lifetime: 600000
+      keepalive-time: 60000
+      connection-test-query: SELECT 1
+
+  # JPA / Hibernate for AWS MySQL
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          batch_size: 10
+        order_inserts: true
+        order_updates: true
