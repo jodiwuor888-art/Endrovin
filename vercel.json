@@ -1,0 +1,28 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/admin", "destination": "/frontendport/admin/login.html" },
+    { "source": "/admin/(.*)", "destination": "/frontendport/admin/$1" },
+    { "source": "/assets/(.*)", "destination": "/frontendport/assets/$1" },
+    { "source": "/about", "destination": "/frontendport/about.html" },
+    { "source": "/contact", "destination": "/frontendport/contact.html" },
+    { "source": "/projects", "destination": "/frontendport/projects.html" },
+    { "source": "/services", "destination": "/frontendport/services.html" },
+    { "source": "/testimonials", "destination": "/frontendport/testimonials.html" },
+    { "source": "/", "destination": "/frontendport/index.html" },
+    { "source": "/(.*)", "destination": "/frontendport/$1" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ]
+}
