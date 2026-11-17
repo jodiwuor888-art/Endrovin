@@ -67,8 +67,8 @@ services:
       - key: ENABLE_EMAIL_NOTIFICATIONS
         value: "false"
 
-    # Persistent disk for uploaded files
-    disk:
-      name: portfolio-uploads
-      mountPath: /app/uploads
-      sizeGB: 1
+    # Persistent disk for uploaded files (Uncomment if upgrading to Render Starter plan or higher)
+    # disk:
+    #   name: portfolio-uploads
+    #   mountPath: /app/uploads
+    #   sizeGB: 1
