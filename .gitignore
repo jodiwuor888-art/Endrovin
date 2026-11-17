@@ -1,0 +1,95 @@
+# ============================================================
+# .gitignore — Joash Portfolio Management System
+# ============================================================
+
+# ── Java / Maven ─────────────────────────────────────────────
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+target/
+backend/target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# ── Logs ─────────────────────────────────────────────────────
+*.log
+backend/logs/
+logs/
+
+# ── Archives ─────────────────────────────────────────────────
+*.zip
+*.tar.gz
+*.rar
+
+# ── JVM crash logs ───────────────────────────────────────────
+hs_err_pid*
+replay_pid*
+
+# ── IDE — IntelliJ IDEA ──────────────────────────────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# ── IDE — Eclipse ────────────────────────────────────────────
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# ── IDE — NetBeans ───────────────────────────────────────────
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbproject/load-into-image.properties
+
+# ── IDE — Visual Studio Code ─────────────────────────────────
+.vscode/
+
+# ── Environment Variables & Secrets ──────────────────────────
+.env
+.env.local
+.env.production
+.env.staging
+*.env
+
+# ── Operating System ─────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# ── Node.js (for tooling/scripts only) ───────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Uploaded dynamic user media (keep folder structure) ──────
+uploads/profiles/*
+uploads/projects/*
+uploads/certificates/*
+uploads/cv/*
+!uploads/profiles/.gitkeep
+!uploads/projects/.gitkeep
+!uploads/certificates/.gitkeep
+!uploads/cv/.gitkeep
+
+# ── PowerShell helper scripts (local dev only) ───────────────
+update_jar.ps1
+
+# ── Root-level temporary/generated assets ────────────────────
+*.tmp

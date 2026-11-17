@@ -1,0 +1,77 @@
+# ============================================================
+# render.yaml — Render Cloud Deployment Configuration
+# Joash Portfolio Management System
+# Docs: https://render.com/docs/yaml-spec
+# ============================================================
+
+services:
+  # ── Backend: Spring Boot Java Web Service ──────────────────
+  - type: web
+    name: joash-portfolio-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+
+    # Render sets the PORT env var automatically — Spring Boot reads ${PORT:8080}
+    healthCheckPath: /actuator/health
+
+    # Auto-deploy whenever the main branch is pushed
+    autoDeploy: true
+
+    envVars:
+      # Spring profile: use MySQL (Aiven / Clever Cloud free tier)
+      - key: SPRING_PROFILES_ACTIVE
+        value: mysql
+
+      # ── Database (set these in Render Dashboard → Environment) ──
+      - key: DB_HOST
+        sync: false   # filled in Render dashboard
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_NAME
+        value: PortfolioDB
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+
+      # ── Security ────────────────────────────────────────────
+      - key: JWT_SECRET
+        sync: false   # 64-char random hex — set in dashboard
+
+      # ── WebAuthn / FIDO2 — MUST match your production domain ─
+      # Example: if frontend is at https://joash-portfolio.vercel.app
+      - key: WEBAUTHN_RP_ID
+        sync: false   # e.g. joash-portfolio.vercel.app
+      - key: WEBAUTHN_RP_NAME
+        value: "Joash Portfolio"
+      - key: WEBAUTHN_ALLOWED_ORIGINS
+        sync: false   # e.g. https://joash-portfolio.vercel.app
+
+      # ── File uploads (local volume on Render free tier) ──────
+      - key: UPLOAD_DIR
+        value: /app/uploads
+
+      # ── CORS origins (frontend URLs) ─────────────────────────
+      - key: ALLOWED_ORIGINS
+        sync: false   # set to your Vercel URL
+
+      # ── Optional email notifications ─────────────────────────
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: NOTIFICATION_EMAIL
+        sync: false
+
+      # ── JPA DDL (update = safe migrations; never use create-drop in prod) ──
+      - key: JPA_DDL_AUTO
+        value: update
+
+    # Persistent disk for uploaded files (1 GB free on paid plans)
+    # Note: Free tier has ephemeral storage — use Cloudinary for persistent uploads
+    disk:
+      name: portfolio-uploads
+      mountPath: /app/uploads
+      sizeGB: 1

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Verified client recommendations, professional endorsements, and testimonials for Joash Odiwuor - Diploma in Computer Science & Software Developer.">
+    <title>Recommendations & Endorsements | Joash Odiwuor</title>
+
+    <!-- Google Font: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+
+    <style>
+        .page-banner {
+            padding: 120px 20px 50px;
+            text-align: center;
+            background: rgba(6, 11, 20, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+        }
+        .page-banner h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #ffffff 40%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            font-weight: 800;
+        }
+        .page-banner p {
+            color: var(--text-secondary, #cbd5e1);
+            max-width: 650px;
+            margin: 0 auto 25px;
+            font-size: 1.05rem;
+        }
+        .filter-bar {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 25px auto;
+            max-width: 900px;
+        }
+        .filter-btn {
+            background: rgba(11, 20, 36, 0.70);
+            border: 1px solid rgba(56, 189, 248, 0.20);
+            color: var(--text-secondary, #cbd5e1);
+            padding: 8px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            transition: all 0.2s ease;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--accent-electric, #38bdf8);
+            border-color: var(--accent-electric, #38bdf8);
+            color: #060b14;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.45);
+        }
+        .search-box-wrap {
+            max-width: 450px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+        .search-box-wrap input {
+            width: 100%;
+            padding: 12px 20px;
+            background: rgba(11, 20, 36, 0.80);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 25px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .search-box-wrap input:focus {
+            outline: none;
+            border-color: var(--accent-electric, #38bdf8);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
+        }
+        .testimonials-grid-page {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .relationship-pill {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--accent-electric, #38bdf8);
+            margin-bottom: 12px;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+        }
+        .org-link {
+            color: var(--accent-electric);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        .org-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <!-- ================= SCHEDULED MAINTENANCE MODE OVERLAY ================= -->
+    <div id="maintenanceScreen" class="maintenance-screen" style="display: none;">
+        <div class="maintenance-container">
+            <div class="maintenance-avatar-wrap">
+                <img src="assets/img/Joash.jpeg" alt="Joash Odiwuor" class="maintenance-avatar" onerror="this.src='assets/img/profile.png'">
+                <span class="maintenance-status-dot"></span>
+            </div>
+            <div class="maintenance-badge">
+                <span class="pulse-indicator"></span> System Maintenance
+            </div>
+            <h1 class="maintenance-title">Joash Odiwuor</h1>
+            <p class="maintenance-headline">Recommendations & Testimonials</p>
+            <div class="maintenance-message-card">
+                <div class="maintenance-icon">⚡</div>
+                <p id="maintenanceMessageText" class="maintenance-text">
+                    The portfolio is briefly undergoing scheduled updates. Please check back shortly.
+                </p>
+            </div>
+            <div class="maintenance-footer">
+                <p class="maintenance-note">Thank you for your patience and interest.</p>
+                <a href="admin/login.html" class="admin-portal-link">
+                    🔒 Administrator Portal
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Navigation -->
+        <!-- ================= HEADER & NAVIGATION ================= -->
+    <header>
+        <nav class="navbar">
+            <a href="index.html#home" class="logo">
+                <img src="assets/img/profile.png" alt="Joash Odiwuor" class="logo-avatar" onerror="this.src='assets/img/Joash.jpeg'">
+                <span id="brandName">Joash Odiwuor</span>
+                <span class="logo-dot">.</span>
+            </a>
+
+            <button class="menu-toggle" aria-label="Toggle navigation menu">☰</button>
+
+            <ul class="nav-links">
+                <li><a href="index.html#home"><span class="nav-icon">🏠</span>Home</a></li>
+                <li><a href="about.html"><span class="nav-icon">👤</span>About</a></li>
+                <li><a href="index.html#skills"><span class="nav-icon">⚡</span>Skills</a></li>
+                <li><a href="projects.html"><span class="nav-icon">💼</span>Projects</a></li>
+                <li><a href="services.html"><span class="nav-icon">🛠️</span>Services</a></li>
+                <li><a href="index.html#education"><span class="nav-icon">🎓</span>Education</a></li>
+                <li><a href="index.html#experience"><span class="nav-icon">📋</span>Experience</a></li>
+                <li><a href="index.html#certificates"><span class="nav-icon">🏆</span>Certs</a></li>
+                <li><a href="testimonials.html" class="active"><span class="nav-icon">⭐</span>Reviews</a></li>
+                <li><a href="contact.html"><span class="nav-icon">✉️</span>Contact</a></li>
+                <li><a href="admin/login.html" class="nav-button">🔒 Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Banner -->
+    <section class="page-banner">
+        <p style="color: var(--accent-electric, #10b981); font-weight: 600; letter-spacing: 2px;">COMMENDATIONS & ENDORSEMENTS</p>
+        <h1>Recommendations & Testimonials</h1>
+        <p>
+            Real feedback from clients, mentors, academic lecturers, employers, and project collaborators who have worked with Joash Odiwuor.
+        </p>
+
+        <button type="button" class="btn primary-btn" onclick="openRecommendationModal()">
+            ✍️ Share Your Experience
+        </button>
+
+        <div class="filter-bar">
+            <button class="filter-btn active" data-rel="ALL">All Categories</button>
+            <button class="filter-btn" data-rel="Client">Clients</button>
+            <button class="filter-btn" data-rel="Employer">Employers</button>
+            <button class="filter-btn" data-rel="Colleague">Colleagues</button>
+            <button class="filter-btn" data-rel="Lecturer">Lecturers</button>
+            <button class="filter-btn" data-rel="Mentor">Mentors</button>
+            <button class="filter-btn" data-rel="Project collaborator">Collaborators</button>
+        </div>
+
+        <div class="search-box-wrap">
+            <input type="text" id="filterSearchInput" placeholder="Search by name, organization, or keywords...">
+        </div>
+    </section>
+
+    <!-- Testimonials Showcase -->
+    <main style="padding-bottom: 80px;">
+        <div id="fullTestimonialsGrid" class="testimonials-grid-page">
+            <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+                <div style="font-size: 3rem; margin-bottom: 15px;">⭐</div>
+                <h3 style="color: #fff; margin-bottom: 10px;">Loading Recommendations...</h3>
+                <p style="color: var(--text-light);">Connecting to database</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- ================= RECOMMENDATION SUBMISSION MODAL ================= -->
+    <div id="recommendationModal" class="modal-overlay" style="display:none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div>
+                    <h3 style="margin: 0; color: #fff; font-size: 1.4rem;">✍️ Share Your Recommendation</h3>
+                    <p style="margin: 4px 0 0; color: var(--text-light); font-size: 0.88rem;">
+                        Your honest feedback is deeply valued. Reviewed by the portfolio owner prior to publication.
+                    </p>
+                </div>
+                <button type="button" class="modal-close" onclick="closeRecommendationModal()" aria-label="Close modal">&times;</button>
+            </div>
+
+            <form id="recommendationForm" class="modal-form" onsubmit="handleRecommendationSubmit(event)">
+                <!-- Anti-Spam Honeypot -->
+                <input type="text" id="recHoneypot" name="website" style="display:none;" tabindex="-1" autocomplete="off">
+
+                <div id="recAlert" class="alert-box" style="display:none; margin-bottom: 15px;"></div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recFullName">Full Name *</label>
+                        <input type="text" id="recFullName" placeholder="e.g. Dr. Jane Mutua" required minlength="2" maxlength="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="recEmail">Email Address * <small style="color: var(--accent-electric);">(Strictly Confidential)</small></label>
+                        <input type="email" id="recEmail" placeholder="jane@example.com" required maxlength="120">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recOrganization">Organization / Company</label>
+                        <input type="text" id="recOrganization" placeholder="e.g. Strathmore / Freelance Client" maxlength="150">
+                    </div>
+                    <div class="form-group">
+                        <label for="recPosition">Professional Position</label>
+                        <input type="text" id="recPosition" placeholder="e.g. Senior Lecturer / Product Manager" maxlength="150">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recRelationship">Professional Relationship *</label>
+                        <select id="recRelationship" required>
+                            <option value="">-- Select Relationship --</option>
+                            <option value="Client">Client</option>
+                            <option value="Employer">Employer</option>
+                            <option value="Colleague">Colleague</option>
+                            <option value="Lecturer">Lecturer</option>
+                            <option value="Mentor">Mentor</option>
+                            <option value="Project collaborator">Project collaborator</option>
+                            <option value="Business partner">Business partner</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="recOrgWebsite">Organization Website</label>
+                        <input type="url" id="recOrgWebsite" placeholder="https://example.com" maxlength="255">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="recPhotoUrl">Profile Photograph URL <small style="color: var(--text-light);">(Optional avatar)</small></label>
+                    <input type="url" id="recPhotoUrl" placeholder="https://..." maxlength="500">
+                </div>
+
+                <div class="form-group">
+                    <label for="recMessage">Recommendation Message *</label>
+                    <textarea id="recMessage" rows="4" placeholder="Describe your experience collaborating with Joash, project achievements, technical strengths, and professional work ethic..." required minlength="10" maxlength="3000"></textarea>
+                    <small style="color: var(--text-light); display: block; text-align: right;"><span id="recCharCount">0</span> / 3000 chars</small>
+                </div>
+
+                <!-- Math CAPTCHA Human Verification -->
+                <div class="form-group captcha-container" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+                    <label style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span>Human Verification (Security Check) *</span>
+                        <button type="button" onclick="loadRecCaptcha()" style="background: none; border: none; color: var(--accent-electric); cursor: pointer; font-size: 0.85rem;">🔄 Refresh</button>
+                    </label>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <span id="recCaptchaQuestion" style="font-weight: 600; color: #fff; background: rgba(16, 185, 129,0.15); padding: 8px 14px; border-radius: 6px; letter-spacing: 1px;">Loading...</span>
+                        <input type="number" id="recCaptchaAnswer" placeholder="Your answer" required style="max-width: 150px;">
+                        <input type="hidden" id="recCaptchaToken">
+                    </div>
+                </div>
+
+                <!-- Consent to Publish Checkbox -->
+                <div class="form-group consent-group" style="margin-bottom: 20px;">
+                    <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; color: var(--text-light); font-size: 0.9rem;">
+                        <input type="checkbox" id="recConsent" required style="margin-top: 3px; accent-color: var(--accent-electric);">
+                        <span>
+                            I explicitly give consent for my name, organization, position, and recommendation to be published on this professional portfolio. (Email address remains strictly confidential).
+                        </span>
+                    </label>
+                </div>
+
+                <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 12px;">
+                    <button type="button" class="btn secondary-btn" onclick="closeRecommendationModal()">Cancel</button>
+                    <button type="submit" id="recSubmitBtn" class="btn primary-btn">
+                        <span>Submit Recommendation 🚀</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <!-- ================= FOOTER ================= -->
+    <footer class="site-footer">
+        <div class="footer-top">
+            <!-- COLUMN 1: BRAND & SOCIAL -->
+            <div class="footer-brand">
+                <div class="footer-brand-header">
+                    <img src="assets/img/profile.png" alt="Joash Odiwuor" class="footer-avatar" onerror="this.src='assets/img/Joash.jpeg'">
+                    <div class="footer-brand-info">
+                        <div class="footer-brand-name">
+                            Joash <span class="accent">Odiwuor</span><span class="logo-dot">.</span>
+                        </div>
+                        <span class="footer-status-badge">
+                            <span class="status-pulse-dot"></span> Available for Projects
+                        </span>
+                    </div>
+                </div>
+                <p class="footer-tagline">
+                    Computer Science graduate &amp; software developer crafting resilient web applications, modern architectures, and full-stack solutions.
+                </p>
+                <div class="footer-social-block">
+                    <span class="footer-social-label">Connect &amp; Socials</span>
+                    <div class="footer-social"></div>
+                </div>
+            </div>
+
+            <!-- COLUMN 2: EXPLORE NAVIGATION -->
+            <div class="footer-nav-col">
+                <h4 class="footer-col-title">Explore</h4>
+                <ul class="footer-links-list">
+                    <li><a href="index.html#home"><span class="ficon">🏠</span> Home</a></li>
+                    <li><a href="about.html"><span class="ficon">👤</span> About Me</a></li>
+                    <li><a href="index.html#skills"><span class="ficon">⚡</span> Skills &amp; Stack</a></li>
+                    <li><a href="projects.html"><span class="ficon">💼</span> Featured Work</a></li>
+                    <li><a href="services.html"><span class="ficon">🛠️</span> Core Services</a></li>
+                </ul>
+            </div>
+
+            <!-- COLUMN 3: CREDENTIALS & REVIEWS -->
+            <div class="footer-nav-col">
+                <h4 class="footer-col-title">Credentials</h4>
+                <ul class="footer-links-list">
+                    <li><a href="index.html#education"><span class="ficon">🎓</span> Education</a></li>
+                    <li><a href="index.html#experience"><span class="ficon">📋</span> Experience</a></li>
+                    <li><a href="index.html#certificates"><span class="ficon">🏆</span> Certifications</a></li>
+                    <li><a href="testimonials.html"><span class="ficon">⭐</span> Client Reviews</a></li>
+                    <li><a href="contact.html"><span class="ficon">✉️</span> Contact Portal</a></li>
+                </ul>
+            </div>
+
+            <!-- COLUMN 4: DIRECT CONNECT & ADMIN PORTAL -->
+            <div class="footer-action-col">
+                <h4 class="footer-col-title">Get in Touch</h4>
+                <div class="footer-contact-info">
+                    <div class="footer-contact-item">
+                        <span class="fci">📍</span>
+                        <div class="fci-content">
+                            <span class="fci-label">Location</span>
+                            <span class="fci-value">Kenya (EAT / UTC+3)</span>
+                        </div>
+                    </div>
+                    <div class="footer-contact-item footer-email-item">
+                        <span class="fci">✉️</span>
+                        <div class="fci-content">
+                            <span class="fci-label">Direct Email</span>
+                            <a href="mailto:jodiwuor888@gmail.com" class="fci-value footer-mail-link">jodiwuor888@gmail.com</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-admin-card">
+                    <div class="fac-meta">
+                        <span class="fac-label">Authorized Access</span>
+                        <span class="fac-title">Administration Portal</span>
+                    </div>
+                    <a href="admin/login.html" class="footer-admin-btn">
+                        <span class="fab-icon">🔒</span>
+                        <span class="fab-text">Admin Login</span>
+                        <span class="fab-arrow">→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER BOTTOM BAR -->
+        <div class="footer-bottom">
+            <div class="footer-copyright">
+                <p>© 2026 <strong>Joash Odiwuor</strong> · All Rights Reserved.</p>
+                <span class="footer-subtext">Designed with cyber-sapphire glassmorphism</span>
+            </div>
+            <div class="footer-back-to-top-wrapper">
+                <a href="#testimonials" class="footer-back-to-top" title="Scroll back to top">
+                    <span class="btt-text">Back to Top</span>
+                    <span class="btt-icon">↑</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script>
+        let allApprovedTestimonials = [];
+        let activeFilter = 'ALL';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadFullTestimonials();
+
+            // Setup filters
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    activeFilter = btn.dataset.rel;
+                    renderFilteredGrid();
+                });
+            });
+
+            // Search filter
+            document.getElementById('filterSearchInput').addEventListener('input', () => {
+                renderFilteredGrid();
+            });
+        });
+
+        async function loadFullTestimonials() {
+            const res = await API.getApprovedTestimonials();
+            if (res && res.success && Array.isArray(res.data)) {
+                allApprovedTestimonials = res.data;
+            } else {
+                allApprovedTestimonials = [];
+            }
+            renderFilteredGrid();
+        }
+
+        function renderFilteredGrid() {
+            const grid = document.getElementById('fullTestimonialsGrid');
+            const search = document.getElementById('filterSearchInput').value.trim().toLowerCase();
+
+            let filtered = allApprovedTestimonials.filter(t => {
+                const matchRel = (activeFilter === 'ALL') || (t.relationship && t.relationship.toLowerCase() === activeFilter.toLowerCase());
+                const matchSearch = !search ||
+                    (t.fullName && t.fullName.toLowerCase().includes(search)) ||
+                    (t.organization && t.organization.toLowerCase().includes(search)) ||
+                    (t.position && t.position.toLowerCase().includes(search)) ||
+                    (t.message && t.message.toLowerCase().includes(search));
+                return matchRel && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 60px 20px; background: rgba(17, 34, 64, 0.4); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
+                        <div style="font-size: 3rem; margin-bottom: 12px;">🌟</div>
+                        <h3 style="color: #fff; margin-bottom: 8px;">No recommendations found</h3>
+                        <p style="color: var(--text-light); max-width: 500px; margin: 0 auto 20px;">
+                            ${search ? 'No reviews match your search query.' : 'No approved client recommendations exist yet in this category.'} Have we collaborated? Share your experience!
+                        </p>
+                        <button type="button" class="btn primary-btn" onclick="openRecommendationModal()">
+                            ✍️ Be the First to Share
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(t => {
+                const stars = '★'.repeat(t.rating || 5);
+                const avatar = t.photoUrl
+                    ? `<img src="${t.photoUrl}" alt="${escapeHtml(t.fullName)}" class="testimonial-avatar" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">`
+                    : `<div style="width:50px; height:50px; border-radius:50%; background:rgba(16, 185, 129,0.2); color:#10b981; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">${escapeHtml(t.fullName.charAt(0))}</div>`;
+
+                return `
+                    <div class="testimonial-card" style="background: var(--bg-card, #112240); padding: 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); display:flex; flex-direction:column; justify-content:space-between;">
+                        <div>
+                            <span class="relationship-pill">${escapeHtml(t.relationship || 'Collaborator')}</span>
+                            <div style="color: #f59e0b; margin-bottom: 12px; font-size: 0.95rem;">${stars}</div>
+                            <p style="color: var(--text-light); font-style: italic; line-height: 1.6; margin-bottom: 20px;">
+                                "${escapeHtml(t.message)}"
+                            </p>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 14px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 15px;">
+                            ${avatar}
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 2px; font-size: 1rem;">${escapeHtml(t.fullName)}</h4>
+                                <p style="color: var(--text-muted, #94a3b8); margin: 0; font-size: 0.82rem;">
+                                    ${escapeHtml(t.position || '')}${t.organization ? ` • ${escapeHtml(t.organization)}` : ''}
+                                </p>
+                                ${t.organizationWebsite ? `<a href="${t.organizationWebsite}" target="_blank" rel="noopener" class="org-link">Visit Website ↗</a>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>

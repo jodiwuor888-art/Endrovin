@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Login | Portfolio Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        :root {
+            --admin-bg-body: #060b14;
+            --admin-accent: #38bdf8;
+            --admin-accent-glow: rgba(56, 189, 248, 0.5);
+            --admin-border: rgba(56, 189, 248, 0.22);
+            --admin-text-main: #ffffff;
+            --admin-text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: 
+                radial-gradient(circle at 50% 15%, rgba(56, 189, 248, 0.16) 0%, transparent 65%),
+                linear-gradient(180deg, rgba(6, 11, 20, 0.15) 0%, rgba(6, 11, 20, 0.32) 100%),
+                url('../frontendport/assets/img/cyber-car-bg.jpg') center center / cover no-repeat fixed;
+            padding: 2rem 1.25rem;
+            color: var(--admin-text-main);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient background glow orb */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, rgba(59, 130, 246, 0.05) 50%, transparent 70%);
+            filter: blur(60px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 460px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-card {
+            background: rgba(8, 16, 32, 0.82);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid var(--admin-border);
+            border-radius: 22px;
+            padding: 2.75rem 2.5rem;
+            box-shadow: 
+                0 25px 70px rgba(0, 0, 0, 0.85),
+                0 0 35px rgba(56, 189, 248, 0.12),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .login-card:hover {
+            border-color: rgba(56, 189, 248, 0.35);
+            box-shadow: 
+                0 30px 80px rgba(0, 0, 0, 0.9),
+                0 0 45px rgba(56, 189, 248, 0.18),
+                inset 0 1px 1px rgba(255, 255, 255, 0.15);
+        }
+
+        /* Brand Header */
+        .login-brand {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-avatar-box {
+            position: relative;
+            width: 68px;
+            height: 68px;
+            margin: 0 auto 1.1rem;
+        }
+
+        .brand-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--admin-accent);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+            display: block;
+        }
+
+        .online-indicator {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 14px;
+            height: 14px;
+            background: #10b981;
+            border: 2.5px solid #081020;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        .login-brand h2 {
+            font-size: 1.65rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.35rem;
+        }
+
+        .login-brand h2 span {
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .portal-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            background: rgba(56, 189, 248, 0.10);
+            border: 1px solid rgba(56, 189, 248, 0.28);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #38bdf8;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            background: #38bdf8;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #38bdf8;
+            animation: pulseDot 2s infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        .login-brand p {
+            color: var(--admin-text-muted);
+            font-size: 0.88rem;
+            line-height: 1.4;
+        }
+
+        /* Alert Box */
+        .alert-box {
+            padding: 0.9rem 1.1rem;
+            border-radius: 12px;
+            font-size: 0.86rem;
+            margin-bottom: 1.5rem;
+            display: none;
+            line-height: 1.45;
+            animation: fadeInAlert 0.3s ease;
+        }
+
+        @keyframes fadeInAlert {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-box.error {
+            background: rgba(239, 68, 68, 0.14);
+            border: 1px solid rgba(239, 68, 68, 0.38);
+            color: #fca5a5;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15);
+        }
+
+        .alert-box.info, .alert-box.success {
+            background: rgba(56, 189, 248, 0.14);
+            border: 1px solid rgba(56, 189, 248, 0.38);
+            color: #7dd3fc;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.15);
+        }
+
+        /* Form Controls */
+        .form-group-admin {
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        .form-group-admin label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: #cbd5e1;
+            margin-bottom: 0.45rem;
+            letter-spacing: 0.02em;
+        }
+
+        .input-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-box .field-icon {
+            position: absolute;
+            left: 1rem;
+            font-size: 1rem;
+            color: #94a3b8;
+            pointer-events: none;
+            transition: color 0.2s ease;
+        }
+
+        .form-group-admin input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.80);
+            border: 1px solid rgba(56, 189, 248, 0.20);
+            border-radius: 12px;
+            padding: 0.85rem 1rem 0.85rem 2.85rem;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 0.92rem;
+            transition: all 0.25s ease;
+            outline: none;
+        }
+
+        .form-group-admin input:focus {
+            background: rgba(15, 23, 42, 0.95);
+            border-color: var(--admin-accent);
+            box-shadow: 
+                0 0 0 3px rgba(56, 189, 248, 0.18),
+                0 0 16px rgba(56, 189, 248, 0.25);
+        }
+
+        .form-group-admin input:focus + .field-icon,
+        .input-box:focus-within .field-icon {
+            color: var(--admin-accent);
+        }
+
+        .input-box .toggle-password {
+            position: absolute;
+            right: 0.9rem;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1.05rem;
+            padding: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s ease;
+        }
+
+        .input-box .toggle-password:hover {
+            color: var(--admin-accent);
+        }
+
+        /* Submit / Action Buttons */
+        .btn-submit-main {
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 50%, #6366f1 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 0.90rem 1.5rem;
+            font-family: inherit;
+            font-size: 0.98rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.40);
+            margin-top: 0.5rem;
+        }
+
+        .btn-submit-main:hover {
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 50%, #4f46e5 100%);
+            box-shadow: 0 6px 28px rgba(56, 189, 248, 0.65);
+            transform: translateY(-2px);
+        }
+
+        .btn-submit-main:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit-main:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Biometric Passkey Divider & Button */
+        .divider-box {
+            display: flex;
+            align-items: center;
+            margin: 1.35rem 0 1.1rem;
+            color: var(--admin-text-muted);
+        }
+
+        .divider-box::before,
+        .divider-box::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(56, 189, 248, 0.18);
+        }
+
+        .divider-box span {
+            padding: 0 12px;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94a3b8;
+        }
+
+        .btn-passkey-direct {
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.32);
+            color: #38bdf8;
+            border-radius: 12px;
+            padding: 0.85rem 1.25rem;
+            font-family: inherit;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-passkey-direct:hover {
+            background: rgba(56, 189, 248, 0.18);
+            border-color: #38bdf8;
+            box-shadow: 0 4px 22px rgba(56, 189, 248, 0.30);
+            transform: translateY(-2px);
+            color: #ffffff;
+        }
+
+        /* ==========================================================================
+           FORGOT PASSWORD & PUBLIC PORTFOLIO SECTION (User Requested Core Feature)
+           ========================================================================== */
+        .login-footer-actions {
+            margin-top: 1.15rem;
+            text-align: center;
+        }
+
+        .forgot-link-wrapper {
+            margin-bottom: 1.2rem;
+        }
+
+        .link-forgot {
+            background: none;
+            border: none;
+            color: #38bdf8;
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .link-forgot:hover {
+            color: #7dd3fc;
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+            text-decoration: underline;
+        }
+
+        .public-portfolio-wrapper {
+            border-top: 1px solid rgba(56, 189, 248, 0.16);
+            padding-top: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        .public-portfolio-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.65rem;
+            width: 100%;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(59, 130, 246, 0.12) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.85rem 1.4rem;
+            border-radius: 12px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+        }
+
+        .public-portfolio-btn:hover {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(59, 130, 246, 0.25) 100%);
+            border-color: #38bdf8;
+            color: #38bdf8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 26px rgba(56, 189, 248, 0.35);
+        }
+
+        .public-portfolio-btn .pp-icon {
+            font-size: 1.1rem;
+            display: inline-block;
+            transition: transform 0.25s ease;
+        }
+
+        .public-portfolio-btn .pp-arrow {
+            font-size: 1.05rem;
+            transition: transform 0.25s ease;
+            margin-left: 0.15rem;
+        }
+
+        .public-portfolio-btn:hover .pp-icon {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        .public-portfolio-btn:hover .pp-arrow {
+            transform: translateX(4px);
+        }
+
+        /* Sub-forms styling */
+        .subform-box {
+            text-align: center;
+        }
+
+        .subform-icon-circle {
+            margin: 1.25rem auto 1rem;
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(56, 189, 248, 0.12);
+            border: 2px solid rgba(56, 189, 248, 0.40);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--admin-accent);
+            box-shadow: 0 0 24px rgba(56, 189, 248, 0.30);
+        }
+
+        .subform-title {
+            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .subform-desc {
+            color: var(--admin-text-muted);
+            font-size: 0.88rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .backToLogin {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-family: inherit;
+            font-size: 0.86rem;
+            cursor: pointer;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            transition: color 0.2s ease;
+        }
+
+        .backToLogin:hover {
+            color: #38bdf8;
+            text-decoration: underline;
+        }
+
+        /* Footer security badge */
+        .portal-security-footer {
+            margin-top: 1.75rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.78rem;
+            color: #64748b;
+            letter-spacing: 0.02em;
+        }
+
+        .portal-security-footer .sec-icon {
+            color: #38bdf8;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+            
+            <!-- BRAND HEADER -->
+            <div class="login-brand">
+                <div class="brand-avatar-box">
+                    <img src="../frontendport/assets/img/profile.png" alt="Joash Odiwuor" class="brand-avatar" onerror="this.src='../frontendport/assets/img/Joash.jpeg'">
+                    <span class="online-indicator" title="System Status: Online"></span>
+                </div>
+                <div class="portal-badge">
+                    <span class="badge-dot"></span>
+                    <span>Admin Security Portal</span>
+                </div>
+                <h2>Joash <span>Odiwuor</span></h2>
+                <p id="portalSubtitle">Secure Portfolio Administration Panel</p>
+            </div>
+
+            <div id="alertBox" class="alert-box"></div>
+
+            <!-- FORM 1: STANDARD ADMIN LOGIN -->
+            <form id="loginForm">
+                <div class="form-group-admin">
+                    <label for="username">Username or Email</label>
+                    <div class="input-box">
+                        <span class="field-icon">👤</span>
+                        <input type="text" id="username" placeholder="Enter administrator username" required autofocus autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="form-group-admin">
+                    <label for="password">Password</label>
+                    <div class="input-box">
+                        <span class="field-icon">🔒</span>
+                        <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
+                        <button type="button" id="togglePasswordBtn" class="toggle-password" title="Toggle password visibility">👁️</button>
+                    </div>
+                </div>
+
+                <button type="submit" id="loginBtn" class="btn-submit-main">
+                    Sign In 🔒
+                </button>
+
+                <div class="divider-box">
+                    <span>or biometric passkey</span>
+                </div>
+
+                <button type="button" id="directPasskeyBtn" class="btn-passkey-direct">
+                    <span>👆</span> Sign In with Fingerprint / Passkey
+                </button>
+
+                <!-- BELOW PASSWORD & BIOMETRIC: FORGOT PASSWORD & PUBLIC PORTFOLIO -->
+                <div class="login-footer-actions">
+                    <div class="forgot-link-wrapper">
+                        <button type="button" id="forgotPasswordLink" class="link-forgot">
+                            Forgot username or password?
+                        </button>
+                    </div>
+
+                    <div class="public-portfolio-wrapper">
+                        <a href="../frontendport/index.html" class="public-portfolio-btn" id="publicPortfolioBtn">
+                            <span class="pp-icon">🌐</span>
+                            <span class="pp-text">Public portfolio</span>
+                            <span class="pp-arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+            </form>
+
+            <!-- FORM 1B: WEBAUTHN / BIOMETRIC PASSKEY PROMPT (STEP 2) -->
+            <div id="passkeyForm" class="subform-box" style="display:none;">
+                <div class="subform-icon-circle">
+                    👆
+                </div>
+                <h3 class="subform-title">Biometric MFA Verification</h3>
+                <p class="subform-desc">
+                    A registered passkey was detected. Touch your fingerprint sensor, authenticate with Windows Hello, or tap your security key to complete sign-in.
+                </p>
+
+                <button type="button" id="passkeyVerifyBtn" class="btn-submit-main" style="margin-bottom:1rem;">
+                    Authenticate with Fingerprint / Passkey 🛡️
+                </button>
+
+                <div style="display:flex; flex-direction:column; gap:0.6rem; margin-top:1rem;">
+                    <button type="button" id="useRecoveryCodeBtn" style="background:none; border:0; color:#38bdf8; cursor:pointer; font:inherit; font-size:0.88rem;">
+                        🔑 Use Emergency Recovery Code
+                    </button>
+                    <button type="button" class="backToLogin">
+                        Cancel and return to password login
+                    </button>
+                </div>
+
+                <div class="public-portfolio-wrapper" style="margin-top:1.5rem;">
+                    <a href="../frontendport/index.html" class="public-portfolio-btn">
+                        <span class="pp-icon">🌐</span>
+                        <span class="pp-text">Public portfolio</span>
+                        <span class="pp-arrow">→</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- FORM 1C: EMERGENCY RECOVERY CODE FALLBACK -->
+            <form id="recoveryCodeForm" style="display:none;">
+                <div style="text-align:center; margin-bottom:1.25rem;">
+                    <div class="subform-icon-circle">🔑</div>
+                    <h3 class="subform-title">Emergency Access Recovery</h3>
+                    <p class="subform-desc">Enter one of your 8 single-use hashed recovery codes (Format: XXXX-XXXX).</p>
+                </div>
+
+                <div class="form-group-admin">
+                    <label for="emergencyRecoveryCode">Single-Use Recovery Code</label>
+                    <input type="text" id="emergencyRecoveryCode" placeholder="e.g. 7K2M-9P4Q" required maxlength="20" style="text-transform:uppercase; letter-spacing:2px; font-weight:600; text-align:center;">
+                </div>
+
+                <button type="submit" id="submitRecoveryCodeBtn" class="btn-submit-main" style="margin-top:1rem;">
+                    Verify Emergency Code 🚀
+                </button>
+
+                <div style="text-align:center; margin-top:1rem;">
+                    <button type="button" id="backToPasskeyBtn" style="background:none; border:0; color:#38bdf8; cursor:pointer; font:inherit; font-size:0.85rem;">
+                        Back to fingerprint verification
+                    </button>
+                </div>
+
+                <div class="public-portfolio-wrapper" style="margin-top:1.5rem;">
+                    <a href="../frontendport/index.html" class="public-portfolio-btn">
+                        <span class="pp-icon">🌐</span>
+                        <span class="pp-text">Public portfolio</span>
+                        <span class="pp-arrow">→</span>
+                    </a>
+                </div>
+            </form>
+
+            <!-- FORM 1D: FORGOT PASSWORD FORM -->
+            <form id="forgotPasswordForm" style="display:none;">
+                <div style="text-align:center; margin-bottom:1.25rem;">
+                    <div class="subform-icon-circle">✉️</div>
+                    <h3 class="subform-title">Account Recovery</h3>
+                    <p class="subform-desc">Enter your administrator email to receive secure password reset instructions.</p>
+                </div>
+
+                <div class="form-group-admin">
+                    <label for="recoveryEmail">Administrator email</label>
+                    <div class="input-box">
+                        <span class="field-icon">✉️</span>
+                        <input type="email" id="recoveryEmail" placeholder="Enter your registered email" required autocomplete="email">
+                    </div>
+                </div>
+
+                <button type="submit" id="recoveryBtn" class="btn-submit-main" style="margin-top:1rem;">
+                    Email Recovery Instructions
+                </button>
+
+                <div style="text-align:center; margin-top:1rem;">
+                    <button type="button" class="backToLogin">← Back to sign in</button>
+                </div>
+
+                <div class="public-portfolio-wrapper" style="margin-top:1.5rem;">
+                    <a href="../frontendport/index.html" class="public-portfolio-btn">
+                        <span class="pp-icon">🌐</span>
+                        <span class="pp-text">Public portfolio</span>
+                        <span class="pp-arrow">→</span>
+                    </a>
+                </div>
+            </form>
+
+            <!-- FORM 1E: RESET PASSWORD FORM -->
+            <form id="resetPasswordForm" style="display:none;">
+                <div style="text-align:center; margin-bottom:1.25rem;">
+                    <div class="subform-icon-circle">🔐</div>
+                    <h3 class="subform-title">Set New Password</h3>
+                    <p class="subform-desc">Create a strong password for your administrator account.</p>
+                </div>
+
+                <input type="hidden" id="resetToken">
+                <div class="form-group-admin">
+                    <label for="newPassword">New password</label>
+                    <div class="input-box">
+                        <span class="field-icon">🔒</span>
+                        <input type="password" id="newPassword" placeholder="At least 8 characters" required minlength="8" maxlength="100" autocomplete="new-password">
+                    </div>
+                </div>
+                <div class="form-group-admin">
+                    <label for="confirmNewPassword">Confirm new password</label>
+                    <div class="input-box">
+                        <span class="field-icon">🔒</span>
+                        <input type="password" id="confirmNewPassword" placeholder="Re-enter your new password" required minlength="8" maxlength="100" autocomplete="new-password">
+                    </div>
+                </div>
+                <button type="submit" id="resetPasswordBtn" class="btn-submit-main" style="margin-top:1rem;">
+                    Reset Password
+                </button>
+
+                <div class="public-portfolio-wrapper" style="margin-top:1.5rem;">
+                    <a href="../frontendport/index.html" class="public-portfolio-btn">
+                        <span class="pp-icon">🌐</span>
+                        <span class="pp-text">Public portfolio</span>
+                        <span class="pp-arrow">→</span>
+                    </a>
+                </div>
+            </form>
+
+            <!-- FORM 2: ONE-TIME FIRST ADMIN SETUP WIZARD (Auto-detected if 0 admins exist) -->
+            <form id="setupWizardForm" style="display: none;">
+                <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 12px; padding: 1.1rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: #cbd5e1; line-height: 1.45;">
+                    <strong style="color: #34d399; display: block; margin-bottom: 0.25rem;">Initial Setup Wizard</strong>
+                    Zero administrators currently exist in SQL Server. Please create the master administrator account. This wizard permanently locks once created.
+                </div>
+
+                <div class="form-group-admin">
+                    <label for="setupFullName">Full Name *</label>
+                    <div class="input-box">
+                        <span class="field-icon">👤</span>
+                        <input type="text" id="setupFullName" placeholder="e.g. Joash Odiwuor" required>
+                    </div>
+                </div>
+
+                <div class="form-group-admin">
+                    <label for="setupUsername">Admin Username *</label>
+                    <div class="input-box">
+                        <span class="field-icon">🔑</span>
+                        <input type="text" id="setupUsername" placeholder="e.g. admin" required minlength="3">
+                    </div>
+                </div>
+
+                <div class="form-group-admin">
+                    <label for="setupEmail">Admin Email *</label>
+                    <div class="input-box">
+                        <span class="field-icon">✉️</span>
+                        <input type="email" id="setupEmail" placeholder="admin@domain.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group-admin">
+                    <label for="setupPassword">Strong Password *</label>
+                    <div class="input-box">
+                        <span class="field-icon">🔒</span>
+                        <input type="password" id="setupPassword" placeholder="Minimum 8 characters" required minlength="8">
+                    </div>
+                </div>
+
+                <button type="submit" id="setupBtn" class="btn-submit-main" style="margin-top: 1rem;">
+                    Initialize Master Administrator 🛡️
+                </button>
+
+                <div class="public-portfolio-wrapper" style="margin-top:1.5rem;">
+                    <a href="../frontendport/index.html" class="public-portfolio-btn">
+                        <span class="pp-icon">🌐</span>
+                        <span class="pp-text">Public portfolio</span>
+                        <span class="pp-arrow">→</span>
+                    </a>
+                </div>
+            </form>
+
+            <div class="portal-security-footer">
+                <span class="sec-icon">🛡️</span>
+                <span>End-to-End Encrypted · 256-Bit SSL · WebAuthn MFA</span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../frontendport/assets/js/api.js"></script>
+    <script src="js/admin-auth.js"></script>
+    <script>
+        let mfaState = null;
+
+        // Toggle password visibility
+        const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+        const passwordInput = document.getElementById('password');
+        if (togglePasswordBtn && passwordInput) {
+            togglePasswordBtn.addEventListener('click', () => {
+                const isPassword = passwordInput.getAttribute('type') === 'password';
+                passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                togglePasswordBtn.textContent = isPassword ? '🙈' : '👁️';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const resetToken = new URLSearchParams(window.location.hash.slice(1)).get('resetToken');
+            if (resetToken) {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('setupWizardForm').style.display = 'none';
+                document.getElementById('resetPasswordForm').style.display = 'block';
+                document.getElementById('resetToken').value = resetToken;
+                document.getElementById('portalSubtitle').textContent = 'Choose a new administrator password';
+                return;
+            }
+
+            // Already logged in? Redirect
+            if (localStorage.getItem('adminToken')) {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            // Check if first-admin setup is required
+            try {
+                const statusRes = await API.getAuthStatus();
+                if (statusRes && statusRes.success && statusRes.data && statusRes.data.setupNeeded) {
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('setupWizardForm').style.display = 'block';
+                    document.getElementById('portalSubtitle').textContent = 'First-Run Administrator Provisioning';
+                }
+            } catch (err) {
+                console.warn('Auth status check skipped or server unreachable.', err);
+            }
+
+            // Prefill last username if saved
+            const lastUser = localStorage.getItem('lastAdminUsername');
+            const usernameInput = document.getElementById('username');
+            if (lastUser && usernameInput && !usernameInput.value) {
+                usernameInput.value = lastUser;
+            }
+        });
+
+        const alertBox = document.getElementById('alertBox');
+        const loginForm = document.getElementById('loginForm');
+        const passkeyForm = document.getElementById('passkeyForm');
+        const recoveryCodeForm = document.getElementById('recoveryCodeForm');
+        const recoveryForm = document.getElementById('forgotPasswordForm');
+        const resetForm = document.getElementById('resetPasswordForm');
+
+        function showAuthAlert(message, type) {
+            alertBox.className = `alert-box ${type}`;
+            alertBox.textContent = message;
+            alertBox.style.display = 'block';
+        }
+
+        document.getElementById('forgotPasswordLink').addEventListener('click', () => {
+            loginForm.style.display = 'none';
+            recoveryForm.style.display = 'block';
+            alertBox.style.display = 'none';
+            document.getElementById('portalSubtitle').textContent = 'Recover your administrator account';
+            document.getElementById('recoveryEmail').value = document.getElementById('username').value.includes('@')
+                ? document.getElementById('username').value.trim()
+                : '';
+        });
+
+        document.querySelectorAll('.backToLogin').forEach(button => button.addEventListener('click', () => {
+            recoveryForm.style.display = 'none';
+            passkeyForm.style.display = 'none';
+            recoveryCodeForm.style.display = 'none';
+            loginForm.style.display = 'block';
+            alertBox.style.display = 'none';
+            document.getElementById('portalSubtitle').textContent = 'Secure Portfolio Administration Panel';
+        }));
+
+        document.getElementById('useRecoveryCodeBtn').addEventListener('click', () => {
+            passkeyForm.style.display = 'none';
+            recoveryCodeForm.style.display = 'block';
+            alertBox.style.display = 'none';
+            document.getElementById('portalSubtitle').textContent = 'Emergency Access Recovery';
+        });
+
+        document.getElementById('backToPasskeyBtn').addEventListener('click', () => {
+            recoveryCodeForm.style.display = 'none';
+            passkeyForm.style.display = 'block';
+            alertBox.style.display = 'none';
+            document.getElementById('portalSubtitle').textContent = 'Biometric WebAuthn Passkey Verification';
+        });
+
+        // Step 2: Passkey Biometric Verification
+        async function doPasskeyAuth() {
+            if (!mfaState || !mfaState.passkeyOptions) {
+                showAuthAlert('MFA authentication session expired. Please sign in again.', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('passkeyVerifyBtn');
+            btn.disabled = true;
+            btn.textContent = 'Awaiting biometric confirmation... 👆';
+
+            try {
+                const res = await triggerPasskeyAuthentication(mfaState.passkeyOptions, mfaState.pendingAuthToken);
+                if (res && res.success && res.data && res.data.token) {
+                    showAuthAlert('Biometric verification accepted! Redirecting...', 'success');
+                    if (mfaState.username) {
+                        localStorage.setItem('lastAdminUsername', mfaState.username);
+                    }
+                    localStorage.setItem('adminToken', res.data.token);
+                    localStorage.setItem('adminUser', JSON.stringify(res.data));
+                    setTimeout(() => window.location.href = 'dashboard.html', 800);
+                } else {
+                    showAuthAlert(res ? (res.message || 'Passkey verification failed.') : 'Passkey error', 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Authenticate with Fingerprint / Passkey 🛡️';
+                }
+            } catch (err) {
+                console.error('Passkey verification error:', err);
+                showAuthAlert(err.message || 'Biometric authentication was cancelled or failed.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Authenticate with Fingerprint / Passkey 🛡️';
+            }
+        }
+
+        document.getElementById('passkeyVerifyBtn').addEventListener('click', doPasskeyAuth);
+
+        // Emergency Recovery Code
+        recoveryCodeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitRecoveryCodeBtn');
+            const code = document.getElementById('emergencyRecoveryCode').value.trim().toUpperCase();
+
+            btn.disabled = true;
+            btn.textContent = 'Verifying Code...';
+
+            try {
+                const res = await API.verifyRecoveryCode({
+                    recoveryCode: code,
+                    username: mfaState ? mfaState.username : document.getElementById('username').value.trim(),
+                    pendingAuthToken: mfaState ? mfaState.pendingAuthToken : null
+                });
+
+                if (res && res.success && res.data && res.data.token) {
+                    showAuthAlert('Emergency recovery code accepted! Redirecting...', 'success');
+                    localStorage.setItem('adminToken', res.data.token);
+                    localStorage.setItem('adminUser', JSON.stringify(res.data));
+                    setTimeout(() => window.location.href = 'dashboard.html', 800);
+                } else {
+                    showAuthAlert(res.message || 'Invalid or already used recovery code.', 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Verify Emergency Code 🚀';
+                }
+            } catch (err) {
+                showAuthAlert('Verification failed. Please check network connection.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Verify Emergency Code 🚀';
+            }
+        });
+
+        recoveryForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const button = document.getElementById('recoveryBtn');
+            button.disabled = true;
+            button.textContent = 'Sending...';
+            try {
+                const result = await API.requestPasswordReset(document.getElementById('recoveryEmail').value.trim());
+                showAuthAlert(
+                    result.message || 'If an administrator account matches that email, recovery instructions will be sent.',
+                    result.success ? 'info' : 'error'
+                );
+            } catch (err) {
+                showAuthAlert('Unable to reach the authentication server. Please try again later.', 'error');
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Email Recovery Instructions';
+            }
+        });
+
+        resetForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const button = document.getElementById('resetPasswordBtn');
+            const newPassword = document.getElementById('newPassword').value;
+            if (newPassword !== document.getElementById('confirmNewPassword').value) {
+                showAuthAlert('The passwords do not match.', 'error');
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = 'Resetting...';
+            try {
+                const result = await API.resetPassword(document.getElementById('resetToken').value, newPassword);
+                if (result && result.success) {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    resetForm.style.display = 'none';
+                    loginForm.style.display = 'block';
+                    document.getElementById('portalSubtitle').textContent = 'Secure Portfolio Administration Panel';
+                    showAuthAlert(result.message, 'success');
+                } else {
+                    showAuthAlert(result.message || 'The reset link is invalid or expired.', 'error');
+                }
+            } catch (err) {
+                showAuthAlert('Unable to reach the authentication server. Please try again later.', 'error');
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Reset Password';
+            }
+        });
+
+        // Handle Setup Form
+        document.getElementById('setupWizardForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('setupBtn');
+            btn.disabled = true;
+            btn.textContent = 'Provisioning...';
+
+            const payload = {
+                fullName: document.getElementById('setupFullName').value.trim(),
+                username: document.getElementById('setupUsername').value.trim(),
+                email: document.getElementById('setupEmail').value.trim(),
+                password: document.getElementById('setupPassword').value
+            };
+
+            try {
+                const res = await API.setupFirstAdmin(payload);
+                if (res && res.success && res.data && res.data.token) {
+                    localStorage.setItem('adminToken', res.data.token);
+                    localStorage.setItem('adminUser', JSON.stringify(res.data));
+                    showAuthAlert('Administrator account provisioned! Redirecting...', 'success');
+                    setTimeout(() => window.location.href = 'dashboard.html', 1000);
+                } else {
+                    showAuthAlert(res.message || 'Setup failed.', 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Initialize Master Administrator 🛡️';
+                }
+            } catch (err) {
+                showAuthAlert('Network or server error during provisioning.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Initialize Master Administrator 🛡️';
+            }
+        });
+
+        // Direct Passkey / Biometric Authentication trigger
+        const directPasskeyBtn = document.getElementById('directPasskeyBtn');
+        if (directPasskeyBtn) {
+            directPasskeyBtn.addEventListener('click', async () => {
+                let username = document.getElementById('username').value.trim();
+                if (!username) {
+                    username = localStorage.getItem('lastAdminUsername') || '';
+                }
+                if (!username) {
+                    showAuthAlert('Please enter your administrator username or email first, then click "Sign In with Fingerprint / Passkey".', 'info');
+                    document.getElementById('username').focus();
+                    return;
+                }
+
+                showAuthAlert('Initiating biometric passkey prompt for ' + username + '...', 'info');
+
+                try {
+                    const optRes = await fetch(`${API_BASE}/api/admin/passkey/authentication/options`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username })
+                    });
+                    const optJson = await optRes.json();
+                    if (optJson.success && optJson.data) {
+                        loginForm.style.display = 'none';
+                        passkeyForm.style.display = 'block';
+                        document.getElementById('portalSubtitle').textContent = 'Biometric WebAuthn Passkey Verification';
+                        const options = Object.assign({}, optJson.data, { username: username });
+                        mfaState = {
+                            username: username,
+                            passkeyOptions: options,
+                            pendingAuthToken: null
+                        };
+                        doPasskeyAuth();
+                    } else {
+                        showAuthAlert(optJson.message || 'No biometric passkey registered yet. Sign in with password first and enroll your fingerprint in the dashboard.', 'error');
+                    }
+                } catch (err) {
+                    showAuthAlert('Please sign in with your password, then click "👆 Biometric Passkey" in the dashboard to register your fingerprint.', 'info');
+                }
+            });
+        }
+
+        // Handle Login Form (Step 1)
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = true;
+            btn.textContent = 'Signing in...';
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            try {
+                const res = await API.login(username, password);
+                if (res && res.success && res.data) {
+                    localStorage.setItem('lastAdminUsername', username);
+                    if (res.data.mfaRequired) {
+                        mfaState = res.data;
+                        loginForm.style.display = 'none';
+                        passkeyForm.style.display = 'block';
+                        document.getElementById('portalSubtitle').textContent = 'Biometric WebAuthn Passkey Verification';
+                        alertBox.style.display = 'none';
+                        doPasskeyAuth();
+                        return;
+                    }
+
+                    if (res.data.token) {
+                        localStorage.setItem('adminToken', res.data.token);
+                        localStorage.setItem('adminUser', JSON.stringify(res.data));
+                        window.location.href = 'dashboard.html';
+                        return;
+                    }
+                }
+
+                showAuthAlert(res ? (res.message || 'Invalid username or password.') : 'Authentication failed.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Sign In 🔒';
+            } catch (err) {
+                showAuthAlert('Unable to connect to authentication server.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Sign In 🔒';
+            }
+        });
+    </script>
+</body>
+</html>

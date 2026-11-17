@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professional software engineering and development services offered by Joash Odiwuor - Full-stack development, Java Spring Boot & Database Design.">
+    <title>Services | Joash Odiwuor - Software Developer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+</head>
+<body>
+        <!-- ================= HEADER & NAVIGATION ================= -->
+    <header>
+        <nav class="navbar">
+            <a href="index.html#home" class="logo">
+                <img src="assets/img/profile.png" alt="Joash Odiwuor" class="logo-avatar" onerror="this.src='assets/img/Joash.jpeg'">
+                <span id="brandName">Joash Odiwuor</span>
+                <span class="logo-dot">.</span>
+            </a>
+
+            <button class="menu-toggle" aria-label="Toggle navigation menu">☰</button>
+
+            <ul class="nav-links">
+                <li><a href="index.html#home"><span class="nav-icon">🏠</span>Home</a></li>
+                <li><a href="about.html"><span class="nav-icon">👤</span>About</a></li>
+                <li><a href="index.html#skills"><span class="nav-icon">⚡</span>Skills</a></li>
+                <li><a href="projects.html"><span class="nav-icon">💼</span>Projects</a></li>
+                <li><a href="services.html" class="active"><span class="nav-icon">🛠️</span>Services</a></li>
+                <li><a href="index.html#education"><span class="nav-icon">🎓</span>Education</a></li>
+                <li><a href="index.html#experience"><span class="nav-icon">📋</span>Experience</a></li>
+                <li><a href="index.html#certificates"><span class="nav-icon">🏆</span>Certs</a></li>
+                <li><a href="testimonials.html"><span class="nav-icon">⭐</span>Reviews</a></li>
+                <li><a href="contact.html"><span class="nav-icon">✉️</span>Contact</a></li>
+                <li><a href="admin/login.html" class="nav-button">🔒 Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="section">
+        <div class="section-title">
+            <p>WHAT I CAN DO</p>
+            <h2>Professional Services</h2>
+        </div>
+        <div id="servicesContainer" class="services-container">
+            <!-- Dynamically populated from REST API -->
+        </div>
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="site-footer">
+        <div class="footer-top">
+            <!-- COLUMN 1: BRAND & SOCIAL -->
+            <div class="footer-brand">
+                <div class="footer-brand-header">
+                    <img src="assets/img/profile.png" alt="Joash Odiwuor" class="footer-avatar" onerror="this.src='assets/img/Joash.jpeg'">
+                    <div class="footer-brand-info">
+                        <div class="footer-brand-name">
+                            Joash <span class="accent">Odiwuor</span><span class="logo-dot">.</span>
+                        </div>
+                        <span class="footer-status-badge">
+                            <span class="status-pulse-dot"></span> Available for Projects
+                        </span>
+                    </div>
+                </div>
+                <p class="footer-tagline">
+                    Computer Science graduate &amp; software developer crafting resilient web applications, modern architectures, and full-stack solutions.
+                </p>
+                <div class="footer-social-block">
+                    <span class="footer-social-label">Connect &amp; Socials</span>
+                    <div class="footer-social"></div>
+                </div>
+            </div>
+
+            <!-- COLUMN 2: EXPLORE NAVIGATION -->
+            <div class="footer-nav-col">
+                <h4 class="footer-col-title">Explore</h4>
+                <ul class="footer-links-list">
+                    <li><a href="index.html#home"><span class="ficon">🏠</span> Home</a></li>
+                    <li><a href="about.html"><span class="ficon">👤</span> About Me</a></li>
+                    <li><a href="index.html#skills"><span class="ficon">⚡</span> Skills &amp; Stack</a></li>
+                    <li><a href="projects.html"><span class="ficon">💼</span> Featured Work</a></li>
+                    <li><a href="services.html"><span class="ficon">🛠️</span> Core Services</a></li>
+                </ul>
+            </div>
+
+            <!-- COLUMN 3: CREDENTIALS & REVIEWS -->
+            <div class="footer-nav-col">
+                <h4 class="footer-col-title">Credentials</h4>
+                <ul class="footer-links-list">
+                    <li><a href="index.html#education"><span class="ficon">🎓</span> Education</a></li>
+                    <li><a href="index.html#experience"><span class="ficon">📋</span> Experience</a></li>
+                    <li><a href="index.html#certificates"><span class="ficon">🏆</span> Certifications</a></li>
+                    <li><a href="testimonials.html"><span class="ficon">⭐</span> Client Reviews</a></li>
+                    <li><a href="contact.html"><span class="ficon">✉️</span> Contact Portal</a></li>
+                </ul>
+            </div>
+
+            <!-- COLUMN 4: DIRECT CONNECT & ADMIN PORTAL -->
+            <div class="footer-action-col">
+                <h4 class="footer-col-title">Get in Touch</h4>
+                <div class="footer-contact-info">
+                    <div class="footer-contact-item">
+                        <span class="fci">📍</span>
+                        <div class="fci-content">
+                            <span class="fci-label">Location</span>
+                            <span class="fci-value">Kenya (EAT / UTC+3)</span>
+                        </div>
+                    </div>
+                    <div class="footer-contact-item footer-email-item">
+                        <span class="fci">✉️</span>
+                        <div class="fci-content">
+                            <span class="fci-label">Direct Email</span>
+                            <a href="mailto:jodiwuor888@gmail.com" class="fci-value footer-mail-link">jodiwuor888@gmail.com</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-admin-card">
+                    <div class="fac-meta">
+                        <span class="fac-label">Authorized Access</span>
+                        <span class="fac-title">Administration Portal</span>
+                    </div>
+                    <a href="admin/login.html" class="footer-admin-btn">
+                        <span class="fab-icon">🔒</span>
+                        <span class="fab-text">Admin Login</span>
+                        <span class="fab-arrow">→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER BOTTOM BAR -->
+        <div class="footer-bottom">
+            <div class="footer-copyright">
+                <p>© 2026 <strong>Joash Odiwuor</strong> · All Rights Reserved.</p>
+                <span class="footer-subtext">Designed with cyber-sapphire glassmorphism</span>
+            </div>
+            <div class="footer-back-to-top-wrapper">
+                <a href="#services" class="footer-back-to-top" title="Scroll back to top">
+                    <span class="btt-text">Back to Top</span>
+                    <span class="btt-icon">↑</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# =============================================================
+# .dockerignore — Exclude unnecessary files from Docker context
+# =============================================================
+target/
+*.jar
+*.log
+.git
+.gitignore
+.idea
+*.iml
+.vscode
+.DS_Store
+Thumbs.db
+desktop.ini
+*.md
+test/
+src/test/

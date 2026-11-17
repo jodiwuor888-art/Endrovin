@@ -1,0 +1,36 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:portfoliodb_test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MSSQLServer
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+portfolio:
+  security:
+    jwt:
+      secret: 4c9b1397b98d4924a9d7249876fecba27931f82e5b7c8466e34458b688d0bcae
+      expiration-ms: 3600000
+    rate-limit:
+      max-attempts: 5
+      lockout-duration-minutes: 15
+  upload:
+    dir: target/test-uploads
+    max-image-bytes: 5242880
+    max-document-bytes: 10485760
+    allowed-image-types:
+      - image/jpeg
+      - image/png
+      - image/webp
+    allowed-document-types:
+      - application/pdf
+  contact:
+    notification-email: test@example.com
+    enable-email-notifications: false

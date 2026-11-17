@@ -1,0 +1,112 @@
+spring:
+  application:
+    name: portfolio-management-system
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:prod}
+
+  # File Upload Multi-part limits
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 15MB
+      max-request-size: 20MB
+
+  # Database Configuration (Microsoft SQL Server)
+  datasource:
+    url: jdbc:sqlserver://${DB_HOST:localhost}:${DB_PORT:1433};databaseName=${DB_NAME:PortfolioDB};encrypt=true;trustServerCertificate=true;integratedSecurity=${DB_INTEGRATED_SECURITY:false}
+    username: ${DB_USER:portfolio_admin}
+    password: ${DB_PASSWORD:StrongPassword123!}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    hikari:
+      pool-name: PortfolioHikariCP
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 30000
+      connection-timeout: 20000
+      max-lifetime: 1800000
+
+  # JPA / Hibernate Configuration
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+
+  # Email Configuration (Optional SMTP for contact alerts)
+  mail:
+    host: ${SMTP_HOST:smtp.gmail.com}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+# Server Configuration
+server:
+  port: ${PORT:8080}
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# Portfolio Custom Application Properties
+portfolio:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:4c9b1397b98d4924a9d7249876fecba27931f82e5b7c8466e34458b688d0bcae}
+      expiration-ms: 86400000 # 24 hours
+    rate-limit:
+      max-attempts: 5
+      lockout-duration-minutes: 15
+    password-reset-url: ${PASSWORD_RESET_URL:http://localhost:8080/admin/login.html}
+    password-reset-from: ${PASSWORD_RESET_FROM:${SMTP_USERNAME:}}
+    webauthn:
+      rp-id: ${WEBAUTHN_RP_ID:localhost}
+      rp-name: ${WEBAUTHN_RP_NAME:Portfolio Management System}
+      allowed-origins: ${WEBAUTHN_ALLOWED_ORIGINS:http://localhost:8080,https://localhost:8080,http://127.0.0.1:8080,http://localhost:5500,http://127.0.0.1:5500}
+  upload:
+    dir: ${UPLOAD_DIR:uploads}
+    max-image-bytes: 5242880 # 5 MB
+    max-document-bytes: 10485760 # 10 MB
+    allowed-image-types:
+      - image/jpeg
+      - image/png
+      - image/webp
+      - image/gif
+    allowed-document-types:
+      - application/pdf
+  cors:
+    allowed-origins: ${WEBAUTHN_ALLOWED_ORIGINS:*}
+  contact:
+    notification-email: ${NOTIFICATION_EMAIL:bevexj888@gmail.com}
+    enable-email-notifications: ${ENABLE_EMAIL_NOTIFICATIONS:false}
+
+# Actuator Configuration
+management:
+  health:
+    mail:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# OpenAPI / Swagger
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method

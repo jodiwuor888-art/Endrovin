@@ -1,0 +1,2182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">`n    <meta name="api-base-url" content="">
+    <title>Administrator Dashboard | Portfolio Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+    <!-- Mobile sidebar toggle -->
+    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle menu">☰</button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo-mark">A</div>
+            <div class="sidebar-logo-text">
+                <strong>Admin Portal</strong>
+                <span>Portfolio System</span>
+            </div>
+        </div>
+
+        <!-- Admin profile strip -->
+        <div class="sidebar-profile">
+            <div class="sidebar-avatar" id="sidebarAvatarInitial">A</div>
+            <div>
+                <div class="sidebar-profile-name" id="sidebarNameDisplay">Administrator</div>
+                <div class="sidebar-profile-role">Full Access</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Overview</div>
+            <button class="nav-item active" data-view="overview">
+                <span class="nav-icon">📊</span> Dashboard
+            </button>
+
+            <div class="nav-section-label">Content</div>
+            <button class="nav-item" data-view="profile">
+                <span class="nav-icon">👤</span> Personal Profile
+            </button>
+            <button class="nav-item" data-view="about">
+                <span class="nav-icon">📄</span> About Me
+            </button>
+            <button class="nav-item" data-view="projects">
+                <span class="nav-icon">🚀</span> Projects
+            </button>
+            <button class="nav-item" data-view="skills">
+                <span class="nav-icon">🛠️</span> Skills &amp; Categories
+            </button>
+            <button class="nav-item" data-view="services">
+                <span class="nav-icon">⚡</span> Services
+            </button>
+
+            <div class="nav-section-label">Career</div>
+            <button class="nav-item" data-view="education">
+                <span class="nav-icon">🎓</span> Education
+            </button>
+            <button class="nav-item" data-view="experience">
+                <span class="nav-icon">💼</span> Experience
+            </button>
+            <button class="nav-item" data-view="certificates">
+                <span class="nav-icon">📜</span> Certificates
+            </button>
+            <button class="nav-item" data-view="achievements">
+                <span class="nav-icon">🏆</span> Achievements
+            </button>
+            <button class="nav-item" data-view="cv">
+                <span class="nav-icon">📋</span> CV Document
+            </button>
+
+            <div class="nav-section-label">Community</div>
+            <button class="nav-item" data-view="testimonials">
+                <span class="nav-icon">⭐</span> Testimonials
+                <span id="badgePendingTestimonials" class="nav-badge" style="display:none;">0</span>
+            </button>
+            <button class="nav-item" data-view="messages">
+                <span class="nav-icon">✉️</span> Contact Inquiries
+                <span id="badgeUnreadMessages" class="nav-badge" style="display:none;">0</span>
+            </button>
+            <button class="nav-item" data-view="social">
+                <span class="nav-icon">🌐</span> Social Links
+            </button>
+
+            <div class="nav-section-label">System</div>
+            <button class="nav-item" data-view="settings">
+                <span class="nav-icon">⚙️</span> Website Settings
+            </button>
+            <button class="nav-item" onclick="navigateToView('settings'); setTimeout(() => switchSettingsCategory('security'), 100);">
+                <span class="nav-icon">👆</span> Biometric Passkeys
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="../index.html" class="btn-logout" style="text-decoration:none; justify-content:center; display:flex; gap:0.5rem; background:rgba(56,189,248,0.07); border-color:rgba(56,189,248,0.2); color:var(--c-text-muted);" onclick="exitAdminToPublic(event)">🌐 View Public Site ↗</a>
+            <button class="btn-logout" onclick="logout()">🚪 Sign Out</button>
+        </div>
+    </aside>
+
+    <!-- ================= MAIN WRAPPER ================= -->
+    <div class="main-wrapper">
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 id="viewTitle" class="topbar-title">Dashboard Overview</h1>
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-status">
+                    <span class="dot"></span>
+                    <span>Live</span>
+                </div>
+                <button type="button" class="btn-admin btn-admin-primary" style="font-size:0.78rem; padding:0.4rem 0.9rem;" onclick="openEnrollPasskeyModal()">👆 Fingerprint</button>
+                <button type="button" class="btn-admin btn-admin-secondary" style="font-size:0.78rem; padding:0.4rem 0.9rem;" onclick="openModal('passwordModal')">🔑 Password</button>
+                <div id="adminAvatarInitial" class="admin-avatar" title="Administrator">A</div>
+                <div style="display:flex; flex-direction:column; gap:1px;">
+                    <strong id="adminNameDisplay" style="color:var(--c-text); font-size:0.85rem; line-height:1.3;">Administrator</strong>
+                    <span style="font-size:0.68rem; color:var(--c-accent); text-transform:uppercase; letter-spacing:0.06em;">Full Access</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- BODY / VIEWS -->
+        <main class="admin-body">
+
+            <!-- ================= VIEW 1: OVERVIEW ================= -->
+            <section id="view-overview" class="admin-view active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🚀</div>
+                        <div class="stat-info">
+                            <h3 id="statProjects">0</h3>
+                            <p>Projects</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🛠️</div>
+                        <div class="stat-info">
+                            <h3 id="statSkills">0</h3>
+                            <p>Technical Skills</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚡</div>
+                        <div class="stat-info">
+                            <h3 id="statServices">0</h3>
+                            <p>Services Offered</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎓</div>
+                        <div class="stat-info">
+                            <h3 id="statEducation">0</h3>
+                            <p>Education Records</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💼</div>
+                        <div class="stat-info">
+                            <h3 id="statExperience">0</h3>
+                            <p>Experience Items</p>
+                        </div>
+                    </div>
+                    
+    <!-- ================= SCHEDULED MAINTENANCE MODE OVERLAY ================= -->
+    <div id="maintenanceScreen" class="maintenance-screen" style="display: none;">
+        <div class="maintenance-container">
+            <div class="maintenance-avatar-wrap">
+                <img src="assets/img/profile.png" alt="Joash Odiwuor" class="maintenance-avatar" onerror="this.src='assets/img/profile.png'">
+                <span class="maintenance-status-dot"></span>
+            </div>
+            <div class="maintenance-badge">
+                <span class="pulse-indicator"></span> System Maintenance
+            </div>
+            <h1 class="maintenance-title">Joash Odiwuor</h1>
+            <p class="maintenance-headline">Software Developer Portfolio</p>
+            <div class="maintenance-message-card">
+                <div class="maintenance-icon">⚡</div>
+                <p id="maintenanceMessageText" class="maintenance-text">
+                    The portfolio is briefly undergoing scheduled updates. Please check back shortly.
+                </p>
+            </div>
+            <div class="maintenance-footer">
+                <p class="maintenance-note">Thank you for your patience and interest.</p>
+                <a href="admin/login.html" class="admin-portal-link">
+                    🔒 Administrator Portal
+                </a>
+            </div>
+        </div>
+    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">📜</div>
+                        <div class="stat-info">
+                            <h3 id="statCertificates">0</h3>
+                            <p>Certifications</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-info">
+                            <h3 id="statTestimonials">0</h3>
+                            <p>Testimonials</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✉️</div>
+                        <div class="stat-info">
+                            <h3 id="statMessages">0</h3>
+                            <p>Contact Messages</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Security & Action Audit Logs -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Security &amp; Administrative Audit Trail</h2>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Action</th>
+                                    <th>Entity</th>
+                                    <th>Details</th>
+                                    <th>Initiator</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditLogsTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 2: PROFILE ================= -->
+            <section id="view-profile" class="admin-view">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Personal Profile Information</h2>
+                    </div>
+                    <!-- Profile Photo Upload — mobile + desktop + drag & drop -->
+                    <div class="profile-photo-upload" id="profilePhotoDropzone">
+                        <div class="profile-photo-frame" id="profilePhotoFrame" onclick="document.getElementById('profilePhotoInput').click()" title="Click or drag an image here">
+                            <img id="profilePhotoPreview" src="assets/img/Joash.jpeg" alt="Profile Photo"
+                                 onerror="this.src='../assets/img/profile.png'">
+                            <div class="photo-overlay">📷</div>
+                        </div>
+                        <div class="profile-photo-info">
+                            <h4>Profile Photograph</h4>
+                            <p>Drag &amp; drop an image here, click the photo, or use the button.<br>
+                               Works from your desktop, gallery, or mobile camera.<br>
+                               Formats: JPG, PNG, WEBP, GIF (Max 5 MB)</p>
+                            <!-- accept="image/*" capture allows camera on mobile -->
+                            <input type="file" id="profilePhotoInput"
+                                   accept="image/*"
+                                   style="display:none;"
+                                   onchange="uploadProfilePhoto(this)">
+                            <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+                                <button class="btn-admin btn-admin-primary"
+                                        onclick="document.getElementById('profilePhotoInput').click()">
+                                    📁 Choose File / Gallery
+                                </button>
+                                <button class="btn-admin btn-admin-secondary"
+                                        onclick="openCameraCapture()">
+                                    📷 Take Photo
+                                </button>
+                            </div>
+                            <div id="photoUploadProgress" style="margin-top:0.6rem; font-size:0.78rem; color:var(--c-accent); display:none;"></div>
+                        </div>
+                    </div>
+                    <input type="file" id="profilePhotoCameraInput"
+                           accept="image/*" capture="environment"
+                           style="display:none;"
+                           onchange="uploadProfilePhoto(this)">
+
+                    <form id="profileForm" onsubmit="saveProfileForm(event)">
+                        <div class="form-grid">
+                            <div class="form-group-admin">
+                                <label for="profFullName">Full Name *</label>
+                                <input type="text" id="profFullName" placeholder="e.g. Joash Odiwuor" required>
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="profHeadline">Professional Headline *</label>
+                                <input type="text" id="profHeadline" placeholder="e.g. Diploma in Computer Science" required>
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="profTitle">Professional Title *</label>
+                                <input type="text" id="profTitle" placeholder="e.g. Aspiring Software Developer" required>
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="profLocation">Location *</label>
+                                <input type="text" id="profLocation" placeholder="e.g. Kenya" required>
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="profEmail">Public Contact Email *</label>
+                                <input type="email" id="profEmail" placeholder="bevexj888@gmail.com" required>
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="profPhone">Phone / WhatsApp</label>
+                                <input type="text" id="profPhone" placeholder="+254 108612398">
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="profGitHub">GitHub Profile URL</label>
+                                <input type="url" id="profGitHub" placeholder="https://github.com/your-handle">
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="profLinkedIn">LinkedIn Profile URL</label>
+                                <input type="url" id="profLinkedIn" placeholder="https://linkedin.com/in/your-handle">
+                            </div>
+                        </div>
+
+                        <div class="form-group-admin" style="margin-top:1.25rem;">
+                            <label for="profBio">Introduction / Bio Summary</label>
+                            <textarea id="profBio" rows="4" placeholder="Brief professional overview for recruiters..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-admin btn-admin-primary" style="margin-top:1rem;">Save Profile Changes</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 3: ABOUT ================= -->
+            <section id="view-about" class="admin-view">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">About Me Biography &amp; Highlights</h2>
+                    </div>
+                    <form id="aboutForm" onsubmit="saveAboutForm(event)">
+                        <div class="form-grid">
+                            <div class="form-group-admin">
+                                <label for="aboutTitleInput">Section Title *</label>
+                                <input type="text" id="aboutTitleInput" placeholder="e.g. About Me" required>
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="aboutSubtitleInput">Section Subtitle</label>
+                                <input type="text" id="aboutSubtitleInput" placeholder="e.g. GET TO KNOW ME">
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="aboutStatusSelect">Publication Status</label>
+                                <select id="aboutStatusSelect">
+                                    <option value="PUBLISHED">PUBLISHED</option>
+                                    <option value="DRAFT">DRAFT</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group-admin" style="margin-top:1rem;">
+                            <label for="aboutP1Input">Biography Paragraph 1 *</label>
+                            <textarea id="aboutP1Input" rows="4" placeholder="Main academic background and software interests..." required></textarea>
+                        </div>
+
+                        <div class="form-group-admin">
+                            <label for="aboutP2Input">Biography Paragraph 2 (Optional)</label>
+                            <textarea id="aboutP2Input" rows="3" placeholder="Core programming and database proficiencies..."></textarea>
+                        </div>
+
+                        <div class="form-group-admin">
+                            <label for="aboutP3Input">Biography Paragraph 3 (Optional)</label>
+                            <textarea id="aboutP3Input" rows="3" placeholder="Career goals and collaborative mindset..."></textarea>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group-admin">
+                                <label for="aboutYearsExp">Years of Experience</label>
+                                <input type="number" id="aboutYearsExp" min="0" value="0">
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="aboutProjectsCompleted">Projects Completed</label>
+                                <input type="number" id="aboutProjectsCompleted" min="0" value="0">
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="aboutClients">Satisfied Clients</label>
+                                <input type="number" id="aboutClients" min="0" value="0">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-admin btn-admin-primary" style="margin-top:1rem;">Save Biography</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 4: PROJECTS ================= -->
+            <section id="view-projects" class="admin-view">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Manage Projects</h2>
+                        <button class="btn-admin btn-admin-primary" onclick="openAddProjectModal()">+ Add New Project</button>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Project Title</th>
+                                    <th>Category</th>
+                                    <th>Technologies</th>
+                                    <th>Featured</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="projectsTableBody">
+                                <!-- Dynamically loaded from SQL Server -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 5: SKILLS ================= -->
+            <section id="view-skills" class="admin-view">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Manage Skills &amp; Categories</h2>
+                        <div style="display:flex; gap:0.75rem;">
+                            <button class="btn-admin btn-admin-secondary" onclick="openAddCategoryModal()">+ Add Category</button>
+                            <button class="btn-admin btn-admin-primary" onclick="openAddSkillModal()">+ Add Skill</button>
+                        </div>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Skill Name</th>
+                                    <th>Proficiency</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="skillsTableBody">
+                                <!-- Dynamically loaded from SQL Server -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 6: SERVICES ================= -->
+            <section id="view-services" class="admin-view">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Professional Services</h2>
+                        <button class="btn-admin btn-admin-primary" onclick="openAddServiceModal()">+ Add Service</button>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Service Title</th>
+                                    <th>Short Description</th>
+                                    <th>Icon</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="servicesTableBody">
+                                <!-- Loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 7: EDUCATION ================= -->
+            <section id="view-education" class="admin-view">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Education &amp; Academic Qualifications</h2>
+                        <button class="btn-admin btn-admin-primary" onclick="openAddEducationModal()">+ Add Education</button>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Degree / Qualification</th>
+                                    <th>Institution</th>
+                                    <th>Location</th>
+                                    <th>Period</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="educationTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 8: EXPERIENCE ================= -->
+            <section id="view-experience" class="admin-view">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Professional Experience</h2>
+                        <button class="btn-admin btn-admin-primary" onclick="openAddExperienceModal()">+ Add Experience</button>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Job Title</th>
+                                    <th>Company</th>
+                                    <th>Location</th>
+                                    <th>Duration</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="experienceTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 9: CERTIFICATES ================= -->
+            <section id="view-certificates" class="admin-view">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Certifications &amp; Credentials</h2>
+                        <button class="btn-admin btn-admin-primary" onclick="openAddCertificateModal()">+ Add Certificate</button>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Certificate Title</th>
+                                    <th>Issuing Organization</th>
+                                    <th>Issue Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="certificatesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 10: TESTIMONIALS MODERATION WORKFLOW ================= -->
+            <section id="view-testimonials" class="admin-view">
+                <div class="admin-card">
+                    <div class="card-header" style="flex-wrap:wrap; gap:1rem;">
+                        <div>
+                            <h2 class="card-title">Recommendations &amp; Client Testimonials Moderation</h2>
+                            <p style="color:var(--admin-text-muted); font-size:0.85rem; margin-top:3px;">
+                                Review incoming public recommendations. Only approved submissions with verified consent appear on the website.
+                            </p>
+                        </div>
+                        <button class="btn-admin btn-admin-primary" onclick="openAddTestimonialAdminModal()">+ Add Manual Testimonial</button>
+                    </div>
+
+                    <!-- Status Filter Tabs -->
+                    <div class="status-tabs">
+                        <button class="status-tab-btn active" data-status="ALL" onclick="filterTestimonialsByStatus('ALL', this)">
+                            <span>All Submissions</span> <span id="countAllTestimonials" class="badge-count">0</span>
+                        </button>
+                        <button class="status-tab-btn" data-status="PENDING" onclick="filterTestimonialsByStatus('PENDING', this)">
+                            <span>⏳ Pending Review</span> <span id="countPendingTestimonials" class="badge-count" style="background:#f59e0b; color:#070e1b; font-weight:700;">0</span>
+                        </button>
+                        <button class="status-tab-btn" data-status="APPROVED" onclick="filterTestimonialsByStatus('APPROVED', this)">
+                            <span>✅ Approved</span> <span id="countApprovedTestimonials" class="badge-count">0</span>
+                        </button>
+                        <button class="status-tab-btn" data-status="REJECTED" onclick="filterTestimonialsByStatus('REJECTED', this)">
+                            <span>❌ Rejected</span> <span id="countRejectedTestimonials" class="badge-count">0</span>
+                        </button>
+                        <button class="status-tab-btn" data-status="ARCHIVED" onclick="filterTestimonialsByStatus('ARCHIVED', this)">
+                            <span>📦 Archived</span> <span id="countArchivedTestimonials" class="badge-count">0</span>
+                        </button>
+                    </div>
+
+                    <!-- Search Filter Bar -->
+                    <div style="margin-bottom:1.25rem; display:flex; gap:10px;">
+                        <input type="text" id="testimonialSearchInput" class="form-control" placeholder="Search by sender name, organization, or message keywords..." oninput="searchTestimonialsAdmin(this.value)" style="width:100%; max-width:400px; padding:0.65rem 1rem; border-radius:8px; background:var(--admin-bg-input); border:1px solid var(--admin-border); color:#fff;">
+                    </div>
+
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Submitter</th>
+                                    <th>Relationship &amp; Organization</th>
+                                    <th>Message Snippet</th>
+                                    <th>Consent</th>
+                                    <th>Submitted</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="testimonialsTableBody">
+                                <tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--admin-text-muted);">Loading recommendations...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 11: MESSAGES ================= -->
+            <section id="view-messages" class="admin-view">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Contact Messages &amp; Client Inquiries</h2>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Sender</th>
+                                    <th>Subject</th>
+                                    <th>Message</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="messagesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 12: CV ================= -->
+            <section id="view-cv" class="admin-view">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Curriculum Vitae (CV) Upload &amp; Management</h2>
+                    </div>
+                    <div class="cv-upload-box" id="cvDropzone"
+                         ondragover="handleCvDragOver(event)"
+                         ondragleave="handleCvDragLeave(event)"
+                         ondrop="handleCvDrop(event)">
+                        <input type="file" id="cvFileInput" accept="application/pdf" onchange="handleCvUpload(this)">
+                        <div style="pointer-events:none;">
+                            <div style="font-size:3.5rem; margin-bottom:1rem; opacity:0.75;">📄</div>
+                            <h3 id="cvStatusText" style="color:var(--c-text); margin-bottom:0.5rem; font-size:1.1rem;">Drop CV here or click to browse</h3>
+                            <p style="font-size:0.85rem; color:var(--c-text-muted); margin-bottom:1.5rem; line-height:1.6;">
+                                Upload your official curriculum vitae in PDF format (Max 10 MB).<br>
+                                It becomes downloadable via the "Download CV" button on your portfolio.
+                            </p>
+                            <div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">
+                                <button class="btn-admin btn-admin-primary" type="button"
+                                        onclick="event.stopPropagation(); document.getElementById('cvFileInput').click()">
+                                    📤 Upload CV (PDF)
+                                </button>
+                                <a id="cvViewLink" href="javascript:void(0)" target="_blank"
+                                   class="btn-admin btn-admin-secondary" style="display:none;">
+                                    View Current CV ↗
+                                </a>
+                            </div>
+                        </div>
+                        <div id="cvUploadProgress" style="margin-top:1rem; font-size:0.85rem; color:var(--c-accent);"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 13: WEB SETTINGS & CONFIGURATION ================= -->
+            <section id="view-settings" class="admin-view">
+                <!-- Settings Toolbar -->
+                <div class="settings-toolbar">
+                    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <input type="text" id="settingsSearchInput" placeholder="🔍 Search any setting..." oninput="filterSettingsLive(this.value)" style="padding:0.6rem 1.1rem; border-radius:20px; background:var(--admin-bg-input); border:1px solid var(--admin-border); color:#fff; width:260px; font-size:0.88rem;">
+                        <div id="settingsUnsavedBanner" class="unsaved-banner">
+                            <span>⚠️ You have unsaved configuration edits</span>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button type="button" class="btn-admin btn-admin-primary" onclick="saveAllSettings()">💾 Save Changes</button>
+                        <button type="button" class="btn-admin btn-admin-secondary" onclick="publishSettingsLive()" style="background:rgba(16,185,129,0.15); border-color:rgba(16,185,129,0.4); color:#34d399;">🚀 Publish</button>
+                        <button type="button" class="btn-admin btn-admin-secondary" onclick="previewSettingsLive()">👁️ Preview</button>
+                        <button type="button" class="btn-admin btn-admin-secondary" onclick="confirmResetSettings()">🔄 Defaults</button>
+                        <button type="button" class="btn-admin btn-admin-secondary" onclick="exportSettingsBackup()">📤 Export</button>
+                        <button type="button" class="btn-admin btn-admin-secondary" onclick="openModal('settingsImportModal')">📥 Import</button>
+                        <button type="button" class="btn-admin btn-admin-secondary" onclick="openSettingsAuditModal()">📜 Audit</button>
+                    </div>
+                </div>
+
+                <div class="settings-layout">
+                    <!-- Left Sub-Navigation Menu (13 Categories) -->
+                    <div class="settings-subnav">
+                        <button class="settings-nav-btn active" data-target="panel-general" onclick="switchSettingsCategory('panel-general', this)">
+                            <span>⚙️ General</span>
+                        </button>
+                        <button class="settings-nav-btn" data-target="panel-appearance" onclick="switchSettingsCategory('panel-appearance', this)">
+                            <span>🎨 Appearance &amp; Theme</span>
+                        </button>
+                        <button class="settings-nav-btn" data-target="panel-homepage" onclick="switchSettingsCategory('panel-homepage', this)">
+                            <span>🏠 Homepage &amp; Display</span>
+                        </button>
+                        <button class="settings-nav-btn" data-target="panel-seo" onclick="switchSettingsCategory('panel-seo', this)">
+                            <span>🔍 SEO &amp; Search</span>
+                        </button>
+                        <button class="settings-nav-btn" data-target="panel-contact" onclick="switchSettingsCategory('panel-contact', this)">
+                            <span>📱 Contact &amp; Social</span>
+                        </button>
+                        <button class="settings-nav-btn" data-target="panel-email" onclick="switchSettingsCategory('panel-email', this)">
+                            <span>✉️ Email &amp; Alerts</span>
+                        </button>
+                        <button class="settings-nav-btn" data-target="panel-media" onclick="switchSettingsCategory('panel-media', this)">
+                            <span>📁 Media &amp; Uploads</span>
+                        </button>
+                        <button class="settings-nav-btn" data-target="panel-privacy" onclick="switchSettingsCategory('panel-privacy', this)">
+                            <span>🛡️ Privacy &amp; Legal</span>
+                        </button>
+                        <button class="settings-nav-btn" data-target="panel-backup" onclick="switchSettingsCategory('panel-backup', this)">
+                            <span>💾 Backup &amp; Health</span>
+                        </button>
+                        <button class="settings-nav-btn" data-target="panel-security" onclick="switchSettingsCategory('panel-security', this)">
+                            <span>🔐 Security &amp; Access</span>
+                        </button>
+                        <button class="settings-nav-btn" data-target="panel-analytics" onclick="switchSettingsCategory('panel-analytics', this)">
+                            <span>📊 Analytics &amp; Tracking</span>
+                        </button>
+                        <button class="settings-nav-btn" data-target="panel-integrations" onclick="switchSettingsCategory('panel-integrations', this)">
+                            <span>🔌 Integrations</span>
+                        </button>
+                        <button class="settings-nav-btn" data-target="panel-advanced" onclick="switchSettingsCategory('panel-advanced', this)">
+                            <span>⚡ Advanced Config</span>
+                        </button>
+                    </div>
+
+                    <!-- Right Settings Content Panels -->
+                    <div id="settingsPanelsContainer">
+                        <!-- 1. GENERAL -->
+                        <div id="panel-general" class="settings-panel active">
+                            <div class="settings-section-header">
+                                <div>
+                                    <h3>General Website Settings</h3>
+                                    <p>Core site identity, branding, owner profiles, and maintenance status</p>
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Website Name</label>
+                                    <input type="text" data-key="general.websiteName" class="setting-input">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Brand Name</label>
+                                    <input type="text" data-key="general.brandName" class="setting-input">
+                                </div>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Tagline / Headline</label>
+                                <input type="text" data-key="general.tagline" class="setting-input">
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Website Meta Description</label>
+                                <textarea data-key="general.description" class="setting-input" rows="2"></textarea>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Owner Full Name</label>
+                                    <input type="text" data-key="general.ownerName" class="setting-input">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Professional Title</label>
+                                    <input type="text" data-key="general.professionalTitle" class="setting-input">
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Contact Email</label>
+                                    <input type="email" data-key="general.contactEmail" class="setting-input">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Contact Phone / WhatsApp</label>
+                                    <input type="text" data-key="general.contactPhone" class="setting-input">
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Physical Location</label>
+                                    <input type="text" data-key="general.physicalLocation" class="setting-input">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Timezone</label>
+                                    <select data-key="general.timezone" class="setting-input">
+                                        <option value="Africa/Nairobi">Africa/Nairobi (EAT, UTC+3)</option>
+                                        <option value="UTC">UTC (Coordinated Universal Time)</option>
+                                        <option value="Europe/London">Europe/London (GMT/BST)</option>
+                                        <option value="America/New_York">America/New_York (EST/EDT)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Logo Image URL</label>
+                                    <input type="url" data-key="general.logoUrl" class="setting-input" placeholder="https://...">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Favicon URL</label>
+                                    <input type="url" data-key="general.faviconUrl" class="setting-input" placeholder="https://...">
+                                </div>
+                            </div>
+                            <div class="setting-switch-row">
+                                <div class="switch-label-group">
+                                    <h4>Website Maintenance Mode</h4>
+                                    <p>When enabled, public visitors see a maintenance notice while admin login remains accessible</p>
+                                </div>
+                                <label class="switch-control">
+                                    <input type="checkbox" data-key="general.maintenanceMode" class="setting-input-bool">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 2. APPEARANCE -->
+                        <div id="panel-appearance" class="settings-panel">
+                            <div class="settings-section-header">
+                                <div>
+                                    <h3>Appearance &amp; Theme Customization</h3>
+                                    <p>Dark/light color palette, typography, button curvature, and layout styles</p>
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Theme Mode</label>
+                                    <select data-key="appearance.themeMode" class="setting-input">
+                                        <option value="dark">Dark Theme (Default Navy &amp; Electric Blue)</option>
+                                        <option value="light">Light Theme</option>
+                                        <option value="auto">System Auto Preference</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Header Navigation Layout</label>
+                                    <select data-key="appearance.headerLayout" class="setting-input">
+                                        <option value="sticky">Sticky Fixed Top</option>
+                                        <option value="static">Static Normal Top</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Primary Dark Navy Background</label>
+                                    <div class="color-picker-group">
+                                        <input type="color" data-color-for="appearance.primaryColor" onchange="syncColorInput(this)">
+                                        <input type="text" data-key="appearance.primaryColor" class="setting-input" style="flex:1;">
+                                    </div>
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Secondary Deep Blue Card Background</label>
+                                    <div class="color-picker-group">
+                                        <input type="color" data-color-for="appearance.secondaryColor" onchange="syncColorInput(this)">
+                                        <input type="text" data-key="appearance.secondaryColor" class="setting-input" style="flex:1;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Electric Blue Accent Color</label>
+                                    <div class="color-picker-group">
+                                        <input type="color" data-color-for="appearance.accentColor" onchange="syncColorInput(this)">
+                                        <input type="text" data-key="appearance.accentColor" class="setting-input" style="flex:1;">
+                                    </div>
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Primary Typography Light Color</label>
+                                    <div class="color-picker-group">
+                                        <input type="color" data-color-for="appearance.textColor" onchange="syncColorInput(this)">
+                                        <input type="text" data-key="appearance.textColor" class="setting-input" style="flex:1;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Font Family</label>
+                                    <select data-key="appearance.fontFamily" class="setting-input">
+                                        <option value="Poppins, sans-serif">Poppins (Default Modern Professional)</option>
+                                        <option value="Inter, system-ui, sans-serif">Inter (Clean Clean Tech)</option>
+                                        <option value="'Roboto', sans-serif">Roboto</option>
+                                        <option value="'Fira Code', monospace">Fira Code (Developer Aesthetic)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Button Border Radius</label>
+                                    <select data-key="appearance.buttonRadius" class="setting-input">
+                                        <option value="8px">8px (Modern Rounded)</option>
+                                        <option value="4px">4px (Subtle Corner)</option>
+                                        <option value="25px">25px (Full Pill Capsule)</option>
+                                        <option value="0px">0px (Sharp Box)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="setting-switch-row">
+                                <div class="switch-label-group">
+                                    <h4>Smooth Anchor Scrolling</h4>
+                                    <p>Smoothly animate transitions when clicking navigation section links</p>
+                                </div>
+                                <label class="switch-control">
+                                    <input type="checkbox" data-key="appearance.enableSmoothScroll" class="setting-input-bool">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 3. HOMEPAGE -->
+                        <div id="panel-homepage" class="settings-panel">
+                            <div class="settings-section-header">
+                                <div>
+                                    <h3>Homepage &amp; Display Controls</h3>
+                                    <p>Show or hide public modules and configure item limits</p>
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Max Projects on Homepage</label>
+                                    <input type="number" min="1" max="24" data-key="homepage.maxProjectsDisplayed" class="setting-input">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Max Testimonials on Homepage</label>
+                                    <input type="number" min="1" max="24" data-key="homepage.maxTestimonialsDisplayed" class="setting-input">
+                                </div>
+                            </div>
+                            <div style="margin-top:1rem;">
+                                <h4 style="color:var(--admin-text-main); font-size:1rem; margin-bottom:0.75rem;">Public Section Visibility Toggles</h4>
+                                <div class="setting-switch-row">
+                                    <div class="switch-label-group"><h4>About Me Section</h4><p>Display biography and personal overview</p></div>
+                                    <label class="switch-control"><input type="checkbox" data-key="homepage.showAbout" class="setting-input-bool"><span class="switch-slider"></span></label>
+                                </div>
+                                <div class="setting-switch-row">
+                                    <div class="switch-label-group"><h4>Technical Skills Section</h4><p>Display categorized skill progress bars</p></div>
+                                    <label class="switch-control"><input type="checkbox" data-key="homepage.showSkills" class="setting-input-bool"><span class="switch-slider"></span></label>
+                                </div>
+                                <div class="setting-switch-row">
+                                    <div class="switch-label-group"><h4>Professional Services Section</h4><p>Display offered technical and freelance services</p></div>
+                                    <label class="switch-control"><input type="checkbox" data-key="homepage.showServices" class="setting-input-bool"><span class="switch-slider"></span></label>
+                                </div>
+                                <div class="setting-switch-row">
+                                    <div class="switch-label-group"><h4>Projects Portfolio Section</h4><p>Display featured projects and GitHub code links</p></div>
+                                    <label class="switch-control"><input type="checkbox" data-key="homepage.showProjects" class="setting-input-bool"><span class="switch-slider"></span></label>
+                                </div>
+                                <div class="setting-switch-row">
+                                    <div class="switch-label-group"><h4>Education Qualifications Section</h4><p>Display diploma, degrees, and institutions</p></div>
+                                    <label class="switch-control"><input type="checkbox" data-key="homepage.showEducation" class="setting-input-bool"><span class="switch-slider"></span></label>
+                                </div>
+                                <div class="setting-switch-row">
+                                    <div class="switch-label-group"><h4>Professional Experience Section</h4><p>Display employment history and internships</p></div>
+                                    <label class="switch-control"><input type="checkbox" data-key="homepage.showExperience" class="setting-input-bool"><span class="switch-slider"></span></label>
+                                </div>
+                                <div class="setting-switch-row">
+                                    <div class="switch-label-group"><h4>Certificates Section</h4><p>Display verified professional credentials</p></div>
+                                    <label class="switch-control"><input type="checkbox" data-key="homepage.showCertificates" class="setting-input-bool"><span class="switch-slider"></span></label>
+                                </div>
+                                <div class="setting-switch-row">
+                                    <div class="switch-label-group"><h4>Recommendations &amp; Testimonials Section</h4><p>Display approved reviews with submission modal</p></div>
+                                    <label class="switch-control"><input type="checkbox" data-key="homepage.showTestimonials" class="setting-input-bool"><span class="switch-slider"></span></label>
+                                </div>
+                                <div class="setting-switch-row">
+                                    <div class="switch-label-group"><h4>Contact Inquiry Form Section</h4><p>Display public inquiry and messaging form</p></div>
+                                    <label class="switch-control"><input type="checkbox" data-key="homepage.showContact" class="setting-input-bool"><span class="switch-slider"></span></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. SEO -->
+                        <div id="panel-seo" class="settings-panel">
+                            <div class="settings-section-header">
+                                <div>
+                                    <h3>SEO &amp; Search Engine Optimization</h3>
+                                    <p>Search engine rankings, social preview cards, and indexing controls</p>
+                                </div>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Default Page Title Tag</label>
+                                <input type="text" data-key="seo.metaTitle" class="setting-input">
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Meta Description</label>
+                                <textarea data-key="seo.metaDescription" class="setting-input" rows="3"></textarea>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Target Keywords (comma-separated)</label>
+                                <input type="text" data-key="seo.keywords" class="setting-input">
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Canonical Production URL</label>
+                                    <input type="url" data-key="seo.canonicalUrl" class="setting-input">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Open Graph Share Card Image URL</label>
+                                    <input type="url" data-key="seo.ogImageUrl" class="setting-input">
+                                </div>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Google Search Console Verification Token</label>
+                                <input type="text" data-key="seo.googleSiteVerification" class="setting-input" placeholder="google-site-verification token">
+                            </div>
+                            <div class="form-group-admin">
+                                <label>robots.txt Directives</label>
+                                <textarea data-key="seo.robotsTxt" class="setting-input" rows="3" style="font-family:monospace; font-size:0.85rem;"></textarea>
+                            </div>
+                            <div class="setting-switch-row">
+                                <div class="switch-label-group">
+                                    <h4>Allow Search Engine Indexing</h4>
+                                    <p>When disabled, adds noindex / nofollow tags to prevent search indexing</p>
+                                </div>
+                                <label class="switch-control">
+                                    <input type="checkbox" data-key="seo.allowIndexing" class="setting-input-bool">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 5. CONTACT & SOCIAL -->
+                        <div id="panel-contact" class="settings-panel">
+                            <div class="settings-section-header">
+                                <div>
+                                    <h3>Contact Information &amp; Social Links</h3>
+                                    <p>Public channels, messaging availability, and social networks</p>
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Public Inquiry Email</label>
+                                    <input type="email" data-key="contact.publicEmail" class="setting-input">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Inquiry Forwarding Recipient</label>
+                                    <input type="email" data-key="contact.contactFormRecipient" class="setting-input">
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Telephone</label>
+                                    <input type="text" data-key="contact.phone" class="setting-input">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>WhatsApp Number (with country code)</label>
+                                    <input type="text" data-key="contact.whatsapp" class="setting-input">
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>GitHub Profile URL</label>
+                                    <input type="url" data-key="contact.githubUrl" class="setting-input">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>LinkedIn Profile URL</label>
+                                    <input type="url" data-key="contact.linkedinUrl" class="setting-input">
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>X / Twitter Profile URL</label>
+                                    <input type="url" data-key="contact.twitterUrl" class="setting-input">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>YouTube Channel URL</label>
+                                    <input type="url" data-key="contact.youtubeUrl" class="setting-input">
+                                </div>
+                            </div>
+                            <div class="setting-switch-row">
+                                <div class="switch-label-group">
+                                    <h4>Enable Public Contact Form</h4>
+                                    <p>Allow visitors to submit project enquiries directly from the homepage</p>
+                                </div>
+                                <label class="switch-control">
+                                    <input type="checkbox" data-key="contact.enableContactForm" class="setting-input-bool">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 6. EMAIL & NOTIFICATIONS -->
+                        <div id="panel-email" class="settings-panel">
+                            <div class="settings-section-header">
+                                <div>
+                                    <h3>Email &amp; Automated Notifications</h3>
+                                    <p>SMTP mail relay credentials and alert triggers (passwords stored encrypted)</p>
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>SMTP Host</label>
+                                    <input type="text" data-key="email.smtpHost" class="setting-input" placeholder="smtp.gmail.com">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>SMTP Port</label>
+                                    <input type="number" data-key="email.smtpPort" class="setting-input" placeholder="587">
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>SMTP Username</label>
+                                    <input type="text" data-key="email.smtpUsername" class="setting-input">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>SMTP App Password</label>
+                                    <input type="password" data-key="email.smtpPassword" class="setting-input" placeholder="••••••••••••••••">
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Sender From Name</label>
+                                    <input type="text" data-key="email.senderName" class="setting-input">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Sender From Email</label>
+                                    <input type="email" data-key="email.senderEmail" class="setting-input">
+                                </div>
+                            </div>
+                            <div class="setting-switch-row">
+                                <div class="switch-label-group"><h4>Alert on Contact Form Inquiries</h4><p>Send instant email alert when a visitor submits an enquiry</p></div>
+                                <label class="switch-control"><input type="checkbox" data-key="email.notifyOnContactInquiry" class="setting-input-bool"><span class="switch-slider"></span></label>
+                            </div>
+                            <div class="setting-switch-row">
+                                <div class="switch-label-group"><h4>Alert on Testimonial Submissions</h4><p>Send email notification when someone shares a recommendation</p></div>
+                                <label class="switch-control"><input type="checkbox" data-key="email.notifyOnTestimonialSubmission" class="setting-input-bool"><span class="switch-slider"></span></label>
+                            </div>
+                            <div class="setting-switch-row">
+                                <div class="switch-label-group"><h4>Alert on Administrator Sign-In</h4><p>Send security email whenever admin authenticates</p></div>
+                                <label class="switch-control"><input type="checkbox" data-key="email.notifyOnAdminLogin" class="setting-input-bool"><span class="switch-slider"></span></label>
+                            </div>
+                        </div>
+
+                        <!-- 7. MEDIA & UPLOADS -->
+                        <div id="panel-media" class="settings-panel">
+                            <div class="settings-section-header">
+                                <div>
+                                    <h3>Media &amp; File Upload Policies</h3>
+                                    <p>File size limits, allowed MIME formats, and image optimization</p>
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Max Image Upload Size (MB)</label>
+                                    <input type="number" min="1" max="25" data-key="media.maxImageSizeMb" class="setting-input">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Max Document Upload Size (MB)</label>
+                                    <input type="number" min="1" max="50" data-key="media.maxDocumentSizeMb" class="setting-input">
+                                </div>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Allowed Image Formats (comma-separated)</label>
+                                <input type="text" data-key="media.allowedImageFormats" class="setting-input">
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Allowed Document Formats</label>
+                                <input type="text" data-key="media.allowedDocumentFormats" class="setting-input">
+                            </div>
+                            <div class="setting-switch-row">
+                                <div class="switch-label-group">
+                                    <h4>Automatic Image Compression</h4>
+                                    <p>Compress and optimize project images and profile avatars on upload</p>
+                                </div>
+                                <label class="switch-control">
+                                    <input type="checkbox" data-key="media.enableImageCompression" class="setting-input-bool">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 8. PRIVACY & LEGAL -->
+                        <div id="panel-privacy" class="settings-panel">
+                            <div class="settings-section-header">
+                                <div>
+                                    <h3>Privacy, Cookies &amp; Legal Notices</h3>
+                                    <p>Cookie consent banner, privacy policy, and GDPR compliance</p>
+                                </div>
+                            </div>
+                            <div class="setting-switch-row">
+                                <div class="switch-label-group">
+                                    <h4>Display Cookie Consent Banner</h4>
+                                    <p>Show essential cookies prompt to new website visitors</p>
+                                </div>
+                                <label class="switch-control">
+                                    <input type="checkbox" data-key="privacy.enableCookieBanner" class="setting-input-bool">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Cookie Banner Text</label>
+                                <input type="text" data-key="privacy.cookieBannerText" class="setting-input">
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Privacy Policy Disclosure</label>
+                                <textarea data-key="privacy.policyText" class="setting-input" rows="3"></textarea>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Terms &amp; Conditions Notice</label>
+                                <textarea data-key="privacy.termsText" class="setting-input" rows="3"></textarea>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Data Retention Window (Days)</label>
+                                <input type="number" data-key="privacy.dataRetentionDays" class="setting-input" style="max-width:200px;">
+                            </div>
+                        </div>
+
+                        <!-- 9. BACKUP & MAINTENANCE -->
+                        <div id="panel-backup" class="settings-panel">
+                            <div class="settings-section-header">
+                                <div>
+                                    <h3>Backup, Health &amp; Maintenance</h3>
+                                    <p>Database backups, release versions, and maintenance state</p>
+                                </div>
+                            </div>
+                            <div class="biometric-card">
+                                <div>
+                                    <h4 style="color:#fff; font-size:1.1rem; margin-bottom:4px;">Database Health Status</h4>
+                                    <p style="color:var(--admin-text-sub); font-size:0.85rem;">Database connection is healthy and responsive.</p>
+                                </div>
+                                <span class="device-badge active-dev">● Connected &amp; Online</span>
+                            </div>
+                            <div class="setting-switch-row" style="margin-bottom:1.25rem;">
+                                <div class="switch-label-group">
+                                    <h4>Enable Maintenance Mode</h4>
+                                    <p>When enabled, public visitors only see the scheduled updates notice while admin portal remains active</p>
+                                </div>
+                                <label class="switch-control">
+                                    <input type="checkbox" data-key="general.maintenanceMode" class="setting-input-bool">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Maintenance Mode Visitor Notice</label>
+                                <textarea data-key="maintenance.maintenanceNotice" class="setting-input" rows="2"></textarea>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>System Release Version</label>
+                                    <input type="text" data-key="maintenance.systemVersion" class="setting-input" readonly style="opacity:0.8;">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Backup Schedule Frequency</label>
+                                    <select data-key="maintenance.backupFrequency" class="setting-input">
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 10. SECURITY & ACCESS (WEBAUTHN & PASSKEYS) -->
+                        <div id="panel-security" class="settings-panel">
+                            <div class="settings-section-header">
+                                <div>
+                                    <h3>Security, WebAuthn Passkeys &amp; Access Controls</h3>
+                                    <p>Fingerprint biometric credentials, session timeouts, and rate limiting</p>
+                                </div>
+                                <div style="display:flex; gap:8px;">
+                                    <button type="button" class="btn-admin btn-admin-primary" onclick="openEnrollPasskeyModal()">👆 Enroll Fingerprint / Device</button>
+                                    <button type="button" class="btn-admin btn-admin-secondary" onclick="openRecoveryCodesModal()">🔑 Recovery Codes</button>
+                                </div>
+                            </div>
+
+                            <!-- Biometric Passkey Overview -->
+                            <div class="biometric-card">
+                                <div style="display:flex; align-items:center; gap:1.25rem;">
+                                    <div class="biometric-pulse-icon">👆</div>
+                                    <div>
+                                        <h4 style="color:#fff; font-size:1.15rem; margin-bottom:4px;">FIDO2 / WebAuthn Biometric Authentication</h4>
+                                        <p style="color:var(--admin-text-sub); font-size:0.85rem; max-width:550px;">
+                                            Enforce Windows Hello, Touch ID, Android Biometrics, or hardware security keys for administrator login. Raw biometrics never leave your device.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Enrolled Devices Table -->
+                            <div style="margin:1.5rem 0;">
+                                <h4 style="color:#fff; font-size:1rem; margin-bottom:0.75rem;">Enrolled Trusted Devices &amp; Biometric Passkeys</h4>
+                                <div class="data-table-container">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Device Name</th>
+                                                <th>Type</th>
+                                                <th>Registered</th>
+                                                <th>Last Used</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="passkeyDevicesTableBody">
+                                            <tr><td colspan="5" style="text-align:center; padding:1.5rem; color:var(--admin-text-muted);">Loading registered biometric devices...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Admin Inactivity Timeout (Minutes)</label>
+                                    <input type="number" min="5" max="1440" data-key="security.sessionTimeoutMinutes" class="setting-input">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Max Failed Login Attempts</label>
+                                    <input type="number" min="3" max="20" data-key="security.maxFailedLoginAttempts" class="setting-input">
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Account Lockout Duration (Minutes)</label>
+                                    <input type="number" min="5" max="120" data-key="security.lockoutDurationMinutes" class="setting-input">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Minimum Password Length</label>
+                                    <input type="number" min="8" max="64" data-key="security.passwordMinLength" class="setting-input">
+                                </div>
+                            </div>
+                            <div class="setting-switch-row">
+                                <div class="switch-label-group">
+                                    <h4>Enforce Passkey / Biometric MFA</h4>
+                                    <p>Require enrolled administrators to verify with fingerprint before granting access</p>
+                                </div>
+                                <label class="switch-control">
+                                    <input type="checkbox" data-key="security.requireMfaPasskey" class="setting-input-bool">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-switch-row">
+                                <div class="switch-label-group">
+                                    <h4>Enable Security Login Alerts</h4>
+                                    <p>Record all authentication attempts in audit log and flag anomalies</p>
+                                </div>
+                                <label class="switch-control">
+                                    <input type="checkbox" data-key="security.enableLoginAlerts" class="setting-input-bool">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 11. ANALYTICS & TRACKING -->
+                        <div id="panel-analytics" class="settings-panel">
+                            <div class="settings-section-header">
+                                <div>
+                                    <h3>Analytics &amp; Visitor Tracking</h3>
+                                    <p>Traffic metrics, Google Analytics 4 integration, and conversion tracking</p>
+                                </div>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Google Analytics 4 Measurement ID</label>
+                                <input type="text" data-key="analytics.googleAnalyticsId" class="setting-input" placeholder="G-XXXXXXXXXX">
+                            </div>
+                            <div class="setting-switch-row">
+                                <div class="switch-label-group"><h4>Enable Page-View Visitor Tracking</h4><p>Record visits to portfolio modules for analytics metrics</p></div>
+                                <label class="switch-control"><input type="checkbox" data-key="analytics.enableVisitorTracking" class="setting-input-bool"><span class="switch-slider"></span></label>
+                            </div>
+                            <div class="setting-switch-row">
+                                <div class="switch-label-group"><h4>IP Anonymization (GDPR Privacy)</h4><p>Mask the last octet of visitor IP addresses</p></div>
+                                <label class="switch-control"><input type="checkbox" data-key="analytics.anonymizeIp" class="setting-input-bool"><span class="switch-slider"></span></label>
+                            </div>
+                            <div class="setting-switch-row">
+                                <div class="switch-label-group"><h4>Track Contact Form Conversions</h4><p>Log successful project inquiries as analytics conversions</p></div>
+                                <label class="switch-control"><input type="checkbox" data-key="analytics.trackContactConversions" class="setting-input-bool"><span class="switch-slider"></span></label>
+                            </div>
+                            <div class="setting-switch-row">
+                                <div class="switch-label-group"><h4>Track CV / Resume Downloads</h4><p>Record visitor clicks on the resume download button</p></div>
+                                <label class="switch-control"><input type="checkbox" data-key="analytics.trackCvDownloads" class="setting-input-bool"><span class="switch-slider"></span></label>
+                            </div>
+                        </div>
+
+                        <!-- 12. INTEGRATIONS -->
+                        <div id="panel-integrations" class="settings-panel">
+                            <div class="settings-section-header">
+                                <div>
+                                    <h3>Third-Party Integrations</h3>
+                                    <p>Google Maps, reCAPTCHA spam shields, and WhatsApp direct chat</p>
+                                </div>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Google Maps Embed API Key</label>
+                                <input type="text" data-key="integrations.googleMapsApiKey" class="setting-input" placeholder="AIzaSy...">
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>Google reCAPTCHA Site Key</label>
+                                    <input type="text" data-key="integrations.recaptchaSiteKey" class="setting-input">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>reCAPTCHA Secret Key</label>
+                                    <input type="password" data-key="integrations.recaptchaSecretKey" class="setting-input" placeholder="••••••••••••••••">
+                                </div>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Custom Production Domain</label>
+                                <input type="text" data-key="integrations.customDomain" class="setting-input" placeholder="e.g. joashodiwuor.com">
+                            </div>
+                            <div class="setting-switch-row">
+                                <div class="switch-label-group">
+                                    <h4>WhatsApp Floating Chat Button</h4>
+                                    <p>Show interactive WhatsApp chat bubble in bottom-right corner</p>
+                                </div>
+                                <label class="switch-control">
+                                    <input type="checkbox" data-key="integrations.whatsappDirectChat" class="setting-input-bool">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 13. ADVANCED -->
+                        <div id="panel-advanced" class="settings-panel">
+                            <div class="settings-section-header">
+                                <div>
+                                    <h3>Advanced Website Configuration</h3>
+                                    <p>Custom CSS stylesheets, header/footer scripts, and REST API cache control</p>
+                                </div>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Custom Scoped CSS Stylesheet</label>
+                                <textarea data-key="advanced.customCss" class="setting-input" rows="5" style="font-family:monospace; font-size:0.85rem;" placeholder="/* Add custom CSS overrides here */"></textarea>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Custom Header Scripts (HTML &lt;head&gt;)</label>
+                                <textarea data-key="advanced.customHeaderScripts" class="setting-input" rows="3" style="font-family:monospace; font-size:0.85rem;" placeholder="<!-- Custom meta tags or verification snippets -->"></textarea>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Custom Footer Scripts (before &lt;/body&gt;)</label>
+                                <textarea data-key="advanced.customFooterScripts" class="setting-input" rows="3" style="font-family:monospace; font-size:0.85rem;" placeholder="<!-- Custom tracking or widget scripts -->"></textarea>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group-admin">
+                                    <label>HTTP Cache-Control Max Age (Seconds)</label>
+                                    <input type="number" min="0" max="86400" data-key="advanced.cacheControlMaxAge" class="setting-input">
+                                </div>
+                            </div>
+                            <div class="setting-switch-row">
+                                <div class="switch-label-group">
+                                    <h4>Enable REST API Rate Limiting</h4>
+                                    <p>Throttles excessive public inquiry and testimonial submissions</p>
+                                </div>
+                                <label class="switch-control">
+                                    <input type="checkbox" data-key="advanced.enableApiRateLimiting" class="setting-input-bool">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 14: ACHIEVEMENTS ================= -->
+            <section id="view-achievements" class="admin-view">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Achievements, Awards &amp; Honors</h2>
+                        <button class="btn-admin btn-admin-primary" onclick="openAddAchievementModal()">+ Add Achievement</button>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Organization</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="achievementsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 15: SOCIAL LINKS ================= -->
+            <section id="view-social" class="admin-view">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Professional Social Links</h2>
+                        <button class="btn-admin btn-admin-primary" onclick="openAddSocialModal()">+ Add Social Link</button>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Platform</th>
+                                    <th>URL</th>
+                                    <th>Icon</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="socialTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- PROJECT MODAL -->
+    <div id="projectModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="projectModalTitle" class="modal-title">Add New Project</h3>
+                <button class="modal-close" onclick="closeModal('projectModal')">✕</button>
+            </div>
+            <form id="projectForm" onsubmit="handleProjectSubmit(event)">
+                <input type="hidden" id="projId">
+                <div class="form-group-admin">
+                    <label for="projTitle">Project Title *</label>
+                    <input type="text" id="projTitle" placeholder="e.g. Student Registration System" required>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group-admin">
+                        <label for="projCategory">Category *</label>
+                        <input type="text" id="projCategory" placeholder="e.g. Web Development, Java App" required>
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="projTech">Technologies (comma-separated) *</label>
+                        <input type="text" id="projTech" placeholder="e.g. Java, Spring Boot, SQL Server, HTML" required>
+                    </div>
+                </div>
+                <div class="form-group-admin">
+                    <label for="projShortDesc">Short Summary *</label>
+                    <textarea id="projShortDesc" rows="3" placeholder="Brief description visible on project card..." required></textarea>
+                </div>
+                <div class="form-group-admin">
+                    <label for="projFullDesc">Detailed Description</label>
+                    <textarea id="projFullDesc" rows="4" placeholder="Detailed architectural and technical highlights..."></textarea>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group-admin">
+                        <label for="projDemoLink">Live Demonstration URL</label>
+                        <input type="url" id="projDemoLink" placeholder="https://example.com/demo">
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="projGithubLink">GitHub Repository URL</label>
+                        <input type="url" id="projGithubLink" placeholder="https://github.com/handle/repo">
+                    </div>
+                </div>
+                <div class="form-group-admin">
+                    <label for="projImageUrl">Screenshot / Featured Image</label>
+                    <div style="display:flex; gap:0.5rem;">
+                        <input type="text" id="projImageUrl" placeholder="File URL or upload below">
+                        <input type="file" id="projImageFileInput" accept="image/*" style="display:none;" onchange="uploadProjectImage(this)">
+                        <button type="button" class="btn-admin btn-admin-secondary" onclick="document.getElementById('projImageFileInput').click()">Upload File</button>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group-admin">
+                        <label for="projStatus">Status</label>
+                        <select id="projStatus">
+                            <option value="PUBLISHED">PUBLISHED</option>
+                            <option value="DRAFT">DRAFT</option>
+                            <option value="UNPUBLISHED">UNPUBLISHED</option>
+                            <option value="ARCHIVED">ARCHIVED</option>
+                        </select>
+                    </div>
+                    <div class="form-group-admin" style="display:flex; align-items:center; gap:0.5rem; padding-top:1.5rem;">
+                        <input type="checkbox" id="projFeatured" style="width:20px; height:20px;">
+                        <label for="projFeatured" style="margin:0; cursor:pointer;">Show in Featured Highlights</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-admin btn-admin-secondary" onclick="closeModal('projectModal')">Cancel</button>
+                    <button type="submit" class="btn-admin btn-admin-primary">Save Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SKILL CATEGORY MODAL -->
+    <div id="categoryModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Skill Category</h3>
+                <button class="modal-close" onclick="closeModal('categoryModal')">✕</button>
+            </div>
+            <form id="categoryForm" onsubmit="handleCategorySubmit(event)">
+                <div class="form-group-admin">
+                    <label for="catName">Category Name *</label>
+                    <input type="text" id="catName" placeholder="e.g. Web Development, Databases" required>
+                </div>
+                <div class="form-group-admin">
+                    <label for="catIcon">Icon Symbol</label>
+                    <input type="text" id="catIcon" placeholder="e.g. &lt;/&gt;, DB, NET">
+                </div>
+                <div class="form-group-admin">
+                    <label for="catDesc">Description</label>
+                    <textarea id="catDesc" rows="2" placeholder="Brief scope of this category..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-admin btn-admin-secondary" onclick="closeModal('categoryModal')">Cancel</button>
+                    <button type="submit" class="btn-admin btn-admin-primary">Create Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SKILL MODAL -->
+    <div id="skillModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Technical Skill</h3>
+                <button class="modal-close" onclick="closeModal('skillModal')">✕</button>
+            </div>
+            <form id="skillForm" onsubmit="handleSkillSubmit(event)">
+                <input type="hidden" id="skillId">
+                <div class="form-group-admin">
+                    <label for="skillCategorySelect">Parent Category *</label>
+                    <select id="skillCategorySelect" required></select>
+                </div>
+                <div class="form-group-admin">
+                    <label for="skillNameInput">Skill Name *</label>
+                    <input type="text" id="skillNameInput" placeholder="e.g. Java, SQL Server, HTML" required>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group-admin">
+                        <label for="skillProficiencyInput">Proficiency (0 - 100%) *</label>
+                        <input type="number" id="skillProficiencyInput" min="0" max="100" value="85" required>
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="skillLevelSelect">Proficiency Level</label>
+                        <select id="skillLevelSelect">
+                            <option value="Advanced">Advanced</option>
+                            <option value="Proficient" selected>Proficient</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Beginner">Beginner</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group-admin">
+                    <label for="skillStatusSelect">Status</label>
+                    <select id="skillStatusSelect">
+                        <option value="PUBLISHED">PUBLISHED</option>
+                        <option value="DRAFT">DRAFT</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-admin btn-admin-secondary" onclick="closeModal('skillModal')">Cancel</button>
+                    <button type="submit" class="btn-admin btn-admin-primary">Add Skill</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SERVICE MODAL -->
+    <div id="serviceModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Professional Service</h3>
+                <button class="modal-close" onclick="closeModal('serviceModal')">✕</button>
+            </div>
+            <form id="serviceForm" onsubmit="handleServiceSubmit(event)">
+                <input type="hidden" id="serviceId">
+                <div class="form-group-admin">
+                    <label for="serviceTitleInput">Service Title *</label>
+                    <input type="text" id="serviceTitleInput" placeholder="e.g. Website Development" required>
+                </div>
+                <div class="form-group-admin">
+                    <label for="serviceIconInput">Icon Symbol</label>
+                    <input type="text" id="serviceIconInput" placeholder="e.g. &lt;/&gt;, 💻, ⚡">
+                </div>
+                <div class="form-group-admin">
+                    <label for="serviceDescInput">Short Description *</label>
+                    <textarea id="serviceDescInput" rows="3" placeholder="Overview of what you provide..." required></textarea>
+                </div>
+                <div class="form-group-admin">
+                    <label for="serviceStatusSelect">Status</label>
+                    <select id="serviceStatusSelect">
+                        <option value="PUBLISHED">PUBLISHED</option>
+                        <option value="DRAFT">DRAFT</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-admin btn-admin-secondary" onclick="closeModal('serviceModal')">Cancel</button>
+                    <button type="submit" class="btn-admin btn-admin-primary">Add Service</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- EDUCATION MODAL -->
+    <div id="educationModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Education Record</h3>
+                <button class="modal-close" onclick="closeModal('educationModal')">✕</button>
+            </div>
+            <form id="educationForm" onsubmit="handleEducationSubmit(event)">
+                <input type="hidden" id="eduId">
+                <div class="form-group-admin">
+                    <label for="eduDegree">Degree or Diploma *</label>
+                    <input type="text" id="eduDegree" placeholder="e.g. Diploma in Computer Science" required>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group-admin">
+                        <label for="eduSchool">Institution *</label>
+                        <input type="text" id="eduSchool" placeholder="e.g. Kisii National Polytechnic" required>
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="eduLocation">Location *</label>
+                        <input type="text" id="eduLocation" placeholder="e.g. Kenya" required>
+                    </div>
+                </div>
+                <div class="form-group-admin">
+                    <label for="eduField">Field of Study *</label>
+                    <input type="text" id="eduField" placeholder="e.g. Computer Science, Software Engineering" required>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group-admin">
+                        <label for="eduStart">Start Date *</label>
+                        <input type="text" id="eduStart" placeholder="e.g. 2025" required>
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="eduEnd">End Date</label>
+                        <input type="text" id="eduEnd" placeholder="e.g. Present or 2026">
+                    </div>
+                </div>
+                <div class="form-group-admin" style="display:flex; align-items:center; gap:0.5rem;">
+                    <input type="checkbox" id="eduCurrent" style="width:20px; height:20px;">
+                    <label for="eduCurrent" style="margin:0; cursor:pointer;">Currently studying here</label>
+                </div>
+                <div class="form-group-admin">
+                    <label for="eduDesc">Description &amp; Highlights</label>
+                    <textarea id="eduDesc" rows="3" placeholder="Relevant coursework and technical focus..."></textarea>
+                </div>
+                <div class="form-group-admin">
+                    <label for="eduStatus">Status</label>
+                    <select id="eduStatus">
+                        <option value="PUBLISHED">PUBLISHED</option>
+                        <option value="DRAFT">DRAFT</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-admin btn-admin-secondary" onclick="closeModal('educationModal')">Cancel</button>
+                    <button type="submit" class="btn-admin btn-admin-primary">Save Education</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- EXPERIENCE MODAL -->
+    <div id="experienceModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Professional Experience</h3>
+                <button class="modal-close" onclick="closeModal('experienceModal')">✕</button>
+            </div>
+            <form id="experienceForm" onsubmit="handleExperienceSubmit(event)">
+                <input type="hidden" id="expId">
+                <div class="form-group-admin">
+                    <label for="expJobTitle">Job Title *</label>
+                    <input type="text" id="expJobTitle" placeholder="e.g. Junior Software Developer" required>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group-admin">
+                        <label for="expCompany">Company / Organization *</label>
+                        <input type="text" id="expCompany" placeholder="e.g. Tech Solutions Kenya" required>
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="expLocation">Location *</label>
+                        <input type="text" id="expLocation" placeholder="e.g. Nairobi, Kenya" required>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group-admin">
+                        <label for="expStart">Start Date *</label>
+                        <input type="text" id="expStart" placeholder="e.g. Jan 2025" required>
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="expEnd">End Date</label>
+                        <input type="text" id="expEnd" placeholder="e.g. Present">
+                    </div>
+                </div>
+                <div class="form-group-admin" style="display:flex; align-items:center; gap:0.5rem;">
+                    <input type="checkbox" id="expCurrent" style="width:20px; height:20px;">
+                    <label for="expCurrent" style="margin:0; cursor:pointer;">Current position</label>
+                </div>
+                <div class="form-group-admin">
+                    <label for="expResp">Key Responsibilities *</label>
+                    <textarea id="expResp" rows="3" placeholder="Key contributions and achievements..." required></textarea>
+                </div>
+                <div class="form-group-admin">
+                    <label for="expTech">Technologies Used</label>
+                    <input type="text" id="expTech" placeholder="e.g. Java, Spring Boot, MySQL, Git">
+                </div>
+                <div class="form-group-admin">
+                    <label for="expStatus">Status</label>
+                    <select id="expStatus">
+                        <option value="PUBLISHED">PUBLISHED</option>
+                        <option value="DRAFT">DRAFT</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-admin btn-admin-secondary" onclick="closeModal('experienceModal')">Cancel</button>
+                    <button type="submit" class="btn-admin btn-admin-primary">Save Experience</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CERTIFICATE MODAL -->
+    <div id="certificateModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Certificate</h3>
+                <button class="modal-close" onclick="closeModal('certificateModal')">✕</button>
+            </div>
+            <form id="certificateForm" onsubmit="handleCertificateSubmit(event)">
+                <input type="hidden" id="certId">
+                <div class="form-group-admin">
+                    <label for="certTitle">Certificate Title *</label>
+                    <input type="text" id="certTitle" placeholder="e.g. Oracle Certified Associate Java Programmer" required>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group-admin">
+                        <label for="certOrg">Issuing Organization *</label>
+                        <input type="text" id="certOrg" placeholder="e.g. Oracle, Cisco, Coursera" required>
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="certDate">Issue Date *</label>
+                        <input type="text" id="certDate" placeholder="e.g. Nov 2025" required>
+                    </div>
+                </div>
+                <div class="form-group-admin">
+                    <label for="certUrl">Verification Credential URL</label>
+                    <input type="url" id="certUrl" placeholder="https://cert-verification.org/id">
+                </div>
+                <div class="form-group-admin">
+                    <label for="certStatus">Status</label>
+                    <select id="certStatus">
+                        <option value="PUBLISHED">PUBLISHED</option>
+                        <option value="DRAFT">DRAFT</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-admin btn-admin-secondary" onclick="closeModal('certificateModal')">Cancel</button>
+                    <button type="submit" class="btn-admin btn-admin-primary">Save Certificate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ACHIEVEMENT MODAL -->
+    <div id="achievementModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="achievementModalTitle" class="modal-title">Add Achievement</h3>
+                <button class="modal-close" onclick="closeModal('achievementModal')">✕</button>
+            </div>
+            <form id="achievementForm" onsubmit="handleAchievementSubmit(event)">
+                <input type="hidden" id="achId">
+                <div class="form-group-admin">
+                    <label for="achTitle">Achievement Title *</label>
+                    <input type="text" id="achTitle" placeholder="e.g. Best Academic Project Award" required>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group-admin">
+                        <label for="achOrg">Organization</label>
+                        <input type="text" id="achOrg" placeholder="e.g. Kisii National Polytechnic">
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="achDate">Date</label>
+                        <input type="text" id="achDate" placeholder="e.g. 2025">
+                    </div>
+                </div>
+                <div class="form-group-admin">
+                    <label for="achDesc">Description *</label>
+                    <textarea id="achDesc" rows="3" placeholder="Key highlights and scope of recognition..." required></textarea>
+                </div>
+                <div class="form-group-admin">
+                    <label for="achStatus">Status</label>
+                    <select id="achStatus">
+                        <option value="PUBLISHED">PUBLISHED</option>
+                        <option value="DRAFT">DRAFT</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-admin btn-admin-secondary" onclick="closeModal('achievementModal')">Cancel</button>
+                    <button type="submit" class="btn-admin btn-admin-primary">Save Achievement</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SOCIAL LINK MODAL -->
+    <div id="socialModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="socialModalTitle" class="modal-title">Add Social Link</h3>
+                <button class="modal-close" onclick="closeModal('socialModal')">✕</button>
+            </div>
+            <form id="socialForm" onsubmit="handleSocialSubmit(event)">
+                <input type="hidden" id="socialId">
+                <div class="form-group-admin">
+                    <label for="socPlatform">Platform Name *</label>
+                    <input type="text" id="socPlatform" list="platformSuggestions" placeholder="e.g. GitHub, LinkedIn, Twitter, Email" oninput="handlePlatformInputChange()" required>
+                    <datalist id="platformSuggestions">
+                        <option value="GitHub">
+                        <option value="LinkedIn">
+                        <option value="Twitter / X">
+                        <option value="Email">
+                        <option value="WhatsApp">
+                        <option value="YouTube">
+                        <option value="Instagram">
+                        <option value="Discord">
+                        <option value="Telegram">
+                    </datalist>
+                </div>
+                <div class="form-group-admin">
+                    <label for="socUrl">Profile or Destination URL *</label>
+                    <input type="text" id="socUrl" placeholder="https://github.com/... or mailto:you@domain.com" required>
+                </div>
+                <div class="form-group-admin">
+                    <label for="socIcon">Icon / Symbol *</label>
+                    <input type="text" id="socIcon" placeholder="e.g. 🐙, 💼, 🐦, ✉️, 💬, fa-github" required>
+                </div>
+                <div class="form-group-admin" style="display:flex; align-items:center; gap:0.5rem;">
+                    <input type="checkbox" id="socActive" checked style="width:20px; height:20px;">
+                    <label for="socActive" style="margin:0; cursor:pointer;">Active on public website</label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-admin btn-admin-secondary" onclick="closeModal('socialModal')">Cancel</button>
+                    <button type="submit" class="btn-admin btn-admin-primary">Save Social Link</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SETTING MODAL -->
+    <div id="settingModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="settingModalTitle" class="modal-title">Add / Update Website Setting</h3>
+                <button class="modal-close" onclick="closeModal('settingModal')">✕</button>
+            </div>
+            <form id="settingForm" onsubmit="handleSettingSubmit(event)">
+                <div class="form-group-admin">
+                    <label for="settingKeyInput">Setting Key *</label>
+                    <input type="text" id="settingKeyInput" placeholder="e.g. site_title, analytics_id" required>
+                </div>
+                <div class="form-group-admin">
+                    <label for="settingValueInput">Setting Value *</label>
+                    <textarea id="settingValueInput" rows="3" placeholder="Configuration value..." required></textarea>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group-admin">
+                        <label for="settingGroupInput">Group</label>
+                        <input type="text" id="settingGroupInput" placeholder="e.g. GENERAL, SEO, CONTACT" value="GENERAL">
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="settingDescInput">Description</label>
+                        <input type="text" id="settingDescInput" placeholder="Purpose of this configuration key">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-admin btn-admin-secondary" onclick="closeModal('settingModal')">Cancel</button>
+                    <button type="submit" class="btn-admin btn-admin-primary">Save Setting</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PASSWORD CHANGE MODAL -->
+    <div id="passwordModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Change Administrator Password</h3>
+                <button class="modal-close" onclick="closeModal('passwordModal')">✕</button>
+            </div>
+            <form id="passwordForm" onsubmit="handlePasswordChangeSubmit(event)">
+                <div class="form-group-admin">
+                    <label for="pwdCurrent">Current Password *</label>
+                    <input type="password" id="pwdCurrent" placeholder="Enter current password" required>
+                </div>
+                <div class="form-group-admin">
+                    <label for="pwdNew">New Password (min 8 chars) *</label>
+                    <input type="password" id="pwdNew" minlength="8" placeholder="Enter new strong password" required>
+                </div>
+                <div class="form-group-admin">
+                    <label for="pwdConfirm">Confirm New Password *</label>
+                    <input type="password" id="pwdConfirm" minlength="8" placeholder="Re-enter new password" required>
+                </div>
+                <div id="pwdMsg" style="margin-bottom:1rem; font-size:0.85rem; display:none;"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-admin btn-admin-secondary" onclick="closeModal('passwordModal')">Cancel</button>
+                    <button type="submit" class="btn-admin btn-admin-primary">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= 1. TESTIMONIAL REVIEW MODAL ================= -->
+    <div id="testimonialReviewModal" class="modal-backdrop">
+        <div class="modal-content" style="max-width: 650px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Review Client Recommendation</h3>
+                <button class="modal-close" onclick="closeModal('testimonialReviewModal')">✕</button>
+            </div>
+            <div id="reviewModalBody" style="display:flex; flex-direction:column; gap:1.25rem;">
+                <div style="display:flex; align-items:center; gap:16px;">
+                    <div id="revAvatarBox" style="width:55px; height:55px; border-radius:50%; background:rgba(0,180,216,0.15); color:var(--admin-accent); font-size:1.5rem; display:flex; align-items:center; justify-content:center; font-weight:700;"></div>
+                    <div>
+                        <h4 id="revFullName" style="color:#fff; font-size:1.15rem; margin-bottom:2px;"></h4>
+                        <p id="revMeta" style="color:var(--admin-text-sub); font-size:0.85rem;"></p>
+                        <p id="revEmail" style="color:var(--admin-accent); font-size:0.82rem; margin-top:2px;"></p>
+                    </div>
+                    <div id="revConsentBadge" style="margin-left:auto;"></div>
+                </div>
+
+                <div style="background:rgba(255,255,255,0.03); border:1px solid var(--admin-border); border-radius:8px; padding:1.25rem;">
+                    <h5 style="color:var(--admin-text-muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Recommendation Message</h5>
+                    <p id="revMessageText" style="color:#f8fafc; font-style:italic; line-height:1.6; font-size:0.95rem;"></p>
+                </div>
+
+                <div class="form-grid">
+                    <div>
+                        <span style="color:var(--admin-text-muted); font-size:0.78rem;">Professional Relationship:</span>
+                        <p id="revRelationship" style="color:#fff; font-weight:600; font-size:0.9rem;"></p>
+                    </div>
+                    <div>
+                        <span style="color:var(--admin-text-muted); font-size:0.78rem;">Organization Website:</span>
+                        <p id="revWebsite" style="font-size:0.9rem;"></p>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div>
+                        <span style="color:var(--admin-text-muted); font-size:0.78rem;">Submitted Timestamp:</span>
+                        <p id="revSubmittedAt" style="color:var(--admin-text-sub); font-size:0.85rem;"></p>
+                    </div>
+                    <div>
+                        <span style="color:var(--admin-text-muted); font-size:0.78rem;">Current Status:</span>
+                        <p id="revStatusBadge"></p>
+                    </div>
+                </div>
+
+                <!-- Rejection Reason input (visible when rejecting) -->
+                <div class="form-group-admin" style="margin-top:0.5rem;">
+                    <label for="revRejectionReason">Rejection / Moderation Notes <small style="color:var(--admin-text-muted);">(Optional explanation if rejected)</small></label>
+                    <input type="text" id="revRejectionReason" placeholder="e.g. Inappropriate language, spam, or unverified client identity">
+                </div>
+            </div>
+
+            <div class="modal-footer" style="flex-wrap:wrap; gap:8px;">
+                <button type="button" class="btn-admin btn-admin-danger" onclick="deleteTestimonialFromReview()">🗑️ Delete</button>
+                <button type="button" class="btn-admin btn-admin-secondary" onclick="archiveTestimonialFromReview()">📦 Archive</button>
+                <button type="button" class="btn-admin btn-admin-secondary" style="border-color:rgba(239,68,68,0.4); color:#f87171;" onclick="rejectTestimonialFromReview()">❌ Reject</button>
+                <button type="button" class="btn-admin btn-admin-primary" onclick="approveTestimonialFromReview()">✅ Approve for Public Display</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 2. SETTINGS AUDIT TRAIL MODAL ================= -->
+    <div id="settingsAuditModal" class="modal-backdrop">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Settings &amp; Configuration Audit Trail</h3>
+                <button class="modal-close" onclick="closeModal('settingsAuditModal')">✕</button>
+            </div>
+            <div class="data-table-container" style="max-height: 450px; overflow-y:auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Action</th>
+                            <th>Admin</th>
+                            <th>IP Address</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="settingsAuditTableBody">
+                        <tr><td colspan="5" style="text-align:center; padding:1.5rem; color:var(--admin-text-muted);">Loading audit logs...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-admin btn-admin-secondary" onclick="closeModal('settingsAuditModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 3. SETTINGS PREVIEW MODAL ================= -->
+    <div id="settingsPreviewModal" class="modal-backdrop">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Live Appearance &amp; Layout Preview</h3>
+                <button class="modal-close" onclick="closeModal('settingsPreviewModal')">✕</button>
+            </div>
+            <div id="settingsPreviewContainer" style="padding:1.5rem; border-radius:10px; border:1px solid rgba(255,255,255,0.1);">
+                <!-- Dynamically updated preview card -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-admin btn-admin-secondary" onclick="closeModal('settingsPreviewModal')">Close</button>
+                <button type="button" class="btn-admin btn-admin-primary" onclick="publishSettingsLive(); closeModal('settingsPreviewModal');">Publish These Changes Now 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 4. SETTINGS IMPORT BACKUP MODAL ================= -->
+    <div id="settingsImportModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Import Website Configuration Backup</h3>
+                <button class="modal-close" onclick="closeModal('settingsImportModal')">✕</button>
+            </div>
+            <form onsubmit="handleSettingsImport(event)">
+                <div class="form-group-admin">
+                    <label>Upload JSON Backup File</label>
+                    <input type="file" id="importJsonFileInput" accept=".json,application/json" onchange="readImportJsonFile(this)">
+                </div>
+                <div class="form-group-admin">
+                    <label>Or Paste Settings JSON Content</label>
+                    <textarea id="importJsonTextArea" rows="7" style="font-family:monospace; font-size:0.82rem;" placeholder='{"settings": {"general.websiteName": "..."}}' required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-admin btn-admin-secondary" onclick="closeModal('settingsImportModal')">Cancel</button>
+                    <button type="submit" id="btnApplyImport" class="btn-admin btn-admin-primary">Apply &amp; Restore Configuration</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= 5. ENROLL PASSKEY BIOMETRIC DEVICE MODAL ================= -->
+    <div id="enrollPasskeyModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Enroll Biometric Passkey / Device</h3>
+                <button class="modal-close" onclick="closeModal('enrollPasskeyModal')">✕</button>
+            </div>
+            <form onsubmit="handlePasskeyEnrollSubmit(event)">
+                <div style="text-align:center; margin-bottom:1.25rem;">
+                    <div style="font-size:2.5rem; margin-bottom:0.5rem; color:var(--admin-accent);">👆</div>
+                    <h4 style="color:#fff; font-size:1.1rem;">Touch Sensor / Windows Hello</h4>
+                    <p style="color:var(--admin-text-sub); font-size:0.85rem;">Register this hardware device as a trusted cryptographic authenticator for administrator login.</p>
+                </div>
+                <div class="form-group-admin">
+                    <label for="enrollDeviceName">Device Friendly Name *</label>
+                    <input type="text" id="enrollDeviceName" placeholder="e.g. ThinkPad T14 Fingerprint, iPhone Touch ID" required>
+                </div>
+                <div class="form-group-admin">
+                    <label for="enrollDeviceType">Device Form Factor</label>
+                    <select id="enrollDeviceType">
+                        <option value="Laptop / Fingerprint Sensor">Laptop / Internal Fingerprint Sensor (Windows Hello)</option>
+                        <option value="Desktop / PIN Security">Desktop / Windows Hello PIN</option>
+                        <option value="Mobile / Biometric">Smartphone (Android Fingerprint / iOS Touch ID)</option>
+                        <option value="Hardware FIDO2 Security Key">Hardware Security Key (YubiKey / FIDO2 USB)</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-admin btn-admin-secondary" onclick="closeModal('enrollPasskeyModal')">Cancel</button>
+                    <button type="submit" id="btnStartEnroll" class="btn-admin btn-admin-primary">Prompt Biometric Scanner 👆</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= 6. EMERGENCY RECOVERY CODES MODAL ================= -->
+    <div id="recoveryCodesModal" class="modal-backdrop">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Emergency Single-Use Recovery Codes</h3>
+                <button class="modal-close" onclick="closeModal('recoveryCodesModal')">✕</button>
+            </div>
+            <div style="padding:0.5rem 0;">
+                <div style="background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35); border-radius:8px; padding:1rem; margin-bottom:1.25rem;">
+                    <p style="color:#fbbf24; font-size:0.88rem; line-height:1.5;">
+                        ⚠️ <strong>Store these codes in a secure password manager.</strong> If you lose access to your biometric passkeys, each code can be used exactly once to sign into the administrator portal.
+                    </p>
+                </div>
+                <div id="recoveryCodesGrid" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:1.5rem;">
+                    <!-- Dynamically populated codes -->
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                <button type="button" class="btn-admin btn-admin-danger" onclick="confirmRegenerateRecoveryCodes()">🔄 Regenerate All Codes</button>
+                <div style="display:flex; gap:8px;">
+                    <button type="button" class="btn-admin btn-admin-secondary" onclick="copyAllRecoveryCodes()">📋 Copy Codes</button>
+                    <button type="button" class="btn-admin btn-admin-primary" onclick="closeModal('recoveryCodesModal')">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/api.js"></script>
+    <script src="js/admin-auth.js"></script>
+    <script src="js/admin-dashboard.js"></script>
+</body>
+</html>

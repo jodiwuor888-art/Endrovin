@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard</title>
+
+    <link rel="stylesheet" href="admin.css">
+
+</head>
+
+<body>
+
+
+<div class="dashboard">
+
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <h2>
+            &lt; Admin /&gt;
+        </h2>
+
+
+        <nav>
+
+            <a href="../frontendport/index.html" onclick="exitAdminToPublic(event)" style="color: #00b4d8; font-weight: 600;">
+                ↗ Public Portfolio
+            </a>
+
+            <a href="#overview">
+                Dashboard
+            </a>
+
+            <a href="#projects">
+                Projects
+            </a>
+
+            <a href="#messages">
+                Messages
+            </a>
+
+            <a href="#skills">
+                Skills
+            </a>
+
+            <a href="#education">
+                Education
+            </a>
+
+        </nav>
+
+
+        <button onclick="logout()">
+            Logout
+        </button>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main-content">
+
+
+        <section id="overview">
+
+            <h1>Dashboard</h1>
+
+            <p>
+                Welcome to your portfolio administration panel.
+            </p>
+
+
+            <div class="statistics">
+
+                <div class="stat-card">
+
+                    <h3 id="projectCount">
+                        0
+                    </h3>
+
+                    <p>Projects</p>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <h3>
+                        0
+                    </h3>
+
+                    <p>Skills</p>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <h3>
+                        0
+                    </h3>
+
+                    <p>Messages</p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PROJECT MANAGEMENT -->
+
+        <section id="projects">
+
+            <div class="section-header">
+
+                <h2>Manage Projects</h2>
+
+            </div>
+
+
+            <form id="projectForm">
+
+                <input
+                    type="text"
+                    id="projectName"
+                    placeholder="Project name"
+                    required
+                >
+
+
+                <input
+                    type="text"
+                    id="category"
+                    placeholder="Category"
+                >
+
+
+                <textarea
+                    id="description"
+                    placeholder="Project description"
+                ></textarea>
+
+
+                <input
+                    type="text"
+                    id="technologies"
+                    placeholder="Technologies e.g. HTML, CSS, JavaScript"
+                >
+
+
+                <input
+                    type="text"
+                    id="projectLink"
+                    placeholder="Project link"
+                >
+
+
+                <input
+                    type="text"
+                    id="imageURL"
+                    placeholder="Image URL"
+                >
+
+
+                <button type="submit">
+                    Add Project
+                </button>
+
+            </form>
+
+
+            <div id="projectList"></div>
+
+        </section>
+
+
+        <!-- MESSAGES -->
+
+        <section id="messages">
+
+            <h2>Contact Messages</h2>
+
+            <div id="messageList"></div>
+
+        </section>
+
+        <form action="save_message.php" method="POST">
+            <form action="save_message.php" method="POST">
+</main>
+    </main>
+
+</div>
+
+
+<script src="admin.js"></script>
+
+</body>
+
+</html>
