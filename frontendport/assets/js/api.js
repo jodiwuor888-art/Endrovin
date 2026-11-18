@@ -251,9 +251,15 @@ function _cachedFetch(key, fetchFn) {
 })();
 
 /* ==========================================================================
-   ADMIN PUBLISH API — Triggers instant cache eviction on the backend
+   ADMIN PUBLISH API — Triggers instant cache eviction + cross-tab auto-refresh
    Called automatically after every successful admin save/update/delete.
    ========================================================================== */
+
+// BroadcastChannel: signals all public tabs in the same browser instantly
+const _publishChannel = (() => {
+    try { return new BroadcastChannel('portfolio_publish'); } catch { return null; }
+})();
+
 Object.assign(API, {
     async publishChanges() {
         try {
@@ -266,22 +272,29 @@ Object.assign(API, {
                 cache: 'no-store'
             });
             const data = await res.json();
-            console.log('[PublishSync] Published — version:', data.version || data.data?.version);
+            const version = data.version || data.data?.version || Date.now();
+            console.log('[AutoRefresh] Published — version:', version);
+
+            // 🔊 Broadcast to all public tabs in the same browser — instant refresh
+            if (_publishChannel) {
+                _publishChannel.postMessage({ type: 'PUBLISHED', version });
+                console.log('[AutoRefresh] Broadcast sent to public tabs');
+            }
+
             return data;
         } catch (err) {
-            console.warn('[PublishSync] Publish trigger failed (non-critical):', err);
+            console.warn('[AutoRefresh] Publish trigger failed (non-critical):', err);
             return { published: false };
         }
     }
 });
 
-// ── Auto-intercept: wrap fetch to trigger publish on successful admin writes ──
+// ── Auto-intercept: wrap fetch to trigger publish on every successful admin write ──
 (function patchAdminFetch() {
     const originalFetch = window.fetch;
     window.fetch = async function(resource, options = {}) {
         const response = await originalFetch(resource, options);
 
-        // Only intercept admin write endpoints that succeed
         const url = typeof resource === 'string' ? resource : resource?.url || '';
         const method = (options.method || 'GET').toUpperCase();
         const isAdminWrite = url.includes('/api/admin/') &&
@@ -291,9 +304,8 @@ Object.assign(API, {
                              !url.includes('/api/admin/passkey');
 
         if (isAdminWrite && response.ok) {
-            // Clone before consuming
             const cloned = response.clone();
-            // Trigger publish asynchronously (don't block the admin UI)
+            // Trigger publish 200ms after save (non-blocking)
             setTimeout(() => {
                 if (typeof API !== 'undefined' && typeof API.publishChanges === 'function') {
                     API.publishChanges().catch(() => {});

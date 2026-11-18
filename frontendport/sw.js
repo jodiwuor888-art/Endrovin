@@ -4,9 +4,9 @@
    for pages, network-first with 3s timeout for API calls.
    ========================================================================== */
 
-const CACHE_NAME = 'joash-portfolio-v3';
-const STATIC_CACHE = 'joash-static-v3';
-const API_CACHE = 'joash-api-v3';
+const CACHE_NAME = 'joash-portfolio-v4';
+const STATIC_CACHE = 'joash-static-v4';
+const API_CACHE = 'joash-api-v4';
 const OFFLINE_URL = './offline.html';
 
 const PRECACHE_ASSETS = [
@@ -145,15 +145,27 @@ self.addEventListener('message', (event) => {
         self.skipWaiting();
     }
     if (event.data === 'BUST_API_CACHE') {
-        // Delete all cached public API responses to force fresh fetch
-        caches.open(API_CACHE).then((cache) => {
-            cache.keys().then((keys) => {
-                keys.forEach((req) => {
-                    if (req.url.includes('/api/public/')) {
-                        cache.delete(req);
-                    }
-                });
-            });
+        // Delete ALL cached pages + public API responses to force fresh content
+        Promise.all([
+            caches.open(API_CACHE).then((cache) =>
+                cache.keys().then((keys) =>
+                    Promise.all(keys.map((req) => cache.delete(req)))
+                )
+            ),
+            caches.open(STATIC_CACHE).then((cache) =>
+                cache.keys().then((keys) =>
+                    Promise.all(keys
+                        .filter((req) =>
+                            req.url.includes('/api/public/') ||
+                            req.url.endsWith('.html') ||
+                            req.url.endsWith('/')
+                        )
+                        .map((req) => cache.delete(req))
+                    )
+                )
+            )
+        ]).then(() => {
+            console.log('[SW] Cache busted — all public pages + API responses cleared');
         });
     }
 });
