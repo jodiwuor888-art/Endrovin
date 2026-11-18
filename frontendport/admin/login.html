@@ -1514,8 +1514,8 @@
             title.textContent = 'Verification Unsuccessful';
             desc.textContent = 'Touch the sensor firmly again or choose an alternative login method.';
         } else {
-            title.textContent = isEnrollmentMode ? 'Link Your Lenovo Fingerprint' : 'Touch Your Lenovo Fingerprint Sensor';
-            desc.textContent = 'Windows Hello is waiting. Touch your laptop\'s built-in sensor.';
+            title.textContent = isEnrollmentMode ? `Link Your ${dev.registerPrompt || 'Device Sensor'}` : (dev.prompt || 'Touch Your Fingerprint Sensor');
+            desc.textContent = dev.sub || 'Biometric sensor is ready. Authenticate using your device.';
         }
     }
 
@@ -1654,7 +1654,8 @@
             }
         } catch (err) {
             setScannerState('error');
-            showAlert(err.message || 'Biometric verification cancelled. Please touch your Lenovo sensor again.', 'info');
+            const dev = getDeviceAuthInfo();
+            showAlert(err.message || `Biometric verification cancelled. Please authenticate on your ${dev.name} to try again.`, 'info');
             document.getElementById('fpBtn').disabled = false;
             if (!mfaState && fpUsernameGroup) fpUsernameGroup.style.display = 'block';
         }
