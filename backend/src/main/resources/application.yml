@@ -19,11 +19,13 @@ spring:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
     hikari:
       pool-name: PortfolioHikariCP
-      maximum-pool-size: 10
+      maximum-pool-size: 15
       minimum-idle: 2
       idle-timeout: 30000
-      connection-timeout: 20000
+      connection-timeout: 8000
       max-lifetime: 1800000
+      keepalive-time: 60000
+      connection-test-query: SELECT 1
 
   # JPA / Hibernate Configuration
   jpa:
@@ -32,7 +34,11 @@ spring:
     show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
+        generate_statistics: false
+        cache:
+          use_second_level_cache: false
+          use_query_cache: false
         jdbc:
           batch_size: 20
         order_inserts: true
@@ -57,6 +63,26 @@ spring:
 
 # Server Configuration
 server:
+# ── Response Compression (GZIP) ─────────────────────────────────
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/plain,text/css,text/javascript,application/javascript,image/svg+xml
+    min-response-size: 1024
+
+# ── Tomcat Thread Pool & Connection Tuning ───────────────────────
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 20
+    accept-count: 100
+    connection-timeout: 10000
+    max-connections: 8192
+    keep-alive-timeout: 20000
+
+# ── HTTP/2 Support ───────────────────────────────────────────────
+  http2:
+    enabled: true
+
   port: ${PORT:8080}
   error:
     include-message: always

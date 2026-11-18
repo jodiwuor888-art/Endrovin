@@ -42,8 +42,19 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 
 # Start Spring Boot application
 ENTRYPOINT ["java", \
+    "-server", \
     "-XX:+UseContainerSupport", \
     "-XX:MaxRAMPercentage=75.0", \
+    "-XX:InitialRAMPercentage=50.0", \
+    "-XX:+UseG1GC", \
+    "-XX:G1HeapRegionSize=16m", \
+    "-XX:MaxGCPauseMillis=200", \
+    "-XX:+ParallelRefProcEnabled", \
+    "-XX:+UseStringDeduplication", \
     "-XX:+OptimizeStringConcat", \
+    "-XX:+TieredCompilation", \
+    "-XX:+UseCompressedOops", \
     "-Djava.security.egd=file:/dev/./urandom", \
+    "-Dspring.jmx.enabled=false", \
+    "-Dspring.backgroundpreinitializer.ignore=true", \
     "-jar", "app.jar"]

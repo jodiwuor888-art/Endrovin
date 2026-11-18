@@ -1078,3 +1078,42 @@ function initScrollReveal() {
         revealElements.forEach(el => el.classList.add('show'));
     }
 }
+
+/* ==========================================================================
+   PERFORMANCE: Intersection Observer for section-by-section loading
+   ========================================================================== */
+(function lazyLoadSections() {
+    if (!('IntersectionObserver' in window)) return;
+    const sections = document.querySelectorAll('section, .section, [data-lazy-load]');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('section-visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { rootMargin: '100px 0px', threshold: 0.05 });
+    sections.forEach((s) => observer.observe(s));
+})();
+
+/* Register service worker with immediate activation */
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+            .then((reg) => {
+                // Force new SW to activate immediately
+                if (reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    if (newWorker) {
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                newWorker.postMessage('SKIP_WAITING');
+                            }
+                        });
+                    }
+                });
+            })
+            .catch(() => {});
+    });
+}

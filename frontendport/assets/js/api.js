@@ -208,3 +208,44 @@ function showToast(message, type = 'success') {
         toast.style.display = 'none';
     }, 4000);
 }
+
+/* ==========================================================================
+   PERFORMANCE LAYER — Request cache + backend warm-up
+   ========================================================================== */
+
+// In-memory response cache (avoids redundant API calls on the same page load)
+const _apiCache = new Map();
+const _apiCacheTTL = 30000; // 30 seconds
+
+function _cachedFetch(key, fetchFn) {
+    const hit = _apiCache.get(key);
+    if (hit && Date.now() - hit.ts < _apiCacheTTL) return Promise.resolve(hit.data);
+    return fetchFn().then((data) => {
+        _apiCache.set(key, { data, ts: Date.now() });
+        return data;
+    });
+}
+
+// Backend warm-up: fires a lightweight HEAD ping as soon as possible
+// so the Render free-tier container is awake before user interactions
+(function warmUpBackend() {
+    if (typeof API_BASE === 'undefined') return;
+    setTimeout(() => {
+        fetch(API_BASE + '/actuator/health', {
+            method: 'GET',
+            cache: 'no-store',
+            signal: AbortSignal.timeout ? AbortSignal.timeout(8000) : undefined
+        }).catch(() => {});
+    }, 500);
+})();
+
+// Prefetch public portfolio data on load (prime the cache)
+(function prefetchPortfolioData() {
+    if (typeof API_BASE === 'undefined') return;
+    setTimeout(() => {
+        fetch(API_BASE + '/api/public/portfolio', {
+            headers: { 'Accept': 'application/json' },
+            cache: 'force-cache'
+        }).catch(() => {});
+    }, 800);
+})();

@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.http.CacheControl;
+import java.util.concurrent.TimeUnit;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.nio.file.Path;
@@ -67,23 +69,23 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations(uploadPath.endsWith("/") ? uploadPath : uploadPath + "/")
-                .setCachePeriod(3600);
+                .setCachePeriod(86400);
 
         // Swagger UI static assets
         registry.addResourceHandler("/swagger-ui/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/")
-                .setCachePeriod(3600);
+                .setCachePeriod(86400);
 
         // Explicitly serve classpath static resources (css, js, favicon)
         registry.addResourceHandler("/static/**")
                 .addResourceLocations("classpath:/static/")
-                .setCachePeriod(3600);
+                .setCachePeriod(86400);
 
         // Map frontendport directory for browser access
         // NOTE: Only map specific non-API prefixes to avoid intercepting /api/** routes
         registry.addResourceHandler("/assets/**")
                 .addResourceLocations("file:frontendport/assets/", "file:../frontendport/assets/")
-                .setCachePeriod(0);
+                .setCachePeriod(300);
 
         registry.addResourceHandler("/admin/**")
                 .addResourceLocations("file:frontendport/admin/", "file:../frontendport/admin/")
