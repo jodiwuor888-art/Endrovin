@@ -251,6 +251,7 @@ public class AuthService {
     @Transactional
     public AuthResponse completePasskeyLogin(String username, PasskeyAuthenticationVerifyRequest request, String origin, String ipAddress) {
         Admin admin = adminRepository.findByUsername(username)
+                .or(() -> adminRepository.findByEmailIgnoreCase(username))
                 .orElseThrow(() -> new UnauthorizedException("Administrator not found for verification"));
 
         // Cryptographically verify the WebAuthn / Passkey signature & challenge

@@ -75,6 +75,7 @@ public class AdminPasskeyController {
 
         String username = resolveUsername(body, userDetails, httpRequest);
         Admin admin = adminRepository.findByUsername(username)
+                .or(() -> adminRepository.findByEmailIgnoreCase(username))
                 .orElseThrow(() -> new UnauthorizedException("Administrator not found: " + username));
 
         String origin = getOrigin(httpRequest);
