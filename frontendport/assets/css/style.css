@@ -1,3 +1,89 @@
+
+/* ═══════════════════════════════════════════════
+   PERFORMANCE OPTIMIZATIONS
+   ═══════════════════════════════════════════════ */
+
+/* Smooth scroll + touch performance */
+html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    text-rendering: optimizeSpeed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* GPU-accelerated scrolling for main containers */
+body {
+    will-change: scroll-position;
+    overflow-x: hidden;
+}
+
+/* Contain heavy card sections to avoid full-page repaints */
+.portfolio-grid,
+.services-grid,
+.testimonials-grid,
+.projects-grid,
+.skills-grid {
+    contain: layout style;
+}
+
+/* Optimize animated cards */
+.card,
+.portfolio-card,
+.service-card,
+.testimonial-card,
+.project-card,
+.skill-item {
+    will-change: transform, opacity;
+    contain: layout style paint;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Nav hover optimizations */
+.nav-link,
+.btn,
+.social-link {
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+/* Image optimizations */
+img {
+    content-visibility: auto;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Reduce motion for accessibility & performance */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    .maint-quantum-scene,
+    .maint-quantum-svg,
+    .core-gimbal-outer,
+    .core-gimbal-mid,
+    .core-gimbal-inner,
+    .core-plasma-orb,
+    .core-laser-beam-l,
+    .core-laser-beam-r,
+    .core-flux-node {
+        animation: none !important;
+    }
+}
+
+/* Optimize search/filter transitions */
+.filter-transition {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    will-change: opacity, transform;
+}
+
 ﻿/* ==========================================================================
    PORTFOLIO MANAGEMENT SYSTEM - CORE STYLESHEET
    Unified Professional Background: Dark Navy & Electric Blue Cyber Technology
@@ -2239,6 +2325,154 @@ footer::before {
     100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
 }
 
+
+/* ═══════════════════════════════════════════════
+   QUANTUM CONSTRUCTION REACTOR — Maintenance Anim
+   ═══════════════════════════════════════════════ */
+.maint-quantum-scene {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: quantumLevitate 4s ease-in-out infinite;
+    will-change: transform;
+    contain: layout style paint;
+}
+@keyframes quantumLevitate {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+}
+.core-ambient-disc {
+    position: absolute;
+    width: 170px;
+    height: 40px;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse, rgba(56,189,248,0.35) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: ambientPulse 3s ease-in-out infinite;
+    will-change: opacity, transform;
+}
+@keyframes ambientPulse {
+    0%, 100% { opacity: 0.5; transform: translateX(-50%) scaleX(1); }
+    50% { opacity: 1; transform: translateX(-50%) scaleX(1.15); }
+}
+.maint-quantum-svg {
+    width: 200px;
+    height: 200px;
+    overflow: visible;
+    filter: drop-shadow(0 0 18px rgba(56,189,248,0.6));
+}
+.core-gimbal-outer {
+    transform-origin: 100px 100px;
+    animation: gimbalCW 10s linear infinite;
+    will-change: transform;
+}
+@keyframes gimbalCW {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.core-gimbal-mid {
+    transform-origin: 100px 100px;
+    animation: gimbalCCW 7s linear infinite;
+    will-change: transform;
+}
+@keyframes gimbalCCW {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-360deg); }
+}
+.core-gimbal-inner {
+    transform-origin: 100px 100px;
+    animation: gimbalCW 4.5s linear infinite;
+    will-change: transform;
+}
+.core-plasma-orb {
+    transform-origin: 100px 100px;
+    animation: plasmaGlow 2s ease-in-out infinite;
+    will-change: transform, opacity;
+}
+.core-plasma-orb-inner {
+    transform-origin: 100px 100px;
+    animation: plasmaInnerPulse 1.5s ease-in-out infinite;
+    will-change: transform;
+}
+@keyframes plasmaGlow {
+    0%, 100% { r: 16; opacity: 1; }
+    50% { r: 20; opacity: 0.8; }
+}
+@keyframes plasmaInnerPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+}
+.core-laser-beam-l {
+    transform-origin: 100px 100px;
+    animation: laserSweepL 3s ease-in-out infinite;
+    will-change: transform, opacity;
+}
+.core-laser-beam-r {
+    transform-origin: 100px 100px;
+    animation: laserSweepR 3s ease-in-out infinite;
+    will-change: transform, opacity;
+}
+@keyframes laserSweepL {
+    0%   { transform: rotate(0deg);    opacity: 0.9; }
+    25%  { transform: rotate(-40deg);  opacity: 1; }
+    50%  { transform: rotate(0deg);    opacity: 0.9; }
+    75%  { transform: rotate(40deg);   opacity: 1; }
+    100% { transform: rotate(0deg);    opacity: 0.9; }
+}
+@keyframes laserSweepR {
+    0%   { transform: rotate(0deg);    opacity: 0.9; }
+    25%  { transform: rotate(40deg);   opacity: 1; }
+    50%  { transform: rotate(0deg);    opacity: 0.9; }
+    75%  { transform: rotate(-40deg);  opacity: 1; }
+    100% { transform: rotate(0deg);    opacity: 0.9; }
+}
+.core-laser-spark-l {
+    transform-origin: 100px 100px;
+    animation: laserSweepL 3s ease-in-out infinite, sparkFlash 1.5s ease-in-out infinite;
+    will-change: transform, opacity;
+}
+.core-laser-spark-r {
+    transform-origin: 100px 100px;
+    animation: laserSweepR 3s ease-in-out infinite, sparkFlash 1.5s ease-in-out infinite 0.75s;
+    will-change: transform, opacity;
+}
+@keyframes sparkFlash {
+    0%, 100% { r: 5; opacity: 0.9; }
+    50% { r: 9; opacity: 1; }
+}
+.core-flux-node { will-change: transform; }
+.core-flux-node.node-a {
+    transform-origin: 100px 100px;
+    animation: orbitCW 6s linear infinite;
+}
+.core-flux-node.node-b {
+    transform-origin: 100px 100px;
+    animation: orbitCCW 6s linear infinite;
+}
+.core-flux-node.node-c {
+    transform-origin: 100px 100px;
+    animation: orbitCW 9s linear infinite;
+}
+.core-flux-node.node-d {
+    transform-origin: 100px 100px;
+    animation: orbitCCW 9s linear infinite;
+}
+@keyframes orbitCW {
+    from { transform: rotate(0deg) translateX(0); }
+    to { transform: rotate(360deg) translateX(0); }
+}
+@keyframes orbitCCW {
+    from { transform: rotate(0deg) translateX(0); }
+    to { transform: rotate(-360deg) translateX(0); }
+}
+.core-hud-brackets { opacity: 0.7; }
+
 .maintenance-title {
     font-size: 1.85rem;
     font-weight: 800;
@@ -2328,235 +2562,6 @@ footer::before {
     100% { transform: translateY(-750px) scale(1.3); opacity: 0; }
 }
 
-/* Dual Interlocking Animated Mechanical Gears Graphic with Core Energy Halo */
-.maint-gears-scene {
-    position: relative;
-    width: 136px;
-    height: 94px;
-    margin: 0 auto 1.35rem;
-}
-
-.maint-gears-scene::before {
-    content: '';
-    position: absolute;
-    inset: -12px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.16) 0%, transparent 70%);
-    animation: maint-core-pulse 3s ease-in-out infinite alternate;
-    pointer-events: none;
-}
-
-@keyframes maint-core-pulse {
-    0% { transform: scale(0.9); opacity: 0.5; }
-    100% { transform: scale(1.2); opacity: 0.95; }
-}
-
-.maint-gear-large-wrap {
-    position: absolute;
-    left: 10px;
-    top: 4px;
-    width: 72px;
-    height: 72px;
-    animation: maint-rotate-cw 7.5s linear infinite;
-    filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.6));
-}
-
-.maint-gear-small-wrap {
-    position: absolute;
-    right: 14px;
-    bottom: 4px;
-    width: 48px;
-    height: 48px;
-    animation: maint-rotate-ccw 4.8s linear infinite;
-    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.65));
-}
-
-.maint-wrench-accent {
-    position: absolute;
-    top: -8px;
-    right: 4px;
-    width: 25px;
-    height: 25px;
-    animation: maint-wrench-work 2.4s ease-in-out infinite alternate;
-    filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.75));
-    z-index: 3;
-}
-
-@keyframes maint-rotate-cw {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-@keyframes maint-rotate-ccw {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(-360deg); }
-}
-
-@keyframes maint-wrench-work {
-    0% { transform: rotate(-25deg) scale(0.95); opacity: 0.8; }
-    50% { transform: rotate(12deg) scale(1.12); opacity: 1; }
-    100% { transform: rotate(-30deg) scale(0.95); opacity: 0.8; }
-}
-
-/* Live Diagnostics Status Pill with Expanding Ripple Waves */
-.maint-status-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 1.1rem;
-    padding: 5px 16px;
-    border-radius: 20px;
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.35);
-    color: #34d399;
-    font-size: 0.76rem;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.12);
-}
-
-.maint-live-dot {
-    position: relative;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #10b981;
-    box-shadow: 0 0 10px #10b981;
-}
-
-.maint-live-dot::after {
-    content: '';
-    position: absolute;
-    inset: -4px;
-    border-radius: 50%;
-    border: 1.5px solid #10b981;
-    animation: maint-ping-ring 1.8s cubic-bezier(0, 0.2, 0.8, 1) infinite;
-}
-
-@keyframes maint-ping-ring {
-    0% { transform: scale(0.6); opacity: 1; }
-    100% { transform: scale(2.4); opacity: 0; }
-}
-
-.maintenance-msg-heading {
-    font-size: 1.18rem;
-    font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.015em;
-}
-
-.maintenance-text {
-    font-size: 0.95rem;
-    line-height: 1.65;
-    color: #cbd5e1;
-    font-weight: 400;
-    margin: 0 0 1.25rem 0;
-}
-
-/* High-Energy Neon Shimmer Progress Bar */
-.maintenance-progress-bar {
-    height: 3.5px;
-    width: 100%;
-    background: rgba(56, 189, 248, 0.12);
-    border-radius: 4px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
-}
-
-.maintenance-progress-fill {
-    height: 100%;
-    width: 50%;
-    background: linear-gradient(90deg, transparent, #38BDF8, #3B82F6, #60A5FA, transparent);
-    box-shadow: 0 0 12px #38BDF8;
-    position: absolute;
-    top: 0;
-    animation: maint-shimmer 2s ease-in-out infinite;
-}
-
-@keyframes maint-shimmer {
-    0% { left: -50%; }
-    100% { left: 100%; }
-}
-
-/* ==========================================================================
-   ADVANCED CYBER HUD & TELEMETRY ANIMATIONS
-   ========================================================================== */
-/* Glowing Cyber Corner HUD Brackets */
-.maint-corner {
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    pointer-events: none;
-    z-index: 2;
-    transition: all 0.3s ease;
-}
-.maint-corner.tl {
-    top: 10px;
-    left: 10px;
-    border-top: 2px solid #38BDF8;
-    border-left: 2px solid #38BDF8;
-    box-shadow: -2px -2px 8px rgba(56, 189, 248, 0.5);
-    animation: maint-corner-pulse 3s infinite alternate;
-}
-.maint-corner.tr {
-    top: 10px;
-    right: 10px;
-    border-top: 2px solid #38BDF8;
-    border-right: 2px solid #38BDF8;
-    box-shadow: 2px -2px 8px rgba(56, 189, 248, 0.5);
-    animation: maint-corner-pulse 3s infinite alternate 0.75s;
-}
-.maint-corner.bl {
-    bottom: 10px;
-    left: 10px;
-    border-bottom: 2px solid #38BDF8;
-    border-left: 2px solid #38BDF8;
-    box-shadow: -2px 2px 8px rgba(56, 189, 248, 0.5);
-    animation: maint-corner-pulse 3s infinite alternate 1.5s;
-}
-.maint-corner.br {
-    bottom: 10px;
-    right: 10px;
-    border-bottom: 2px solid #38BDF8;
-    border-right: 2px solid #38BDF8;
-    box-shadow: 2px 2px 8px rgba(56, 189, 248, 0.5);
-    animation: maint-corner-pulse 3s infinite alternate 2.25s;
-}
-
-@keyframes maint-corner-pulse {
-    0% { opacity: 0.35; filter: brightness(0.9); }
-    100% { opacity: 1; filter: brightness(1.6); }
-}
-
-/* Orbiting Satellite Tech Beacon around Avatar */
-.maint-orbit-track {
-    position: absolute;
-    inset: -18px;
-    border-radius: 50%;
-    pointer-events: none;
-    animation: maint-orbit-spin 6.5s linear infinite;
-    z-index: 3;
-}
-.maint-orbit-node {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: #00F0FF;
-    box-shadow: 0 0 10px #00F0FF, 0 0 20px #38BDF8, 0 0 30px #2563EB;
-}
-
-@keyframes maint-orbit-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-/* Iridescent Moving Gradient Text Shimmer on Joash Odiwuor */
 .maintenance-title {
     font-size: 1.85rem;
     font-weight: 800;
