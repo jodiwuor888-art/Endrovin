@@ -149,10 +149,13 @@ public class PortfolioProperties {
 
     public static class Contact {
         private String notificationEmail = "bevexj888@gmail.com";
-        private boolean enableEmailNotifications = true;
+        private String enableEmailNotifications = "true";
 
         public String getNotificationEmail() {
-            return notificationEmail;
+            if (enableEmailNotifications != null && enableEmailNotifications.contains("@")) {
+                return enableEmailNotifications.trim();
+            }
+            return (notificationEmail != null && !notificationEmail.isBlank()) ? notificationEmail : "bevexj888@gmail.com";
         }
 
         public void setNotificationEmail(String notificationEmail) {
@@ -160,10 +163,14 @@ public class PortfolioProperties {
         }
 
         public boolean isEnableEmailNotifications() {
-            return enableEmailNotifications;
+            if (enableEmailNotifications == null || enableEmailNotifications.isBlank()) {
+                return false;
+            }
+            String val = enableEmailNotifications.trim().toLowerCase();
+            return "true".equals(val) || "1".equals(val) || "yes".equals(val) || "on".equals(val) || val.contains("@");
         }
 
-        public void setEnableEmailNotifications(boolean enableEmailNotifications) {
+        public void setEnableEmailNotifications(String enableEmailNotifications) {
             this.enableEmailNotifications = enableEmailNotifications;
         }
     }
