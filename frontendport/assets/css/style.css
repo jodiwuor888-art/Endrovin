@@ -2127,7 +2127,7 @@ footer::before {
     background: rgba(7, 17, 31, 0.75);
     border: 1px solid rgba(56, 189, 248, 0.18);
     border-radius: 16px;
-    padding: 1.6rem 1.8rem;
+    padding: 1.75rem 1.8rem 1.5rem;
     margin-bottom: 1.35rem;
     width: 100%;
     position: relative;
@@ -2135,28 +2135,133 @@ footer::before {
     box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
 }
 
-.maintenance-icon-wrap {
-    width: 48px;
-    height: 48px;
-    margin: 0 auto 0.75rem;
+/* Glowing laser scanline across the card */
+.maint-scanline {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.85) 50%, transparent 100%);
+    box-shadow: 0 0 12px #38BDF8, 0 0 20px rgba(56, 189, 248, 0.5);
+    animation: maint-scan 3.8s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 2;
+}
+
+@keyframes maint-scan {
+    0% { top: 0%; opacity: 0.15; }
+    20% { opacity: 0.95; }
+    80% { opacity: 0.95; }
+    100% { top: 98%; opacity: 0.15; }
+}
+
+/* Floating Digital Particles */
+.maint-particle {
+    position: absolute;
     border-radius: 50%;
-    background: rgba(56, 189, 248, 0.1);
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--cyan-accent, #38BDF8);
+    pointer-events: none;
+    background: #38BDF8;
+    box-shadow: 0 0 10px #38BDF8;
+    opacity: 0.35;
+    animation: maint-float-particle 8s linear infinite;
+    z-index: 0;
+}
+.maint-particle.p1 { width: 5px; height: 5px; left: 18%; bottom: 12%; animation-duration: 9s; animation-delay: 0s; }
+.maint-particle.p2 { width: 4px; height: 4px; left: 82%; bottom: 18%; animation-duration: 11s; animation-delay: 2s; }
+.maint-particle.p3 { width: 6px; height: 6px; left: 32%; bottom: 10%; animation-duration: 10s; animation-delay: 4s; }
+.maint-particle.p4 { width: 3px; height: 3px; left: 68%; bottom: 15%; animation-duration: 7s; animation-delay: 1s; }
+
+@keyframes maint-float-particle {
+    0% { transform: translateY(0) scale(0.8); opacity: 0; }
+    20% { opacity: 0.55; }
+    80% { opacity: 0.55; }
+    100% { transform: translateY(-380px) scale(1.2); opacity: 0; }
 }
 
-.maintenance-gear-svg {
-    width: 24px;
-    height: 24px;
-    animation: maint-spin 14s linear infinite;
+/* Dual Interlocking Animated Mechanical Gears Graphic */
+.maint-gears-scene {
+    position: relative;
+    width: 124px;
+    height: 88px;
+    margin: 0 auto 1.25rem;
 }
 
-@keyframes maint-spin {
+.maint-gear-large-wrap {
+    position: absolute;
+    left: 8px;
+    top: 2px;
+    width: 68px;
+    height: 68px;
+    animation: maint-rotate-cw 8s linear infinite;
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
+}
+
+.maint-gear-small-wrap {
+    position: absolute;
+    right: 12px;
+    bottom: 2px;
+    width: 44px;
+    height: 44px;
+    animation: maint-rotate-ccw 5.1s linear infinite;
+    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.4));
+}
+
+.maint-wrench-accent {
+    position: absolute;
+    top: -6px;
+    right: 2px;
+    width: 22px;
+    height: 22px;
+    animation: maint-wrench-wiggle 3s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6));
+    z-index: 3;
+}
+
+@keyframes maint-rotate-cw {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
+}
+
+@keyframes maint-rotate-ccw {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-360deg); }
+}
+
+@keyframes maint-wrench-wiggle {
+    0% { transform: rotate(-15deg) scale(0.95); opacity: 0.75; }
+    50% { transform: rotate(5deg) scale(1.1); opacity: 1; }
+    100% { transform: rotate(-22deg) scale(0.95); opacity: 0.75; }
+}
+
+/* Live Diagnostics Status Pill */
+.maint-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 0.95rem;
+    padding: 4px 14px;
+    border-radius: 20px;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    color: #34d399;
+    font-size: 0.74rem;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+}
+
+.maint-live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+    animation: maint-dot-ping 1.6s infinite;
+}
+
+@keyframes maint-dot-ping {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.35; }
 }
 
 .maintenance-msg-heading {
