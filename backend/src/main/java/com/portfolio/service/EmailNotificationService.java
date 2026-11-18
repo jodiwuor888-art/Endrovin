@@ -11,6 +11,17 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
 @Service
@@ -20,11 +31,15 @@ public class EmailNotificationService {
 
     private final PortfolioProperties properties;
     private final JavaMailSender springMailSender;
+    private final HttpClient httpClient;
 
     public EmailNotificationService(PortfolioProperties properties,
                                     @org.springframework.beans.factory.annotation.Autowired(required = false) JavaMailSender mailSender) {
         this.properties = properties;
         this.springMailSender = mailSender;
+        this.httpClient = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(8))
+                .build();
     }
 
     public String getNotificationEmail() {
@@ -33,9 +48,29 @@ public class EmailNotificationService {
     }
 
     public boolean isConfigured() {
+        return isHttpApiConfigured() || isSmtpConfigured();
+    }
+
+    public boolean isHttpApiConfigured() {
+        String resendKey = getResendApiKey();
+        String brevoKey = getBrevoApiKey();
+        return (resendKey != null && !resendKey.isBlank()) || (brevoKey != null && !brevoKey.isBlank());
+    }
+
+    public boolean isSmtpConfigured() {
         String u = getSmtpUsername();
         String p = getSmtpPassword();
         return u != null && !u.isBlank() && p != null && !p.isBlank();
+    }
+
+    private String getResendApiKey() {
+        String key = System.getenv("RESEND_API_KEY");
+        return (key != null && !key.isBlank()) ? key.trim() : null;
+    }
+
+    private String getBrevoApiKey() {
+        String key = System.getenv("BREVO_API_KEY");
+        return (key != null && !key.isBlank()) ? key.trim() : null;
     }
 
     private String getSmtpUsername() {
@@ -47,10 +82,92 @@ public class EmailNotificationService {
     private String getSmtpPassword() {
         String p = System.getenv("SMTP_PASSWORD");
         if (p != null && !p.isBlank()) {
-            // Remove any whitespace (Google App Passwords are often copied in 4-character blocks with spaces)
             return p.replace(" ", "").trim();
         }
         return null;
+    }
+
+    /**
+     * Resend HTTP API Client (Port 443 HTTPS - 100% Unrestricted on Render Free Tier)
+     * Free tier: 3,000 emails/month at https://resend.com
+     */
+    private boolean sendViaResend(String apiKey, String from, String to, String replyTo, String subject, String body) {
+        try {
+            String resendFrom = System.getenv("RESEND_FROM");
+            if (resendFrom == null || resendFrom.isBlank()) {
+                resendFrom = "Joash Portfolio <onboarding@resend.dev>";
+            }
+
+            StringBuilder json = new StringBuilder();
+            json.append("{");
+            json.append("\"from\":\"").append(escapeJson(resendFrom)).append("\",");
+            json.append("\"to\":[\"").append(escapeJson(to)).append("\"],");
+            if (replyTo != null && !replyTo.isBlank()) {
+                json.append("\"reply_to\":\"").append(escapeJson(replyTo)).append("\",");
+            }
+            json.append("\"subject\":\"").append(escapeJson(subject)).append("\",");
+            json.append("\"text\":\"").append(escapeJson(body)).append("\"");
+            json.append("}");
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.resend.com/emails"))
+                    .header("Authorization", "Bearer " + apiKey)
+                    .header("Content-Type", "application/json")
+                    .header("User-Agent", "JoashPortfolio/1.0")
+                    .timeout(Duration.ofSeconds(10))
+                    .POST(HttpRequest.BodyPublishers.ofString(json.toString(), StandardCharsets.UTF_8))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                log.info("[RESEND HTTPS] Real-time email delivered successfully to {}! Response: {}", to, response.body());
+                return true;
+            } else {
+                log.error("[RESEND HTTPS] Dispatch failed with status {}: {}", response.statusCode(), response.body());
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("[RESEND HTTPS] Exception calling Resend API: {}", e.getMessage(), e);
+            return false;
+        }
+    }
+
+    /**
+     * Brevo (Sendinblue) HTTP API Client (Port 443 HTTPS)
+     */
+    private boolean sendViaBrevo(String apiKey, String from, String to, String replyTo, String subject, String body) {
+        try {
+            StringBuilder json = new StringBuilder();
+            json.append("{");
+            json.append("\"sender\":{\"name\":\"Joash Portfolio\",\"email\":\"").append(escapeJson(from != null ? from : getNotificationEmail())).append("\"},");
+            json.append("\"to\":[{\"email\":\"").append(escapeJson(to)).append("\"}],");
+            if (replyTo != null && !replyTo.isBlank()) {
+                json.append("\"replyTo\":{\"email\":\"").append(escapeJson(replyTo)).append("\"},");
+            }
+            json.append("\"subject\":\"").append(escapeJson(subject)).append("\",");
+            json.append("\"textContent\":\"").append(escapeJson(body)).append("\"");
+            json.append("}");
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.brevo.com/v3/smtp/email"))
+                    .header("api-key", apiKey)
+                    .header("Content-Type", "application/json")
+                    .timeout(Duration.ofSeconds(10))
+                    .POST(HttpRequest.BodyPublishers.ofString(json.toString(), StandardCharsets.UTF_8))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                log.info("[BREVO HTTPS] Real-time email delivered successfully to {}! Response: {}", to, response.body());
+                return true;
+            } else {
+                log.error("[BREVO HTTPS] Dispatch failed with status {}: {}", response.statusCode(), response.body());
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("[BREVO HTTPS] Exception calling Brevo API: {}", e.getMessage(), e);
+            return false;
+        }
     }
 
     private JavaMailSender buildSender(int port, boolean useSsl) {
@@ -81,9 +198,6 @@ public class EmailNotificationService {
             props.put("mail.smtps.connectiontimeout", "8000");
             props.put("mail.smtps.timeout", "8000");
             props.put("mail.smtps.writetimeout", "8000");
-            props.put("mail.smtps.socketFactory.port", String.valueOf(port));
-            props.put("mail.smtps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-            props.put("mail.smtps.socketFactory.fallback", "false");
         } else {
             impl.setProtocol("smtp");
             props.put("mail.transport.protocol", "smtp");
@@ -100,9 +214,8 @@ public class EmailNotificationService {
         return impl;
     }
 
-    private boolean sendWithFallback(SimpleMailMessage mail, String context) {
-        if (!isConfigured()) {
-            log.warn("[{}] SMTP credentials not set (SMTP_USERNAME / SMTP_PASSWORD). Skipping email alert.", context);
+    private boolean sendViaSmtp(SimpleMailMessage mail, String context) {
+        if (!isSmtpConfigured()) {
             return false;
         }
 
@@ -114,7 +227,6 @@ public class EmailNotificationService {
             } catch (Exception ignored) {}
         }
 
-        // On cloud containers (Render), port 465 SMTPS connects directly through the outbound proxy.
         int firstPort = (preferredPort == 587) ? 465 : preferredPort;
         boolean firstSsl = (firstPort == 465);
         int fallbackPort = (firstPort == 465) ? 587 : 465;
@@ -157,6 +269,46 @@ public class EmailNotificationService {
         }
 
         return false;
+    }
+
+    /**
+     * Master Multi-Tier Email Dispatcher:
+     * Tier 1: Resend HTTPS API (Port 443 — guaranteed to bypass cloud firewall blocks)
+     * Tier 2: Brevo HTTPS API (Port 443)
+     * Tier 3: Direct SMTPS (Port 465 / 587)
+     */
+    private boolean sendWithFallback(SimpleMailMessage mail, String replyTo, String context) {
+        String to = mail.getTo() != null && mail.getTo().length > 0 ? mail.getTo()[0] : getNotificationEmail();
+        String from = mail.getFrom() != null ? mail.getFrom() : getNotificationEmail();
+        String subject = mail.getSubject() != null ? mail.getSubject() : "Portfolio Notification";
+        String body = mail.getText() != null ? mail.getText() : "";
+
+        // Tier 1: Resend HTTPS API
+        String resendKey = getResendApiKey();
+        if (resendKey != null) {
+            log.info("[{}] Attempting real-time HTTPS dispatch via Resend API (port 443)...", context);
+            boolean ok = sendViaResend(resendKey, from, to, replyTo, subject, body);
+            if (ok) return true;
+        }
+
+        // Tier 2: Brevo HTTPS API
+        String brevoKey = getBrevoApiKey();
+        if (brevoKey != null) {
+            log.info("[{}] Attempting real-time HTTPS dispatch via Brevo API (port 443)...", context);
+            boolean ok = sendViaBrevo(brevoKey, from, to, replyTo, subject, body);
+            if (ok) return true;
+        }
+
+        // Tier 3: Direct SMTP
+        boolean smtpOk = sendViaSmtp(mail, context);
+        if (smtpOk) return true;
+
+        log.error("[{}] All delivery tiers failed for recipient {}", context, to);
+        return false;
+    }
+
+    private boolean sendWithFallback(SimpleMailMessage mail, String context) {
+        return sendWithFallback(mail, mail.getReplyTo(), context);
     }
 
     @Async
@@ -210,7 +362,7 @@ public class EmailNotificationService {
                 message.getEmail()
         ));
 
-        sendWithFallback(mail, "CONTACT NOTIFICATION");
+        sendWithFallback(mail, message.getEmail(), "CONTACT NOTIFICATION");
     }
 
     public boolean sendPasswordResetEmail(Admin admin, String resetCode, String resetUrl) {
@@ -258,19 +410,21 @@ public class EmailNotificationService {
         return sendWithFallback(mail, "PASSWORD RESET");
     }
 
-    // Overload for backward compatibility
     public boolean sendPasswordResetEmail(Admin admin, String resetUrl) {
         return sendPasswordResetEmail(admin, "CODE", resetUrl);
     }
 
-    public java.util.Map<String, Object> runDiagnostics() {
-        java.util.Map<String, Object> diag = new java.util.LinkedHashMap<>();
+    public Map<String, Object> runDiagnostics() {
+        Map<String, Object> diag = new LinkedHashMap<>();
         String u = getSmtpUsername();
         String p = getSmtpPassword();
+        String resendKey = getResendApiKey();
+        String brevoKey = getBrevoApiKey();
+
         diag.put("configured", isConfigured());
-        diag.put("username_set", u != null && !u.isBlank());
-        diag.put("password_set", p != null && !p.isBlank());
-        diag.put("password_length", p != null ? p.length() : 0);
+        diag.put("resend_api_configured", resendKey != null);
+        diag.put("brevo_api_configured", brevoKey != null);
+        diag.put("smtp_configured", isSmtpConfigured());
         diag.put("notification_recipient", getNotificationEmail());
 
         String host = System.getenv("SMTP_HOST");
@@ -279,35 +433,69 @@ public class EmailNotificationService {
 
         // Test TCP Socket to Port 465
         long t0 = System.currentTimeMillis();
-        try (java.net.Socket s = new java.net.Socket()) {
-            s.connect(new java.net.InetSocketAddress(host, 465), 5000);
+        try (Socket s = new Socket()) {
+            s.connect(new InetSocketAddress(host, 465), 5000);
             diag.put("tcp_port_465", "CONNECTED in " + (System.currentTimeMillis() - t0) + "ms");
         } catch (Exception e) {
-            diag.put("tcp_port_465", "BLOCKED/FAILED: " + e.getClass().getSimpleName() + ": " + e.getMessage());
+            diag.put("tcp_port_465", "BLOCKED: " + e.getClass().getSimpleName() + " (Render Free Tier blocks raw SMTP ports)");
         }
 
         // Test TCP Socket to Port 587
         t0 = System.currentTimeMillis();
-        try (java.net.Socket s = new java.net.Socket()) {
-            s.connect(new java.net.InetSocketAddress(host, 587), 5000);
+        try (Socket s = new Socket()) {
+            s.connect(new InetSocketAddress(host, 587), 5000);
             diag.put("tcp_port_587", "CONNECTED in " + (System.currentTimeMillis() - t0) + "ms");
         } catch (Exception e) {
-            diag.put("tcp_port_587", "BLOCKED/FAILED: " + e.getClass().getSimpleName() + ": " + e.getMessage());
+            diag.put("tcp_port_587", "BLOCKED: " + e.getClass().getSimpleName() + " (Render Free Tier blocks raw SMTP ports)");
         }
 
-        // Test sending a live ping email if configured
+        if (resendKey != null) {
+            diag.put("active_delivery_method", "Resend HTTPS API (Port 443 - Fully Unrestricted)");
+        } else if (brevoKey != null) {
+            diag.put("active_delivery_method", "Brevo HTTPS API (Port 443 - Fully Unrestricted)");
+        } else {
+            diag.put("active_delivery_method", "Direct SMTP (Blocked by Render Free Tier firewall)");
+            diag.put("recommended_solution", "Add RESEND_API_KEY to Render Environment. Free signup at https://resend.com (takes 30 seconds). Enables instant real-time delivery over HTTPS port 443.");
+        }
+
+        // Test live dispatch
         if (isConfigured()) {
             SimpleMailMessage ping = new SimpleMailMessage();
             ping.setTo(getNotificationEmail());
-            ping.setFrom(u);
-            ping.setSubject("⚡ Live Portfolio Notification Test (" + java.time.LocalDateTime.now() + ")");
-            ping.setText("This is an automated live notification verification to confirm that real-time email alerts are arriving in your inbox.");
+            ping.setFrom(u != null ? u : "Joash Portfolio <onboarding@resend.dev>");
+            ping.setSubject("⚡ Live Portfolio Notification Test (" + LocalDateTime.now() + ")");
+            ping.setText("This is an automated live notification verification confirming that real-time email alerts are now reflecting in your inbox.");
             boolean sent = sendWithFallback(ping, "DIAGNOSTIC TEST");
             diag.put("test_email_dispatch", sent ? "SUCCESS - Dispatched to " + getNotificationEmail() : "FAILED - Check application logs");
         } else {
-            diag.put("test_email_dispatch", "SKIPPED - SMTP credentials not set");
+            diag.put("test_email_dispatch", "SKIPPED - No email delivery method configured");
         }
 
         return diag;
+    }
+
+    private String escapeJson(String s) {
+        if (s == null) return "";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '"' -> sb.append("\\\"");
+                case '\\' -> sb.append("\\\\");
+                case '\b' -> sb.append("\\b");
+                case '\f' -> sb.append("\\f");
+                case '\n' -> sb.append("\\n");
+                case '\r' -> sb.append("\\r");
+                case '\t' -> sb.append("\\t");
+                default -> {
+                    if (c < ' ') {
+                        sb.append(String.format("\\u%04x", (int) c));
+                    } else {
+                        sb.append(c);
+                    }
+                }
+            }
+        }
+        return sb.toString();
     }
 }

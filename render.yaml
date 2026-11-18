@@ -57,7 +57,9 @@ services:
       - key: JPA_DDL_AUTO
         value: update
 
-      # ── Optional email ──────────────────────────────────────
+      # ── Email Delivery (Resend HTTPS API over port 443 for Render Free Tier) ──
+      - key: RESEND_API_KEY
+        sync: false
       - key: SMTP_USERNAME
         sync: false
       - key: SMTP_PASSWORD
