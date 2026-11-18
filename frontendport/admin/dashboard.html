@@ -225,8 +225,12 @@
 
                 <!-- Recent Security & Action Audit Logs -->
                 <div class="admin-card">
-                    <div class="card-header">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                         <h2 class="card-title">Security &amp; Administrative Audit Trail</h2>
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <button type="button" class="btn-admin btn-admin-secondary btn-sm" onclick="loadAuditLogs()">🔄 Refresh</button>
+                            <button type="button" class="btn-admin btn-admin-danger btn-sm" onclick="confirmClearAllAuditLogs()">🗑️ Clear All Logs</button>
+                        </div>
                     </div>
                     <div class="data-table-container">
                         <table class="data-table">
@@ -237,6 +241,7 @@
                                     <th>Details</th>
                                     <th>Initiator</th>
                                     <th>Timestamp</th>
+                                    <th style="width:70px; text-align:center;">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="auditLogsTableBody">
@@ -2066,10 +2071,11 @@
                             <th>Admin</th>
                             <th>IP Address</th>
                             <th>Details</th>
+                            <th style="width:70px; text-align:center;">Action</th>
                         </tr>
                     </thead>
                     <tbody id="settingsAuditTableBody">
-                        <tr><td colspan="5" style="text-align:center; padding:1.5rem; color:var(--admin-text-muted);">Loading audit logs...</td></tr>
+                        <tr><td colspan="6" style="text-align:center; padding:1.5rem; color:var(--admin-text-muted);">Loading audit logs...</td></tr>
                     </tbody>
                 </table>
             </div>

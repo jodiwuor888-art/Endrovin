@@ -113,6 +113,18 @@ public class AdminWebsiteSettingController {
         return ResponseEntity.ok(ApiResponse.ok(settingsService.getSettingsAuditTrail()));
     }
 
+    @DeleteMapping("/audit/{id}")
+    @Operation(summary = "Delete a settings audit trail entry by ID")
+    public ResponseEntity<ApiResponse<Void>> deleteSettingsAuditEntry(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails,
+            HttpServletRequest request) {
+
+        String username = userDetails != null ? userDetails.getUsername() : "admin";
+        managementService.deleteAuditLog(id, username, getClientIp(request));
+        return ResponseEntity.ok(ApiResponse.ok("Settings audit entry deleted successfully", null));
+    }
+
     @PostMapping
     @Operation(summary = "Save or update a single website setting (backward compatibility)")
     public ResponseEntity<ApiResponse<WebsiteSettingDto>> saveSingleSetting(

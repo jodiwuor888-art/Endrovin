@@ -7,18 +7,19 @@ import com.portfolio.service.AdminManagementService;
 import com.portfolio.service.DashboardStatsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/dashboard")
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "Admin Dashboard", description = "Dashboard overview and real SQL Server statistics")
+@Tag(name = "Admin Dashboard", description = "Dashboard overview, statistics and audit logs")
 public class AdminDashboardController {
 
     private final DashboardStatsService statsService;
@@ -41,5 +42,38 @@ public class AdminDashboardController {
     public ResponseEntity<ApiResponse<List<AuditLogDto>>> getAuditLogs() {
         List<AuditLogDto> logs = managementService.getRecentAuditLogs();
         return ResponseEntity.ok(ApiResponse.ok(logs));
+    }
+
+    @DeleteMapping("/audit-logs/{id}")
+    @Operation(summary = "Delete an audit log entry by ID")
+    public ResponseEntity<ApiResponse<Void>> deleteAuditLog(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails,
+            HttpServletRequest request) {
+
+        String username = userDetails != null ? userDetails.getUsername() : "admin";
+        String ip = getClientIp(request);
+        managementService.deleteAuditLog(id, username, ip);
+        return ResponseEntity.ok(ApiResponse.ok("Audit log entry deleted successfully", null));
+    }
+
+    @DeleteMapping("/audit-logs")
+    @Operation(summary = "Clear all audit log entries")
+    public ResponseEntity<ApiResponse<Void>> clearAllAuditLogs(
+            @AuthenticationPrincipal UserDetails userDetails,
+            HttpServletRequest request) {
+
+        String username = userDetails != null ? userDetails.getUsername() : "admin";
+        String ip = getClientIp(request);
+        managementService.clearAllAuditLogs(username, ip);
+        return ResponseEntity.ok(ApiResponse.ok("All audit logs cleared successfully", null));
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String xf = request.getHeader("X-Forwarded-For");
+        if (xf != null && !xf.isBlank()) {
+            return xf.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 }
