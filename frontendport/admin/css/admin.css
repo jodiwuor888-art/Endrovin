@@ -5,13 +5,22 @@
    ========================================================================== */
 
 :root {
+    /* Exact Brand Unified Palette */
+    --bg-primary:    #07111F;
+    --bg-secondary:  #0B1730;
+    --bg-deep:       #050B16;
+    --blue-primary:  #2563EB;
+    --blue-bright:   #3B82F6;
+    --cyan-accent:   #38BDF8;
+    --text-primary:  #FFFFFF;
+
     /* Core Palette */
-    --c-bg:          #040810;
-    --c-surface:     rgba(10, 18, 35, 0.90);
-    --c-surface-2:   rgba(16, 28, 54, 0.80);
-    --c-surface-3:   rgba(22, 38, 72, 0.70);
-    --c-border:      rgba(56, 189, 248, 0.12);
-    --c-border-hi:   rgba(56, 189, 248, 0.40);
+    --c-bg:          #07111F;
+    --c-surface:     rgba(11, 23, 48, 0.92);
+    --c-surface-2:   rgba(11, 23, 48, 0.78);
+    --c-surface-3:   rgba(18, 35, 70, 0.75);
+    --c-border:      rgba(59, 130, 246, 0.18);
+    --c-border-hi:   rgba(56, 189, 248, 0.45);
 
     /* Accent */
     --c-accent:      #38bdf8;
@@ -70,30 +79,118 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; }
-
-body {
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background-color: var(--c-bg);
-    background-image:
-        radial-gradient(ellipse 80% 50% at 85% 5%, rgba(56,189,248,0.14) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 10% 90%, rgba(129,140,248,0.08) 0%, transparent 60%),
-        linear-gradient(180deg, rgba(4,8,16,0.10) 0%, rgba(4,8,16,0.55) 100%),
-        url('../../assets/img/cyber-car-bg.jpg') center top / cover no-repeat fixed;
-    color: var(--c-text-sub);
-    min-height: 100vh;
-    display: flex;
-    overflow-x: hidden;
+html {
+    min-height: 100%;
+    background: var(--bg-primary);
+    scroll-behavior: smooth;
 }
 
 /* Thin accent line at top */
-body::before {
+html::before {
     content: '';
     position: fixed;
     top: 0; left: 0; right: 0;
     height: 2px;
     background: linear-gradient(90deg, transparent, var(--c-accent), var(--c-indigo), transparent);
     z-index: 1000;
+}
+
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    position: relative;
+    isolation: isolate;
+    background-color: var(--bg-primary);
+    background-image:
+        radial-gradient(
+            ellipse at 85% 12%,
+            rgba(37, 99, 235, 0.20) 0%,
+            transparent 48%
+        ),
+        radial-gradient(
+            ellipse at 10% 85%,
+            rgba(56, 189, 248, 0.10) 0%,
+            transparent 42%
+        ),
+        linear-gradient(
+            135deg,
+            #050B16 0%,
+            #07111F 48%,
+            #0B1730 100%
+        );
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: 100% 100%;
+    background-attachment: fixed;
+    color: var(--c-text-sub);
+    min-height: 100vh;
+    display: flex;
+    overflow-x: hidden;
+}
+
+/* Subtle geometric grid */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+
+    background-image:
+        linear-gradient(
+            rgba(59, 130, 246, 0.035) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(59, 130, 246, 0.035) 1px,
+            transparent 1px
+        );
+
+    background-size: 48px 48px;
+    background-position: center top;
+}
+
+/* Subtle ambient lighting */
+body::after {
+    content: "";
+    position: fixed;
+    top: 12%;
+    right: -140px;
+
+    width: 380px;
+    height: 380px;
+
+    z-index: -1;
+    pointer-events: none;
+
+    background: rgba(37, 99, 235, 0.10);
+
+    filter: blur(100px);
+    border-radius: 50%;
+}
+
+@media (max-width: 768px) {
+    body::before {
+        background-size: 40px 40px;
+    }
+
+    body::after {
+        width: 260px;
+        height: 260px;
+        right: -120px;
+        filter: blur(75px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 
 /* ============================================================

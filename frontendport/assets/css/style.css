@@ -1,27 +1,33 @@
 ﻿/* ==========================================================================
    PORTFOLIO MANAGEMENT SYSTEM - CORE STYLESHEET
-   Design Theme: Cyber Sapphire & Neon Indigo Glassmorphism
-   Ultra-attractive futuristic luxury aesthetic with glowing accents & glass depth
+   Unified Professional Background: Dark Navy & Electric Blue Cyber Technology
+   Responsive & visually identical across Mobile, Tablet, Laptop, and Desktop
    ========================================================================== */
 
 :root {
-    --bg-primary: #060b14;
-    --bg-secondary: rgba(15, 23, 42, 0.70);
-    --bg-tertiary: rgba(30, 41, 59, 0.80);
-    --bg-card: rgba(11, 20, 36, 0.72);
-    --bg-card-hover: rgba(18, 32, 58, 0.85);
-    
-    --text-primary: #ffffff;
+    --bg-primary: #07111F;
+    --bg-secondary: #0B1730;
+    --bg-deep: #050B16;
+
+    --blue-primary: #2563EB;
+    --blue-bright: #3B82F6;
+    --cyan-accent: #38BDF8;
+
+    --text-primary: #FFFFFF;
     --text-secondary: #cbd5e1;
     --text-muted: #94a3b8;
-    
+
     --accent-electric: #38bdf8;
     --accent-glow: rgba(56, 189, 248, 0.35);
     --accent-secondary: #3b82f6;
-    --accent-cyan: #22d3ee;
-    --accent-indigo: #818cf8;
+    --accent-cyan: #38bdf8;
+    --accent-indigo: #2563eb;
 
-    --border-color: rgba(56, 189, 248, 0.14);
+    --bg-tertiary: rgba(11, 23, 48, 0.88);
+    --bg-card: rgba(11, 23, 48, 0.78);
+    --bg-card-hover: rgba(18, 35, 70, 0.88);
+
+    --border-color: rgba(59, 130, 246, 0.18);
     --border-accent: rgba(56, 189, 248, 0.45);
 
     --success: #10b981;
@@ -52,29 +58,121 @@
     padding: 0;
 }
 
+/* Unified website background */
+
 html {
+    min-height: 100%;
+    background: var(--bg-primary);
     scroll-behavior: smooth;
     scroll-padding-top: 85px;
     font-size: 16px;
 }
 
 body {
-    background-color: #060b14;
-    background-image: 
-        radial-gradient(circle at 50% 12%, rgba(56, 189, 248, 0.16) 0%, transparent 65%),
-        linear-gradient(180deg, rgba(6, 11, 20, 0.18) 0%, rgba(6, 11, 20, 0.32) 40%, rgba(6, 11, 20, 0.48) 100%),
-        url('../img/cyber-car-bg.jpg');
-    background-size: cover;
-    background-position: center top;
-    background-attachment: fixed;
+    position: relative;
+    isolation: isolate;
+    min-height: 100vh;
+    margin: 0;
+
+    background-color: var(--bg-primary);
+
+    background-image:
+        radial-gradient(
+            ellipse at 85% 12%,
+            rgba(37, 99, 235, 0.20) 0%,
+            transparent 48%
+        ),
+        radial-gradient(
+            ellipse at 10% 85%,
+            rgba(56, 189, 248, 0.10) 0%,
+            transparent 42%
+        ),
+        linear-gradient(
+            135deg,
+            #050B16 0%,
+            #07111F 48%,
+            #0B1730 100%
+        );
+
     background-repeat: no-repeat;
-    color: var(--text-secondary);
+    background-position: center top;
+    background-size: 100% 100%;
+    background-attachment: fixed;
+
+    color: var(--text-primary);
     font-family: var(--font-body);
     line-height: 1.65;
     overflow-x: hidden;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
+}
+
+/* Subtle geometric grid */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+
+    background-image:
+        linear-gradient(
+            rgba(59, 130, 246, 0.035) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(59, 130, 246, 0.035) 1px,
+            transparent 1px
+        );
+
+    background-size: 48px 48px;
+    background-position: center top;
+}
+
+/* Subtle ambient lighting */
+
+body::after {
+    content: "";
+    position: fixed;
+    top: 12%;
+    right: -140px;
+
+    width: 380px;
+    height: 380px;
+
+    z-index: -1;
+    pointer-events: none;
+
+    background: rgba(37, 99, 235, 0.10);
+
+    filter: blur(100px);
+    border-radius: 50%;
+}
+
+/* Keep main content above background */
+
+main,
+footer,
+section,
+nav {
+    position: relative;
+}
+
+/* Reusable Glass Card Component */
+.glass-card {
+    background: rgba(11, 23, 48, 0.78);
+    border: 1px solid rgba(59, 130, 246, 0.18);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+@supports not ((-webkit-backdrop-filter: blur(12px)) or (backdrop-filter: blur(12px))) {
+    .glass-card {
+        background: #0B1730;
+    }
 }
 
 a {

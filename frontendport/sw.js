@@ -3,10 +3,10 @@
    Secure caching policy: Public static shell cached; Admin & Auth strictly bypassed
    ========================================================================== */
 
-const CACHE_NAME = 'joash-portfolio-static-v1';
+const CACHE_NAME = 'joash-portfolio-static-v2';
 const OFFLINE_URL = './offline.html';
 
-// Public static assets safe to pre-cache
+// Public static assets safe to pre-cache (lightweight & high performance)
 const PRECACHE_ASSETS = [
     './',
     './index.html',
@@ -22,8 +22,7 @@ const PRECACHE_ASSETS = [
     './assets/js/api.js',
     './assets/js/main.js',
     './assets/img/profile.png',
-    './assets/img/Joash.jpeg',
-    './assets/img/cyber-car-bg.jpg'
+    './assets/img/Joash.jpeg'
 ];
 
 // Install: Cache public static shell

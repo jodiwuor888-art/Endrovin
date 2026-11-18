@@ -27,6 +27,31 @@ html, body {
     overflow-x: hidden;
 }
 
+/* Responsive Background Adjustments (Preserving Unified Identity) */
+@media (max-width: 768px) {
+    body::before {
+        background-size: 40px 40px;
+    }
+
+    body::after {
+        width: 260px;
+        height: 260px;
+        right: -120px;
+        filter: blur(75px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
 /* Support Dynamic Viewport Units for mobile address bars */
 body {
     min-height: 100vh;
