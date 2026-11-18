@@ -1761,6 +1761,159 @@ textarea[class*="setting-input"]:focus {
     100% { left: 100%; }
 }
 
+/* ==========================================================================
+   ADVANCED CYBER HUD & TELEMETRY ANIMATIONS
+   ========================================================================== */
+/* Glowing Cyber Corner HUD Brackets */
+.maint-corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+.maint-corner.tl {
+    top: 10px;
+    left: 10px;
+    border-top: 2px solid #38BDF8;
+    border-left: 2px solid #38BDF8;
+    box-shadow: -2px -2px 8px rgba(56, 189, 248, 0.5);
+    animation: maint-corner-pulse 3s infinite alternate;
+}
+.maint-corner.tr {
+    top: 10px;
+    right: 10px;
+    border-top: 2px solid #38BDF8;
+    border-right: 2px solid #38BDF8;
+    box-shadow: 2px -2px 8px rgba(56, 189, 248, 0.5);
+    animation: maint-corner-pulse 3s infinite alternate 0.75s;
+}
+.maint-corner.bl {
+    bottom: 10px;
+    left: 10px;
+    border-bottom: 2px solid #38BDF8;
+    border-left: 2px solid #38BDF8;
+    box-shadow: -2px 2px 8px rgba(56, 189, 248, 0.5);
+    animation: maint-corner-pulse 3s infinite alternate 1.5s;
+}
+.maint-corner.br {
+    bottom: 10px;
+    right: 10px;
+    border-bottom: 2px solid #38BDF8;
+    border-right: 2px solid #38BDF8;
+    box-shadow: 2px 2px 8px rgba(56, 189, 248, 0.5);
+    animation: maint-corner-pulse 3s infinite alternate 2.25s;
+}
+
+@keyframes maint-corner-pulse {
+    0% { opacity: 0.35; filter: brightness(0.9); }
+    100% { opacity: 1; filter: brightness(1.6); }
+}
+
+/* Orbiting Satellite Tech Beacon around Avatar */
+.maint-orbit-track {
+    position: absolute;
+    inset: -18px;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: maint-orbit-spin 6.5s linear infinite;
+    z-index: 3;
+}
+.maint-orbit-node {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #00F0FF;
+    box-shadow: 0 0 10px #00F0FF, 0 0 20px #38BDF8, 0 0 30px #2563EB;
+}
+
+@keyframes maint-orbit-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Iridescent Moving Gradient Text Shimmer on Joash Odiwuor */
+.maintenance-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    background: linear-gradient(120deg, #ffffff 0%, #ffffff 35%, #38BDF8 50%, #60A5FA 65%, #ffffff 80%, #ffffff 100%);
+    background-size: 250% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: maint-title-shimmer 4.5s linear infinite;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+}
+
+@keyframes maint-title-shimmer {
+    0% { background-position: 250% center; }
+    100% { background-position: -250% center; }
+}
+
+/* Live Scrolling Cyber Telemetry Console Stream */
+.maint-telemetry-console {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(4, 9, 18, 0.75);
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    border-radius: 10px;
+    padding: 6px 12px;
+    margin-bottom: 1.15rem;
+    overflow: hidden;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 0.72rem;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.telemetry-badge {
+    background: rgba(56, 189, 248, 0.18);
+    color: #38BDF8;
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-weight: 700;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    animation: telemetry-blink 2s infinite ease-in-out;
+}
+
+@keyframes telemetry-blink {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; filter: brightness(1.3); }
+}
+
+.telemetry-marquee-wrap {
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+    position: relative;
+    mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+
+.telemetry-marquee {
+    display: inline-block;
+    padding-left: 100%;
+    color: #94A3B8;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    animation: telemetry-scroll 16s linear infinite;
+}
+
+@keyframes telemetry-scroll {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-100%, 0, 0); }
+}
+
+
 
 
 /* ============================================================
