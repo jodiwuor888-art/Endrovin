@@ -314,6 +314,21 @@
             50% { opacity: 0.85; transform: scale(1.06); }
         }
 
+        /* Holographic HUD Ring — rotating dashed tech circle */
+        .avatar-hud-ring {
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 1.5px dashed rgba(56, 189, 248, 0.45);
+            animation: hud-spin-cw 12s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes hud-spin-cw {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         .avatar-img {
             width: 100%;
             height: 100%;
@@ -606,7 +621,8 @@
         .form-control:focus {
             border-color: var(--primary);
             background: rgba(14, 28, 56, 0.92);
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.16), 0 0 20px rgba(56, 189, 248, 0.12);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.16), 0 0 20px rgba(56, 189, 248, 0.18), 0 0 40px rgba(56, 189, 248, 0.06);
+            transition: all 0.3s ease;
         }
 
         .form-control:focus + .input-icon,
@@ -668,6 +684,25 @@
             opacity: 0;
             transition: opacity 0.3s ease;
             pointer-events: none;
+        }
+
+        /* Energy Shimmer Beam across submit button */
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 80%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.35) 50%, transparent 100%);
+            transform: skewX(-25deg);
+            animation: btn-energy-pulse 3.2s infinite ease-in-out;
+            pointer-events: none;
+            z-index: 1;
+        }
+        @keyframes btn-energy-pulse {
+            0%, 25% { left: -120%; }
+            65%, 100% { left: 180%; }
         }
 
         .btn-submit:hover:not(:disabled) {
@@ -1095,6 +1130,11 @@
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
     <div class="laser-stripe"></div>
+    <div class="login-spark s1"></div>
+    <div class="login-spark s2"></div>
+    <div class="login-spark s3"></div>
+    <div class="login-spark s4"></div>
+    <div class="login-spark s5"></div>
 
     <div class="login-wrapper">
         <div class="login-card">
@@ -1107,6 +1147,7 @@
                 <!-- Brand Header -->
                 <div class="brand-header">
                     <div class="avatar-container">
+                        <div class="avatar-hud-ring"></div>
                         <div class="avatar-glow-ring"></div>
                         <img src="assets/img/Joash.jpeg" alt="Administrator" class="avatar-img" onerror="this.src='../assets/img/profile.png'">
                         <div class="status-dot"></div>
