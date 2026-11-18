@@ -1123,7 +1123,225 @@
                 animation: none !important;
             }
         }
-    </style>
+    
+        /* ==========================================================================
+           CYBER SCORPION SENTINEL — ADVANCED NEON BIOMECHANICAL ANIMATION
+           ========================================================================== */
+        .cyber-scorpion-wrap {
+            position: relative;
+            width: 110px;
+            height: 88px;
+            margin: 0 auto 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: scorp-levitate 4.5s ease-in-out infinite alternate;
+        }
+
+        .cyber-scorpion-wrap:hover {
+            transform: scale(1.08) translateY(-3px);
+        }
+
+        .cyber-scorpion-wrap:active {
+            transform: scale(0.96);
+        }
+
+        /* Ambient Pulsing Aura behind Scorpion */
+        .scorp-ambient-aura {
+            position: absolute;
+            inset: -12px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.3) 0%, rgba(139, 92, 246, 0.2) 45%, rgba(236, 72, 153, 0.12) 70%, transparent 85%);
+            filter: blur(14px);
+            pointer-events: none;
+            z-index: 0;
+            animation: scorp-aura-pulse 3.8s ease-in-out infinite alternate;
+        }
+
+        @keyframes scorp-aura-pulse {
+            0% { transform: scale(0.85); opacity: 0.6; filter: blur(12px) hue-rotate(0deg); }
+            50% { transform: scale(1.15); opacity: 0.95; filter: blur(16px) hue-rotate(45deg); }
+            100% { transform: scale(0.9); opacity: 0.7; filter: blur(14px) hue-rotate(90deg); }
+        }
+
+        @keyframes scorp-levitate {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-4px) rotate(0.8deg); }
+            100% { transform: translateY(2px) rotate(-0.8deg); }
+        }
+
+        /* SVG Scorpion Styling */
+        .cyber-scorpion-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.55)) drop-shadow(0 0 22px rgba(139, 92, 246, 0.35));
+            transition: filter 0.35s ease;
+        }
+
+        .cyber-scorpion-wrap:hover .cyber-scorpion-svg {
+            filter: drop-shadow(0 0 18px rgba(0, 240, 255, 0.85)) drop-shadow(0 0 32px rgba(236, 72, 153, 0.6));
+        }
+
+        /* Tail Swaying Animation */
+        .scorp-tail-sway {
+            transform-origin: 110px 148px;
+            animation: scorp-tail-sway 3.2s ease-in-out infinite alternate;
+        }
+
+        @keyframes scorp-tail-sway {
+            0% { transform: rotate(-5deg); }
+            50% { transform: rotate(3deg); }
+            100% { transform: rotate(-3deg); }
+        }
+
+        /* Articulated Claws Snapping & Guarding */
+        .scorp-claw-left {
+            transform-origin: 90px 80px;
+            animation: scorp-claw-l 3.6s ease-in-out infinite alternate;
+        }
+
+        .scorp-claw-right {
+            transform-origin: 130px 80px;
+            animation: scorp-claw-r 3.6s ease-in-out infinite alternate 0.4s;
+        }
+
+        @keyframes scorp-claw-l {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(-6deg); }
+            100% { transform: rotate(3deg); }
+        }
+
+        @keyframes scorp-claw-r {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(6deg); }
+            100% { transform: rotate(-3deg); }
+        }
+
+        /* Pincer Jaw Snapping */
+        .scorp-jaw-l {
+            transform-origin: 32px 28px;
+            animation: scorp-jaw-snap-l 2.8s ease-in-out infinite;
+        }
+
+        .scorp-jaw-r {
+            transform-origin: 188px 28px;
+            animation: scorp-jaw-snap-r 2.8s ease-in-out infinite 0.3s;
+        }
+
+        @keyframes scorp-jaw-snap-l {
+            0%, 100% { transform: rotate(0deg); }
+            30% { transform: rotate(12deg); }
+            50% { transform: rotate(-4deg); }
+        }
+
+        @keyframes scorp-jaw-snap-r {
+            0%, 100% { transform: rotate(0deg); }
+            30% { transform: rotate(-12deg); }
+            50% { transform: rotate(4deg); }
+        }
+
+        /* Walking Legs Robotics Twitch */
+        .scorp-leg-pair.l1, .scorp-leg-pair.r3 {
+            animation: scorp-leg-twitch 3s ease-in-out infinite alternate;
+        }
+        .scorp-leg-pair.l2, .scorp-leg-pair.r4 {
+            animation: scorp-leg-twitch 3.4s ease-in-out infinite alternate 0.5s;
+        }
+        .scorp-leg-pair.l3, .scorp-leg-pair.r1 {
+            animation: scorp-leg-twitch 2.8s ease-in-out infinite alternate 1s;
+        }
+        .scorp-leg-pair.l4, .scorp-leg-pair.r2 {
+            animation: scorp-leg-twitch 3.2s ease-in-out infinite alternate 1.5s;
+        }
+
+        @keyframes scorp-leg-twitch {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-1.5px) scale(1.02); }
+            100% { transform: translateY(0.8px); }
+        }
+
+        /* Glowing Neon Venom Stinger Flare */
+        .scorp-venom-flare {
+            transform-origin: 130px 34px;
+            animation: scorp-venom-pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes scorp-venom-pulse {
+            0%, 100% { transform: scale(0.8); opacity: 0.75; filter: drop-shadow(0 0 4px #00F0FF); }
+            40% { transform: scale(1.8); opacity: 1; filter: drop-shadow(0 0 12px #10B981) drop-shadow(0 0 20px #00F0FF); }
+            70% { transform: scale(1.4); opacity: 0.9; filter: drop-shadow(0 0 16px #EC4899); }
+        }
+
+        /* Electric Lightning Spark Arc */
+        .scorp-venom-spark {
+            animation: scorp-spark-flash 2.4s infinite ease-in-out;
+        }
+
+        @keyframes scorp-spark-flash {
+            0%, 85%, 100% { opacity: 0; stroke-dasharray: 2 10; }
+            88% { opacity: 1; stroke-dasharray: 6 2; stroke: #00F0FF; }
+            92% { opacity: 0.3; stroke-dasharray: 1 4; stroke: #EC4899; }
+            96% { opacity: 1; stroke-dasharray: 8 2; stroke: #10B981; }
+        }
+
+        /* Cyber Eyes Optical Scan */
+        .scorp-eye-l, .scorp-eye-r {
+            animation: scorp-eyes-pulse 2.2s infinite ease-in-out;
+        }
+
+        @keyframes scorp-eyes-pulse {
+            0%, 100% { opacity: 0.75; filter: drop-shadow(0 0 3px #FF0055); }
+            50% { opacity: 1; filter: drop-shadow(0 0 8px #FF0055) drop-shadow(0 0 14px #FF0055); }
+        }
+
+        /* Sentinel Pill Subtitle */
+        .scorp-sentinel-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #38BDF8;
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.22);
+            padding: 2px 10px;
+            border-radius: 12px;
+            margin-top: 0.25rem;
+            margin-bottom: 0.65rem;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.12);
+        }
+
+        .scorp-sentinel-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #00F0FF;
+            box-shadow: 0 0 8px #00F0FF;
+            animation: scorp-dot-ping 1.6s infinite;
+        }
+
+        @keyframes scorp-dot-ping {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.4; }
+        }
+
+        @media (max-width: 480px) {
+            .cyber-scorpion-wrap {
+                width: 90px;
+                height: 72px;
+                margin-bottom: 0.4rem;
+            }
+        }
+
+</style>
 </head>
 <body>
     <div class="cyber-grid"></div>
