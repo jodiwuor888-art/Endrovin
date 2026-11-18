@@ -33,6 +33,41 @@ function getUploadHeaders() {
     };
 }
 
+/**
+ * Cross-platform device detection for WebAuthn passkey labeling
+ */
+function getPlatformDeviceInfo() {
+    const ua = navigator.userAgent || '';
+    if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+        return {
+            name: 'Apple Face ID / Touch ID',
+            type: 'Apple iOS/iPadOS Platform Authenticator'
+        };
+    }
+    if (/Macintosh|Mac OS X/.test(ua)) {
+        return {
+            name: 'Mac Touch ID',
+            type: 'macOS Platform Authenticator'
+        };
+    }
+    if (/Android/.test(ua)) {
+        return {
+            name: 'Android Biometric Passkey',
+            type: 'Android Platform Authenticator'
+        };
+    }
+    if (/Windows/.test(ua)) {
+        return {
+            name: 'Windows Hello / Fingerprint Reader',
+            type: 'Windows Platform Authenticator'
+        };
+    }
+    return {
+        name: 'Built-in Platform Biometrics',
+        type: 'Device Platform Authenticator'
+    };
+}
+
 function logout() {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminUser');
@@ -224,7 +259,8 @@ async function triggerPasskeyAuthentication(options, pendingAuthToken, username)
             throw new Error('WebAuthn biometrics requires domain "localhost" instead of IP address. Please open via http://localhost:8080/admin/');
         }
         if (authErr.name === 'NotAllowedError') {
-            throw new Error('Biometric verification cancelled or timed out. Place your finger on the Lenovo sensor and try again.');
+            const devInfo = getPlatformDeviceInfo();
+            throw new Error(`Biometric verification was cancelled or timed out. Please verify on your ${devInfo.name} sensor to try again.`);
         }
         throw authErr;
     }
