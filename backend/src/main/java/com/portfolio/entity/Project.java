@@ -27,7 +27,7 @@ public class Project {
     private String shortDescription;
 
     @Lob
-    @Column(name = "DetailedDescription")
+    @Column(name = "DetailedDescription", columnDefinition = "LONGTEXT")
     private String detailedDescription;
 
     @Column(name = "Technologies", nullable = false, length = 300)

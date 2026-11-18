@@ -31,6 +31,31 @@
 <body>
     <a href="#main" class="skip-link">Skip to main content</a>
 
+    <!-- ================= MAINTENANCE MODE SCREEN ================= -->
+    <div id="maintenanceScreen" class="maintenance-screen" style="display:none;" role="alertdialog" aria-modal="true" aria-label="Site under maintenance">
+        <div class="maintenance-container">
+            <div class="maintenance-avatar-wrap">
+                <img src="assets/images/profile.jpg" alt="Joash Odiwuor" class="maintenance-avatar" onerror="this.style.display='none'">
+                <span class="maintenance-status-dot"></span>
+            </div>
+            <span class="maintenance-badge">
+                <span>🔧</span>
+                <span>Scheduled Maintenance</span>
+            </span>
+            <h1 class="maintenance-title">We'll Be Right Back</h1>
+            <p class="maintenance-headline">Joash Odiwuor — Portfolio</p>
+            <div class="maintenance-message-card">
+                <div class="maintenance-icon">⚙️</div>
+                <p class="maintenance-text" id="maintenanceMessageText">
+                    The portfolio is briefly undergoing scheduled updates. Please check back shortly.
+                </p>
+            </div>
+            <div class="maintenance-footer">
+                <p class="maintenance-note">© 2024 Joash Odiwuor. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- ================= HEADER & NAVIGATION ================= -->
     <header>
         <nav class="navbar">
