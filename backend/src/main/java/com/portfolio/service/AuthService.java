@@ -218,25 +218,7 @@ public class AuthService {
             AdminUserDetails userDetails = (AdminUserDetails) authentication.getPrincipal();
             Admin admin = userDetails.getAdmin();
 
-            // Check if admin has enrolled biometric/passkey credentials
-            long enrolledPasskeys = credentialRepository.countByAdminAndRevokedAtIsNull(admin);
-            if (enrolledPasskeys > 0) {
-                // Issue temporary pending-MFA token and fetch passkey authentication options
-                String pendingAuthToken = tokenProvider.generatePendingMfaToken(admin);
-                PasskeyAuthenticationOptionsResponse passkeyOptions = webAuthnService.getAuthenticationOptions(admin, origin);
-
-                auditLogService.logAction(username, "MFA_CHALLENGE_ISSUED", "Admins", String.valueOf(admin.getId()), "Biometric MFA challenge presented", ipAddress);
-
-                return AuthResponse.mfaRequired(
-                        pendingAuthToken,
-                        admin.getAdminId(),
-                        admin.getUsername(),
-                        admin.getEmail(),
-                        passkeyOptions
-                );
-            }
-
-            // Direct login for admins without enrolled passkeys (or initial setup)
+            // Direct independent password login (user can log in via password OR biometric passkey independently)
             admin.setLastLoginAt(LocalDateTime.now());
             admin.setFailedLoginAttempts(0);
             admin.setLockoutUntil(null);
@@ -248,7 +230,7 @@ public class AuthService {
                     .map(authority -> authority.getAuthority())
                     .collect(Collectors.toSet());
 
-            auditLogService.logAction(username, "LOGIN_SUCCESS", "Admins", String.valueOf(admin.getId()), "Successful administrator authentication", ipAddress);
+            auditLogService.logAction(username, "LOGIN_SUCCESS", "Admins", String.valueOf(admin.getId()), "Successful administrator authentication via password", ipAddress);
 
             return new AuthResponse(
                     jwt,

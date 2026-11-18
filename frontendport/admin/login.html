@@ -894,19 +894,6 @@
                     </div>
                 </div>
 
-                <!-- Stepper Progress Navigator -->
-                <div class="auth-stepper">
-                    <div class="step-item active" id="stepIndicator1">
-                        <div class="step-bubble" id="stepBubble1">1</div>
-                        <span>Credentials</span>
-                    </div>
-                    <div class="step-connector" id="stepConnector"></div>
-                    <div class="step-item" id="stepIndicator2">
-                        <div class="step-bubble" id="stepBubble2">2</div>
-                        <span>Biometrics</span>
-                    </div>
-                </div>
-
                 <!-- Notification Alert Box -->
                 <div class="alert-box" id="alertBox">
                     <span id="alertIcon">⚠️</span>
@@ -1341,32 +1328,12 @@
                 currentUsername = username;
                 localStorage.setItem('lastAdminUsername', username);
 
-                // Case A: Fingerprint credential already registered
-                if (res.data.mfaRequired) {
-                    mfaState = res.data;
-                    showStep2(username, 'verify');
-                    setTimeout(() => doPasskeyAuth(), 400);
-                    return;
-                }
-
-                // Case B: Password verified, but Lenovo sensor not enrolled yet
+                // Direct password authentication (standalone login)
                 if (res.data.token) {
-                    pendingLoginToken = res.data.token;
-                    mfaState = {
-                        adminUser: res.data,
-                        username: username
-                    };
-
-                    const platformAvailable = await isPlatformFingerprintAvailable();
-                    if (platformAvailable) {
-                        showStep2(username, 'enroll');
-                        setTimeout(() => doPasskeyEnrollmentOnLogin(), 400);
-                    } else {
-                        localStorage.setItem('adminToken', res.data.token);
-                        localStorage.setItem('adminUser', JSON.stringify(res.data));
-                        showAlert('Login successful! Redirecting to dashboard...', 'success');
-                        setTimeout(() => { window.location.href = 'dashboard.html'; }, 700);
-                    }
+                    localStorage.setItem('adminToken', res.data.token);
+                    localStorage.setItem('adminUser', JSON.stringify(res.data));
+                    showAlert('Sign in successful! Entering dashboard...', 'success');
+                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
                     return;
                 }
             }
