@@ -660,7 +660,7 @@ function renderTestimonials(testimonials) {
         const organization = t.organization || t.clientCompany || '';
         const message = t.message || t.testimonialText || '';
         const avatar = (t.photoUrl || t.clientAvatarUrl)
-            ? `<img src="${t.photoUrl || t.clientAvatarUrl}" alt="${escapeHtml(name)}" class="testimonial-avatar" style="width:48px; height:48px; border-radius:50%; object-fit:cover;">`
+            ? `<img src="${t.photoUrl || t.clientAvatarUrl}" alt="${escapeHtml(name)}" class="testimonial-avatar" width="48" height="48" loading="lazy" style="width:48px; height:48px; border-radius:50%; object-fit:cover;">`
             : `<div style="width:48px; height:48px; border-radius:50%; background:rgba(0,210,255,0.2); color:#00d2ff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:1.15rem;">${escapeHtml(name.charAt(0))}</div>`;
 
         return `
@@ -927,7 +927,8 @@ function updateDynamicSocialLinks() {
             <a href="${escapeHtml(item.url)}" 
                ${item.url.startsWith('mailto:') ? '' : 'target="_blank" rel="noopener noreferrer"'} 
                class="footer-social-link" 
-               title="${escapeHtml(item.platform)}">
+               title="${escapeHtml(item.platform)}"
+               aria-label="${escapeHtml(item.platform)}">
                 ${item.icon}
             </a>
         `).join('');
