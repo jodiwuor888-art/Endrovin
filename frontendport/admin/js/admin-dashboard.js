@@ -31,10 +31,10 @@ function closeSidebar() {
     if (ov) ov.classList.remove('active');
 }
 
-/* Close sidebar when a nav item is clicked on mobile */
+/* Close sidebar when a nav item is clicked on mobile or tablet */
 document.addEventListener('click', e => {
     const item = e.target.closest('.nav-item[data-view]');
-    if (item && window.innerWidth < 768) closeSidebar();
+    if (item && window.innerWidth <= 1024) closeSidebar();
 });
 
 /* ============================================================
