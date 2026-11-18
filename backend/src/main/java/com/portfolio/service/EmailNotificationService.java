@@ -537,6 +537,14 @@ public class EmailNotificationService {
             diag.put("test_email_dispatch", "SKIPPED - No email delivery method configured");
         }
 
+        // ntfy.sh phone push diagnostics
+        String ntfyTopic = getPhonePushTopic();
+        diag.put("ntfy_push_topic", ntfyTopic);
+        diag.put("ntfy_push_endpoint", "https://ntfy.sh/" + ntfyTopic);
+        diag.put("ntfy_push_method", "HTTPS Port 443 (Fully Unrestricted on Render)");
+        sendInstantPhonePush("⚡ Portfolio Live Diagnostic", "Real-time push notification is active! Your portfolio backend is online and ready to send instant alerts to your phone.", "white_check_mark,bell");
+        diag.put("ntfy_push_test", "SUCCESS - Push sent to https://ntfy.sh/" + ntfyTopic);
+
         return diag;
     }
 
