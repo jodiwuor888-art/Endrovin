@@ -50,6 +50,10 @@ spring:
           auth: true
           starttls:
             enable: true
+            required: false
+          connectiontimeout: 8000
+          timeout: 8000
+          writetimeout: 8000
 
 # Server Configuration
 server:
@@ -88,7 +92,7 @@ portfolio:
     allowed-origins: ${WEBAUTHN_ALLOWED_ORIGINS:*}
   contact:
     notification-email: ${NOTIFICATION_EMAIL:bevexj888@gmail.com}
-    enable-email-notifications: ${ENABLE_EMAIL_NOTIFICATIONS:false}
+    enable-email-notifications: ${ENABLE_EMAIL_NOTIFICATIONS:true}
 
 # Actuator Configuration
 management:

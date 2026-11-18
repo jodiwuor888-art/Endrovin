@@ -41,20 +41,45 @@ public class EmailNotificationService {
         try {
             SimpleMailMessage mail = new SimpleMailMessage();
             mail.setTo(properties.getContact().getNotificationEmail());
-            mail.setSubject("New Portfolio Contact: " + message.getSubject());
+            mail.setReplyTo(message.getEmail());
+
+            String from = properties.getSecurity().getPasswordResetFrom();
+            if (from != null && !from.isBlank()) {
+                mail.setFrom(from);
+            }
+
+            mail.setSubject("⚡ Urgent Portfolio Inquiry: " + message.getSubject() + " (from " + message.getFullName() + ")");
             mail.setText(String.format(
-                    "You received a new inquiry on your Portfolio website:\n\n" +
-                            "From: %s\n" +
-                            "Email: %s\n" +
-                            "IP Address: %s\n\n" +
-                            "Message:\n%s\n\n" +
-                            "---\n" +
-                            "Respond from your Portfolio Admin Dashboard.",
-                    message.getFullName(), message.getEmail(), message.getClientIp(), message.getMessage()
+                    "Hello Joash,\n\n" +
+                    "A new visitor just submitted a contact message on your portfolio:\n\n" +
+                    "==================================================\n" +
+                    "VISITOR DETAILS\n" +
+                    "==================================================\n" +
+                    "Full Name:  %s\n" +
+                    "Email:      %s\n" +
+                    "Subject:    %s\n" +
+                    "IP Address: %s\n\n" +
+                    "==================================================\n" +
+                    "MESSAGE\n" +
+                    "==================================================\n" +
+                    "%s\n\n" +
+                    "==================================================\n" +
+                    "QUICK RESPONSE OPTIONS\n" +
+                    "==================================================\n" +
+                    "• Simply click 'Reply' in your email client to answer %s directly at %s.\n" +
+                    "• View and manage all messages in your Admin Dashboard:\n" +
+                    "  https://endrovin-frontendport.vercel.app/admin/dashboard.html#messages\n",
+                    message.getFullName(),
+                    message.getEmail(),
+                    message.getSubject(),
+                    message.getClientIp(),
+                    message.getMessage(),
+                    message.getFullName(),
+                    message.getEmail()
             ));
 
             mailSender.send(mail);
-            log.info("[CONTACT NOTIFICATION] Email sent successfully to {}", properties.getContact().getNotificationEmail());
+            log.info("[CONTACT NOTIFICATION] Alert email sent successfully to {}", properties.getContact().getNotificationEmail());
         } catch (Exception e) {
             log.error("[CONTACT NOTIFICATION] Failed to send email alert: {}", e.getMessage());
         }

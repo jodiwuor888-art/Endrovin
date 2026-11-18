@@ -149,7 +149,7 @@ public class PortfolioProperties {
 
     public static class Contact {
         private String notificationEmail = "bevexj888@gmail.com";
-        private boolean enableEmailNotifications = false;
+        private boolean enableEmailNotifications = true;
 
         public String getNotificationEmail() {
             return notificationEmail;
