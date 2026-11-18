@@ -67,7 +67,7 @@ portfolio:
     rate-limit:
       max-attempts: 5
       lockout-duration-minutes: 15
-    password-reset-url: ${PASSWORD_RESET_URL:http://localhost:8080/admin/login.html}
+    password-reset-url: ${PASSWORD_RESET_URL:https://endrovin-frontendport.vercel.app/admin/login.html}
     password-reset-from: ${PASSWORD_RESET_FROM:${SMTP_USERNAME:}}
     webauthn:
       rp-id: ${WEBAUTHN_RP_ID:localhost}
