@@ -929,4 +929,21 @@ public class AdminManagementService {
             return d;
         }).collect(Collectors.toList());
     }
+
+    @Transactional
+    public void deleteAuditLog(Long id, String username, String ip) {
+        AuditLog log = auditLogRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Audit log entry not found with ID: " + id));
+        auditLogRepository.delete(log);
+        auditLogService.logAction(username, "DELETE_AUDIT_LOG", "AuditLogs", String.valueOf(id),
+                "Deleted audit log record #" + id + " (" + log.getAction() + ")", ip);
+    }
+
+    @Transactional
+    public void clearAllAuditLogs(String username, String ip) {
+        long count = auditLogRepository.count();
+        auditLogRepository.deleteAll();
+        auditLogService.logAction(username, "CLEAR_ALL_AUDIT_LOGS", "AuditLogs", "ALL",
+                "Cleared all " + count + " audit log entries", ip);
+    }
 }
