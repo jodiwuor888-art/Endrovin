@@ -1168,19 +1168,30 @@
     let isEnrollmentMode = false;
     let pendingLoginToken = null;
 
-    // Detect internal Lenovo biometric hardware on load
+    // Detect internal device biometric hardware on load
     document.addEventListener('DOMContentLoaded', async () => {
         const badge = document.getElementById('sensorStatusBadge');
         const text  = document.getElementById('sensorStatusText');
+        const isWindows = /Windows/i.test(navigator.userAgent);
+        const isMobile  = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
 
         if (typeof isPlatformFingerprintAvailable === 'function') {
             const hasSensor = await isPlatformFingerprintAvailable();
             if (hasSensor) {
                 badge.className = 'hardware-pill';
-                text.textContent = 'Lenovo Fingerprint Sensor (Windows Hello) Active';
+                text.textContent = isWindows
+                    ? 'Lenovo Fingerprint Sensor (Windows Hello) Active'
+                    : (isMobile ? 'Phone Fingerprint Sensor Active' : 'Device Biometric Authenticator Active');
+
+                const btnSpan = document.getElementById('directPasskeyBtn')?.querySelector('span');
+                if (btnSpan) {
+                    btnSpan.textContent = isWindows
+                        ? 'Sign in with Lenovo Fingerprint Sensor'
+                        : (isMobile ? 'Sign in with Phone Fingerprint' : 'Sign in with Device Biometrics');
+                }
             } else {
                 badge.className = 'hardware-pill unavailable';
-                text.textContent = 'Platform Biometrics (Windows Hello) Available';
+                text.textContent = 'Biometric Authenticator Ready';
             }
         }
     });
@@ -1231,14 +1242,21 @@
         document.getElementById('fpUserInitial').textContent = initial;
         document.getElementById('fpUsername').textContent = username;
 
+        const isWindows = /Windows/i.test(navigator.userAgent);
+        const isMobile  = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
+
         if (isEnrollmentMode) {
-            document.getElementById('fpTitle').textContent = 'Link Your Lenovo Fingerprint Sensor';
-            document.getElementById('fpSubtitle').textContent = 'Touch the sensor on your laptop keyboard/deck to register it with this administrator account.';
+            document.getElementById('fpTitle').textContent = isWindows ? 'Link Your Lenovo Fingerprint Sensor' : 'Link Device Fingerprint';
+            document.getElementById('fpSubtitle').textContent = isWindows
+                ? 'Touch the sensor on your laptop keyboard/deck to register this machine independently.'
+                : 'Touch your phone\'s fingerprint sensor to register this device independently.';
             document.getElementById('fpBtn').querySelector('span').textContent = 'Touch Sensor to Register';
             document.getElementById('btnSkipEnroll').style.display = 'flex';
         } else {
-            document.getElementById('fpTitle').textContent = 'Touch Your Lenovo Fingerprint Sensor';
-            document.getElementById('fpSubtitle').textContent = 'Windows Hello is waiting. Place your finger on the mounted sensor to confirm authentication.';
+            document.getElementById('fpTitle').textContent = isWindows ? 'Touch Your Lenovo Fingerprint Sensor' : 'Touch Device Fingerprint';
+            document.getElementById('fpSubtitle').textContent = isWindows
+                ? 'Windows Hello is waiting. Place your finger on the laptop reader to authenticate independently.'
+                : 'Touch your phone\'s fingerprint sensor to authenticate directly.';
             document.getElementById('fpBtn').querySelector('span').textContent = 'Verify with Sensor';
             document.getElementById('btnSkipEnroll').style.display = 'none';
         }
@@ -1406,8 +1424,19 @@
         document.getElementById('fpBtn').disabled = true;
 
         try {
-            const deviceName = 'Lenovo Laptop Fingerprint Reader';
-            const deviceType = 'Laptop / Internal Biometric Sensor';
+            const isWindows = /Windows/i.test(navigator.userAgent);
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            const isApple   = /iPhone|iPad|Mac/i.test(navigator.userAgent);
+            let deviceName = 'Lenovo Laptop Fingerprint Reader';
+            let deviceType = 'Laptop / Windows Hello';
+            if (isAndroid) {
+                deviceName = 'Android Phone Biometric Sensor';
+                deviceType = 'Smartphone / Android Fingerprint';
+            } else if (isApple) {
+                deviceName = 'Apple TouchID / FaceID Device';
+                deviceType = 'Mobile / TouchID';
+            }
+
             const regRes = await triggerPasskeyRegistration(deviceName, deviceType, pendingLoginToken);
 
             if (regRes && regRes.success) {
@@ -1416,7 +1445,7 @@
                 if (mfaState && mfaState.adminUser) {
                     localStorage.setItem('adminUser', JSON.stringify(mfaState.adminUser));
                 }
-                showAlert('Lenovo Fingerprint registered! Entering dashboard...', 'success');
+                showAlert(`${deviceName} registered! Entering dashboard...`, 'success');
                 setTimeout(() => { window.location.href = 'dashboard.html'; }, 850);
             } else {
                 setScannerState('error');

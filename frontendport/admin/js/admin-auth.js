@@ -195,21 +195,24 @@ async function triggerPasskeyAuthentication(options, pendingAuthToken, username)
         options = Object.assign({}, optJson.data, { username: un });
     }
 
-    // Prepare credential request options targeted for Lenovo mounted fingerprint / Windows Hello
+    // Prepare credential request options targeted strictly for local device platform sensor
     const publicKey = {
         challenge: base64urlToUint8Array(options.challenge),
         rpId: normalizeRpId(options.rpId),
         timeout: options.timeout || 60000,
-        // 'required' forces biometric verification via the mounted Lenovo sensor
-        userVerification: 'required'
+        // 'required' forces physical biometric verification on this local device
+        userVerification: 'required',
+        // 'client-device' hint instructs browser to prioritize this device's own sensor
+        // and NOT prompt cross-device hybrid (QR code / phone connect)
+        hints: ['client-device']
     };
 
     if (options.allowCredentials && options.allowCredentials.length > 0) {
         publicKey.allowCredentials = options.allowCredentials.map(c => ({
             id: base64urlToUint8Array(c.id),
             type: c.type || 'public-key',
-            // 'internal' directs Windows Hello to use the built-in laptop fingerprint sensor
-            transports: (c.transports && c.transports.length > 0) ? c.transports : ['internal']
+            // Enforce ['internal'] only — prevents Windows/Chrome from asking to connect an Android phone or tablet
+            transports: ['internal']
         }));
     }
 
@@ -324,19 +327,20 @@ async function triggerPasskeyRegistration(deviceName, deviceType, authTokenOverr
         timeout: options.timeout || 60000,
         attestation: options.attestation || 'none',
         authenticatorSelection: {
-            authenticatorAttachment: 'platform', // Strictly tells Windows Hello to use Lenovo internal fingerprint sensor
-            userVerification: 'required',        // Requires physical fingerprint touch on the sensor
+            authenticatorAttachment: 'platform', // Strictly uses this device's own internal sensor (laptop or phone)
+            userVerification: 'required',        // Requires physical biometric touch on this device
             residentKey: 'preferred'
-        }
+        },
+        hints: ['client-device']
     };
 
-    // 3. Call browser WebAuthn creation (triggers Windows Hello fingerprint prompt)
+    // 3. Call browser WebAuthn creation (triggers local platform biometric prompt)
     let credential;
     try {
         credential = await navigator.credentials.create({ publicKey });
     } catch (credErr) {
         if (credErr.name === 'SecurityError' || (credErr.message && credErr.message.toLowerCase().includes('invalid domain'))) {
-            throw new Error('WebAuthn biometrics requires domain "localhost" instead of IP address. Please open via http://localhost:8080/admin/');
+            throw new Error('Biometric security error: Domain must match ' + window.location.hostname);
         }
         if (credErr.name === 'NotAllowedError') {
             throw new Error('Biometric setup was cancelled or timed out. Please try again.');
