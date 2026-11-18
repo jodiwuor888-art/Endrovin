@@ -1418,16 +1418,25 @@
         btn.textContent = 'Provisioning Administrator...';
 
         try {
-            const res = await fetch(`${API_BASE}/api/admin/setup`, {
+            const res = await fetch(`${API_BASE}/api/auth/setup-first-admin`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
             const json = await res.json();
             if (json.success) {
-                showAlert('Master Administrator initialized successfully! You can now sign in.', 'success');
-                document.getElementById('username').value = payload.username;
-                document.getElementById('setupDrawer').removeAttribute('open');
+                showAlert('Master Administrator created successfully! Logging you in...', 'success');
+                if (json.data && json.data.token) {
+                    localStorage.setItem('adminToken', json.data.token);
+                    localStorage.setItem('adminUser', JSON.stringify(json.data));
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1200);
+                } else {
+                    document.getElementById('username').value = payload.username;
+                    document.getElementById('password').value = payload.password;
+                    document.getElementById('setupDrawer').removeAttribute('open');
+                }
             } else {
                 showAlert(json.message || 'Setup provisioning failed.', 'error');
                 btn.disabled = false;
