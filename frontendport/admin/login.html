@@ -5,7 +5,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://joash-portfolio-backend.onrender.com">
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#07111F">
@@ -103,12 +102,6 @@
             overflow-x: hidden;
         }
 
-        @property --beam-angle {
-            syntax: '<angle>';
-            inherits: false;
-            initial-value: 0deg;
-        }
-
         /* Ambient animated glow orbs */
         .ambient-orb {
             position: fixed;
@@ -138,29 +131,6 @@
             100% { transform: scale(1.15) translate(20px, -20px); opacity: 0.95; }
         }
 
-        /* High-Tech Background Cyber Floating Particles */
-        .login-spark {
-            position: fixed;
-            border-radius: 50%;
-            pointer-events: none;
-            background: #38BDF8;
-            box-shadow: 0 0 12px #38BDF8, 0 0 24px rgba(56, 189, 248, 0.4);
-            animation: spark-float 9s linear infinite;
-            z-index: 0;
-        }
-        .login-spark.s1 { width: 5px; height: 5px; left: 15%; bottom: 10%; animation-duration: 9s; animation-delay: 0s; }
-        .login-spark.s2 { width: 4px; height: 4px; left: 82%; bottom: 15%; animation-duration: 11s; animation-delay: 2s; }
-        .login-spark.s3 { width: 6px; height: 6px; left: 25%; bottom: 8%; animation-duration: 10s; animation-delay: 4.5s; }
-        .login-spark.s4 { width: 3px; height: 3px; left: 74%; bottom: 12%; animation-duration: 8s; animation-delay: 1.5s; }
-        .login-spark.s5 { width: 4px; height: 4px; left: 48%; bottom: 5%; animation-duration: 12s; animation-delay: 3s; }
-
-        @keyframes spark-float {
-            0% { transform: translateY(0) scale(0.7); opacity: 0; }
-            20% { opacity: 0.6; }
-            80% { opacity: 0.6; }
-            100% { transform: translateY(-750px) scale(1.3); opacity: 0; }
-        }
-
         /* Subtle cyber grid overlay */
         .cyber-grid {
             position: fixed;
@@ -186,7 +156,7 @@
             }
         }
 
-        /* Top luminous laser stripe with dynamic pulse */
+        /* Top luminous laser stripe */
         .laser-stripe {
             position: fixed;
             top: 0;
@@ -194,13 +164,8 @@
             right: 0;
             height: 2.5px;
             background: linear-gradient(90deg, transparent 0%, var(--primary) 35%, var(--indigo) 65%, transparent 100%);
-            box-shadow: 0 0 16px var(--primary), 0 0 30px var(--primary);
+            box-shadow: 0 0 16px var(--primary);
             z-index: 100;
-            animation: laser-pulse 4s ease-in-out infinite alternate;
-        }
-        @keyframes laser-pulse {
-            0% { opacity: 0.6; filter: brightness(1); }
-            100% { opacity: 1; filter: brightness(1.4); }
         }
 
         /* Main Container */
@@ -209,11 +174,10 @@
             max-width: 480px;
             position: relative;
             z-index: 1;
-            perspective: 1000px;
         }
 
         /* ==========================================================================
-           ULTRA-PREMIUM GLASS CARD WITH ELECTRIC ROTATING BORDER BEAM
+           ULTRA-PREMIUM GLASS CARD
            ========================================================================== */
         .login-card {
             background: var(--glass-bg);
@@ -226,46 +190,16 @@
                 0 30px 80px -15px rgba(0, 0, 0, 0.85),
                 0 0 45px rgba(56, 189, 248, 0.12),
                 inset 0 1px 1px rgba(255, 255, 255, 0.15);
-            transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
+            transition: border-color 0.4s ease, box-shadow 0.4s ease;
             position: relative;
-            animation: card-reveal 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        @keyframes card-reveal {
-            0% { opacity: 0; transform: translateY(28px) scale(0.96); filter: blur(8px); }
-            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-        }
-
-        /* Conic-Gradient Electric Rotating Border Beam */
-        .login-card::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: inherit;
-            background: conic-gradient(from var(--beam-angle), transparent 0deg, var(--primary) 45deg, var(--indigo) 90deg, transparent 150deg, var(--cyan-accent) 230deg, transparent 300deg);
-            z-index: -1;
-            animation: beam-spin 5.5s linear infinite;
-            opacity: 0.55;
-            transition: opacity 0.35s ease;
-        }
-
-        @keyframes beam-spin {
-            to { --beam-angle: 360deg; }
-        }
-
-        .login-card:focus-within::before,
-        .login-card:hover::before {
-            opacity: 0.95;
-            filter: drop-shadow(0 0 14px rgba(56, 189, 248, 0.55));
         }
 
         .login-card:hover {
             border-color: var(--glass-border-hover);
             box-shadow: 
                 0 35px 90px -15px rgba(0, 0, 0, 0.90),
-                0 0 60px rgba(56, 189, 248, 0.25),
-                inset 0 1px 1px rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
+                0 0 60px rgba(56, 189, 248, 0.18),
+                inset 0 1px 1px rgba(255, 255, 255, 0.22);
         }
 
         /* Top Progress Track */
@@ -312,26 +246,11 @@
             background: linear-gradient(135deg, var(--primary), var(--indigo));
             opacity: 0.6;
             filter: blur(6px);
-            animation: pulse-ring 3s infinite ease-in-out;
+            /* static clean glow */
         }
         @keyframes pulse-ring {
             0%, 100% { opacity: 0.5; transform: scale(1); }
             50% { opacity: 0.85; transform: scale(1.06); }
-        }
-
-        /* Holographic HUD Ring — rotating dashed tech circle */
-        .avatar-hud-ring {
-            position: absolute;
-            inset: -8px;
-            border-radius: 50%;
-            border: 1.5px dashed rgba(56, 189, 248, 0.45);
-            animation: hud-spin-cw 12s linear infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-        @keyframes hud-spin-cw {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
         }
 
         .avatar-img {
@@ -626,8 +545,7 @@
         .form-control:focus {
             border-color: var(--primary);
             background: rgba(14, 28, 56, 0.92);
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.16), 0 0 20px rgba(56, 189, 248, 0.18), 0 0 40px rgba(56, 189, 248, 0.06);
-            transition: all 0.3s ease;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.16), 0 0 20px rgba(56, 189, 248, 0.12);
         }
 
         .form-control:focus + .input-icon,
@@ -689,25 +607,6 @@
             opacity: 0;
             transition: opacity 0.3s ease;
             pointer-events: none;
-        }
-
-        /* Energy Shimmer Beam across submit button */
-        .btn-submit::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -120%;
-            width: 80%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.35) 50%, transparent 100%);
-            transform: skewX(-25deg);
-            animation: btn-energy-pulse 3.2s infinite ease-in-out;
-            pointer-events: none;
-            z-index: 1;
-        }
-        @keyframes btn-energy-pulse {
-            0%, 25% { left: -120%; }
-            65%, 100% { left: 180%; }
         }
 
         .btn-submit:hover:not(:disabled) {
@@ -1128,507 +1027,13 @@
                 animation: none !important;
             }
         }
-    
-        /* ==========================================================================
-           CYBER SCORPION SENTINEL — ADVANCED NEON BIOMECHANICAL ANIMATION
-           ========================================================================== */
-        .cyber-scorpion-wrap {
-            position: relative;
-            width: 110px;
-            height: 88px;
-            margin: 0 auto 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            user-select: none;
-            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-            animation: scorp-levitate 4.5s ease-in-out infinite alternate;
-        }
-
-        .cyber-scorpion-wrap:hover {
-            transform: scale(1.08) translateY(-3px);
-        }
-
-        .cyber-scorpion-wrap:active {
-            transform: scale(0.96);
-        }
-
-        /* Ambient Pulsing Aura behind Scorpion */
-        .scorp-ambient-aura {
-            position: absolute;
-            inset: -12px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(0, 240, 255, 0.3) 0%, rgba(139, 92, 246, 0.2) 45%, rgba(236, 72, 153, 0.12) 70%, transparent 85%);
-            filter: blur(14px);
-            pointer-events: none;
-            z-index: 0;
-            animation: scorp-aura-pulse 3.8s ease-in-out infinite alternate;
-        }
-
-        @keyframes scorp-aura-pulse {
-            0% { transform: scale(0.85); opacity: 0.6; filter: blur(12px) hue-rotate(0deg); }
-            50% { transform: scale(1.15); opacity: 0.95; filter: blur(16px) hue-rotate(45deg); }
-            100% { transform: scale(0.9); opacity: 0.7; filter: blur(14px) hue-rotate(90deg); }
-        }
-
-        @keyframes scorp-levitate {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-4px) rotate(0.8deg); }
-            100% { transform: translateY(2px) rotate(-0.8deg); }
-        }
-
-        /* SVG Scorpion Styling */
-        .cyber-scorpion-svg {
-            width: 100%;
-            height: 100%;
-            overflow: visible;
-            position: relative;
-            z-index: 1;
-            filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.55)) drop-shadow(0 0 22px rgba(139, 92, 246, 0.35));
-            transition: filter 0.35s ease;
-        }
-
-        .cyber-scorpion-wrap:hover .cyber-scorpion-svg {
-            filter: drop-shadow(0 0 18px rgba(0, 240, 255, 0.85)) drop-shadow(0 0 32px rgba(236, 72, 153, 0.6));
-        }
-
-        /* Tail Swaying Animation */
-        .scorp-tail-sway {
-            transform-origin: 110px 148px;
-            animation: scorp-tail-sway 3.2s ease-in-out infinite alternate;
-        }
-
-        @keyframes scorp-tail-sway {
-            0% { transform: rotate(-5deg); }
-            50% { transform: rotate(3deg); }
-            100% { transform: rotate(-3deg); }
-        }
-
-        /* Articulated Claws Snapping & Guarding */
-        .scorp-claw-left {
-            transform-origin: 90px 80px;
-            animation: scorp-claw-l 3.6s ease-in-out infinite alternate;
-        }
-
-        .scorp-claw-right {
-            transform-origin: 130px 80px;
-            animation: scorp-claw-r 3.6s ease-in-out infinite alternate 0.4s;
-        }
-
-        @keyframes scorp-claw-l {
-            0% { transform: rotate(0deg); }
-            50% { transform: rotate(-6deg); }
-            100% { transform: rotate(3deg); }
-        }
-
-        @keyframes scorp-claw-r {
-            0% { transform: rotate(0deg); }
-            50% { transform: rotate(6deg); }
-            100% { transform: rotate(-3deg); }
-        }
-
-        /* Pincer Jaw Snapping */
-        .scorp-jaw-l {
-            transform-origin: 32px 28px;
-            animation: scorp-jaw-snap-l 2.8s ease-in-out infinite;
-        }
-
-        .scorp-jaw-r {
-            transform-origin: 188px 28px;
-            animation: scorp-jaw-snap-r 2.8s ease-in-out infinite 0.3s;
-        }
-
-        @keyframes scorp-jaw-snap-l {
-            0%, 100% { transform: rotate(0deg); }
-            30% { transform: rotate(12deg); }
-            50% { transform: rotate(-4deg); }
-        }
-
-        @keyframes scorp-jaw-snap-r {
-            0%, 100% { transform: rotate(0deg); }
-            30% { transform: rotate(-12deg); }
-            50% { transform: rotate(4deg); }
-        }
-
-        /* Walking Legs Robotics Twitch */
-        .scorp-leg-pair.l1, .scorp-leg-pair.r3 {
-            animation: scorp-leg-twitch 3s ease-in-out infinite alternate;
-        }
-        .scorp-leg-pair.l2, .scorp-leg-pair.r4 {
-            animation: scorp-leg-twitch 3.4s ease-in-out infinite alternate 0.5s;
-        }
-        .scorp-leg-pair.l3, .scorp-leg-pair.r1 {
-            animation: scorp-leg-twitch 2.8s ease-in-out infinite alternate 1s;
-        }
-        .scorp-leg-pair.l4, .scorp-leg-pair.r2 {
-            animation: scorp-leg-twitch 3.2s ease-in-out infinite alternate 1.5s;
-        }
-
-        @keyframes scorp-leg-twitch {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-1.5px) scale(1.02); }
-            100% { transform: translateY(0.8px); }
-        }
-
-        /* Glowing Neon Venom Stinger Flare */
-        .scorp-venom-flare {
-            transform-origin: 130px 34px;
-            animation: scorp-venom-pulse 2s infinite ease-in-out;
-        }
-
-        @keyframes scorp-venom-pulse {
-            0%, 100% { transform: scale(0.8); opacity: 0.75; filter: drop-shadow(0 0 4px #00F0FF); }
-            40% { transform: scale(1.8); opacity: 1; filter: drop-shadow(0 0 12px #10B981) drop-shadow(0 0 20px #00F0FF); }
-            70% { transform: scale(1.4); opacity: 0.9; filter: drop-shadow(0 0 16px #EC4899); }
-        }
-
-        /* Electric Lightning Spark Arc */
-        .scorp-venom-spark {
-            animation: scorp-spark-flash 2.4s infinite ease-in-out;
-        }
-
-        @keyframes scorp-spark-flash {
-            0%, 85%, 100% { opacity: 0; stroke-dasharray: 2 10; }
-            88% { opacity: 1; stroke-dasharray: 6 2; stroke: #00F0FF; }
-            92% { opacity: 0.3; stroke-dasharray: 1 4; stroke: #EC4899; }
-            96% { opacity: 1; stroke-dasharray: 8 2; stroke: #10B981; }
-        }
-
-        /* Cyber Eyes Optical Scan */
-        .scorp-eye-l, .scorp-eye-r {
-            animation: scorp-eyes-pulse 2.2s infinite ease-in-out;
-        }
-
-        @keyframes scorp-eyes-pulse {
-            0%, 100% { opacity: 0.75; filter: drop-shadow(0 0 3px #FF0055); }
-            50% { opacity: 1; filter: drop-shadow(0 0 8px #FF0055) drop-shadow(0 0 14px #FF0055); }
-        }
-
-        /* Sentinel Pill Subtitle */
-        .scorp-sentinel-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: #38BDF8;
-            background: rgba(56, 189, 248, 0.08);
-            border: 1px solid rgba(56, 189, 248, 0.22);
-            padding: 2px 10px;
-            border-radius: 12px;
-            margin-top: 0.25rem;
-            margin-bottom: 0.65rem;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.12);
-        }
-
-        .scorp-sentinel-dot {
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: #00F0FF;
-            box-shadow: 0 0 8px #00F0FF;
-            animation: scorp-dot-ping 1.6s infinite;
-        }
-
-        @keyframes scorp-dot-ping {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.5); opacity: 0.4; }
-        }
-
-        @media (max-width: 480px) {
-            .cyber-scorpion-wrap {
-                width: 90px;
-                height: 72px;
-                margin-bottom: 0.4rem;
-            }
-        }
-
-
-        /* ==========================================================================
-           CYBER CREATURE STAGE: SCORPION & SPIDER SENTINELS
-           ========================================================================== */
-        .cyber-creature-stage {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.15rem;
-            position: relative;
-        }
-
-        .creature-toggle-pill {
-            display: inline-flex;
-            align-items: center;
-            background: rgba(15, 23, 42, 0.75);
-            border: 1px solid rgba(56, 189, 248, 0.25);
-            border-radius: 20px;
-            padding: 3px;
-            gap: 4px;
-            margin-bottom: 0.85rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-            z-index: 2;
-        }
-
-        .creature-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted, #94a3b8);
-            font-size: 0.74rem;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            padding: 4px 12px;
-            border-radius: 14px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            font-family: inherit;
-        }
-
-        .creature-btn:hover {
-            color: #ffffff;
-            background: rgba(56, 189, 248, 0.12);
-        }
-
-        .creature-btn.active {
-            color: #ffffff;
-            background: linear-gradient(135deg, rgba(56, 189, 248, 0.35) 0%, rgba(99, 102, 241, 0.35) 100%);
-            border: 1px solid rgba(56, 189, 248, 0.5);
-            box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
-        }
-
-        .cyber-creature-wrap {
-            position: relative;
-            width: 140px;
-            height: 110px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            user-select: none;
-            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-            animation: creature-levitate 4.5s ease-in-out infinite alternate;
-        }
-
-        .cyber-creature-wrap:hover {
-            transform: scale(1.08) translateY(-4px);
-        }
-
-        .cyber-creature-wrap:active {
-            transform: scale(0.96);
-        }
-
-        @keyframes creature-levitate {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-5px) rotate(0.6deg); }
-            100% { transform: translateY(3px) rotate(-0.6deg); }
-        }
-
-        /* Ambient Pulsing Aura */
-        .creature-ambient-aura {
-            position: absolute;
-            inset: -14px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(0, 240, 255, 0.28) 0%, rgba(139, 92, 246, 0.18) 45%, rgba(236, 72, 153, 0.12) 70%, transparent 85%);
-            filter: blur(16px);
-            pointer-events: none;
-            z-index: 0;
-            animation: creature-aura-pulse 4s ease-in-out infinite alternate;
-        }
-
-        @keyframes creature-aura-pulse {
-            0% { transform: scale(0.85); opacity: 0.6; filter: blur(14px) hue-rotate(0deg); }
-            50% { transform: scale(1.15); opacity: 0.95; filter: blur(18px) hue-rotate(50deg); }
-            100% { transform: scale(0.9); opacity: 0.7; filter: blur(14px) hue-rotate(100deg); }
-        }
-
-        /* SVG Creature General */
-        .cyber-creature-svg {
-            width: 100%;
-            height: 100%;
-            overflow: visible;
-            position: relative;
-            z-index: 1;
-            filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.6)) drop-shadow(0 0 25px rgba(139, 92, 246, 0.4));
-            transition: filter 0.35s ease;
-        }
-
-        .cyber-creature-wrap:hover .cyber-creature-svg {
-            filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.9)) drop-shadow(0 0 35px rgba(236, 72, 153, 0.65));
-        }
-
-        /* -------------------------------------------------------------
-           SCORPION SPECIFIC ANIMATIONS
-           ------------------------------------------------------------- */
-        .scorp-tail-sway {
-            transform-origin: 110px 148px;
-            animation: scorp-tail-sway 3.2s ease-in-out infinite alternate;
-        }
-        @keyframes scorp-tail-sway {
-            0% { transform: rotate(-5deg); }
-            50% { transform: rotate(3deg); }
-            100% { transform: rotate(-3deg); }
-        }
-
-        .scorp-claw-left {
-            transform-origin: 90px 80px;
-            animation: scorp-claw-l 3.6s ease-in-out infinite alternate;
-        }
-        .scorp-claw-right {
-            transform-origin: 130px 80px;
-            animation: scorp-claw-r 3.6s ease-in-out infinite alternate 0.4s;
-        }
-        @keyframes scorp-claw-l {
-            0% { transform: rotate(0deg); }
-            50% { transform: rotate(-6deg); }
-            100% { transform: rotate(3deg); }
-        }
-        @keyframes scorp-claw-r {
-            0% { transform: rotate(0deg); }
-            50% { transform: rotate(6deg); }
-            100% { transform: rotate(-3deg); }
-        }
-
-        .scorp-jaw-l {
-            transform-origin: 32px 28px;
-            animation: scorp-jaw-snap-l 2.8s ease-in-out infinite;
-        }
-        .scorp-jaw-r {
-            transform-origin: 188px 28px;
-            animation: scorp-jaw-snap-r 2.8s ease-in-out infinite 0.3s;
-        }
-        @keyframes scorp-jaw-snap-l {
-            0%, 100% { transform: rotate(0deg); }
-            30% { transform: rotate(12deg); }
-            50% { transform: rotate(-4deg); }
-        }
-        @keyframes scorp-jaw-snap-r {
-            0%, 100% { transform: rotate(0deg); }
-            30% { transform: rotate(-12deg); }
-            50% { transform: rotate(4deg); }
-        }
-
-        .scorp-leg-pair.l1, .scorp-leg-pair.r3 { animation: scorp-leg-twitch 3s ease-in-out infinite alternate; }
-        .scorp-leg-pair.l2, .scorp-leg-pair.r4 { animation: scorp-leg-twitch 3.4s ease-in-out infinite alternate 0.5s; }
-        .scorp-leg-pair.l3, .scorp-leg-pair.r1 { animation: scorp-leg-twitch 2.8s ease-in-out infinite alternate 1s; }
-        .scorp-leg-pair.l4, .scorp-leg-pair.r2 { animation: scorp-leg-twitch 3.2s ease-in-out infinite alternate 1.5s; }
-        @keyframes scorp-leg-twitch {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-1.5px) scale(1.02); }
-            100% { transform: translateY(0.8px); }
-        }
-
-        .scorp-venom-flare {
-            transform-origin: 130px 34px;
-            animation: scorp-venom-pulse 2s infinite ease-in-out;
-        }
-        @keyframes scorp-venom-pulse {
-            0%, 100% { transform: scale(0.8); opacity: 0.75; filter: drop-shadow(0 0 4px #00F0FF); }
-            40% { transform: scale(1.8); opacity: 1; filter: drop-shadow(0 0 12px #10B981) drop-shadow(0 0 20px #00F0FF); }
-            70% { transform: scale(1.4); opacity: 0.9; filter: drop-shadow(0 0 16px #EC4899); }
-        }
-
-        .scorp-venom-spark {
-            animation: scorp-spark-flash 2.4s infinite ease-in-out;
-        }
-        @keyframes scorp-spark-flash {
-            0%, 85%, 100% { opacity: 0; stroke-dasharray: 2 10; }
-            88% { opacity: 1; stroke-dasharray: 6 2; stroke: #00F0FF; }
-            92% { opacity: 0.3; stroke-dasharray: 1 4; stroke: #EC4899; }
-            96% { opacity: 1; stroke-dasharray: 8 2; stroke: #10B981; }
-        }
-
-        .scorp-eye-l, .scorp-eye-r {
-            animation: scorp-eyes-pulse 2.2s infinite ease-in-out;
-        }
-        @keyframes scorp-eyes-pulse {
-            0%, 100% { opacity: 0.75; filter: drop-shadow(0 0 3px #FF0055); }
-            50% { opacity: 1; filter: drop-shadow(0 0 8px #FF0055) drop-shadow(0 0 14px #FF0055); }
-        }
-
-        /* -------------------------------------------------------------
-           SPIDER SPECIFIC ANIMATIONS
-           ------------------------------------------------------------- */
-        .spider-leg.sl1, .spider-leg.sr3 { animation: spider-step-a 3.2s ease-in-out infinite alternate; }
-        .spider-leg.sl2, .spider-leg.sr4 { animation: spider-step-b 3s ease-in-out infinite alternate 0.4s; }
-        .spider-leg.sl3, .spider-leg.sr1 { animation: spider-step-c 3.4s ease-in-out infinite alternate 0.8s; }
-        .spider-leg.sl4, .spider-leg.sr2 { animation: spider-step-d 2.8s ease-in-out infinite alternate 1.2s; }
-
-        @keyframes spider-step-a {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-3px) rotate(-1.5deg); }
-            100% { transform: translateY(1px); }
-        }
-        @keyframes spider-step-b {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(2.5px) rotate(1deg); }
-            100% { transform: translateY(-1.5px); }
-        }
-        @keyframes spider-step-c {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-2px) rotate(1.5deg); }
-            100% { transform: translateY(2px); }
-        }
-        @keyframes spider-step-d {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(2px) rotate(-1deg); }
-            100% { transform: translateY(-2px); }
-        }
-
-        .spider-core-emblem {
-            animation: spider-core-glow 2.2s ease-in-out infinite alternate;
-        }
-        @keyframes spider-core-glow {
-            0% { opacity: 0.6; filter: drop-shadow(0 0 4px #00F0FF); }
-            100% { opacity: 1; filter: drop-shadow(0 0 14px #EC4899) drop-shadow(0 0 22px #00F0FF); }
-        }
-
-        .spider-eye-main {
-            animation: spider-main-eyes 2s infinite ease-in-out;
-        }
-        @keyframes spider-main-eyes {
-            0%, 100% { filter: drop-shadow(0 0 2px #00F0FF); }
-            50% { filter: drop-shadow(0 0 8px #00F0FF) drop-shadow(0 0 14px #38BDF8); }
-        }
-
-        .spider-fangs {
-            animation: spider-fangs-flex 2.6s ease-in-out infinite alternate;
-            transform-origin: 110px 94px;
-        }
-        @keyframes spider-fangs-flex {
-            0% { transform: scale(0.95); }
-            50% { transform: scale(1.08); }
-            100% { transform: scale(0.98); }
-        }
-
-        .spider-venom-drop {
-            animation: spider-drop-pulse 1.8s infinite ease-in-out;
-        }
-        @keyframes spider-drop-pulse {
-            0%, 100% { opacity: 0.6; transform: scale(0.8); filter: drop-shadow(0 0 2px #10B981); }
-            50% { opacity: 1; transform: scale(1.4); filter: drop-shadow(0 0 8px #10B981) drop-shadow(0 0 14px #34D399); }
-        }
-
-        @media (max-width: 480px) {
-            .cyber-creature-wrap {
-                width: 120px;
-                height: 95px;
-            }
-        }
-
-</style>
+    </style>
 </head>
 <body>
     <div class="cyber-grid"></div>
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
     <div class="laser-stripe"></div>
-    <div class="login-spark s1"></div>
-    <div class="login-spark s2"></div>
-    <div class="login-spark s3"></div>
-    <div class="login-spark s4"></div>
-    <div class="login-spark s5"></div>
 
     <div class="login-wrapper">
         <div class="login-card">
@@ -1640,309 +1045,12 @@
             <div class="card-body">
                 <!-- Brand Header -->
                 <div class="brand-header">
-                    <!-- CYBER SENTINEL STAGE (SCORPION & SPIDER) -->
-                    <div class="cyber-creature-stage">
-                        <!-- Mode Selector Pill -->
-                        <div class="creature-toggle-pill" role="tablist" aria-label="Select Security Sentinel">
-                            <button type="button" class="creature-btn active" id="btnScorpMode" onclick="setSentinelMode('scorpion')">
-                                <span>🦂 Cyber Scorpion</span>
-                            </button>
-                            <button type="button" class="creature-btn" id="btnSpiderMode" onclick="setSentinelMode('spider')">
-                                <span>🕷️ Neon Spider</span>
-                            </button>
-                        </div>
-
-                        <!-- 1. CYBER SCORPION SENTINEL -->
-                        <div class="cyber-creature-wrap" id="scorpSentinel" title="Cyber Scorpion Sentinel Active — Click to Alternate" onclick="toggleSentinelMode()">
-                            <div class="creature-ambient-aura"></div>
-                            <svg class="cyber-creature-svg" viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <linearGradient id="scorpBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stop-color="#00F0FF"/>
-                                        <stop offset="40%" stop-color="#3B82F6"/>
-                                        <stop offset="70%" stop-color="#1E3A8A"/>
-                                        <stop offset="100%" stop-color="#0F172A"/>
-                                    </linearGradient>
-
-                                    <linearGradient id="scorpCarapace" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stop-color="#38BDF8"/>
-                                        <stop offset="50%" stop-color="#1D4ED8"/>
-                                        <stop offset="100%" stop-color="#0A1128"/>
-                                    </linearGradient>
-
-                                    <linearGradient id="scorpClawGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stop-color="#00F0FF"/>
-                                        <stop offset="50%" stop-color="#8B5CF6"/>
-                                        <stop offset="100%" stop-color="#EC4899"/>
-                                    </linearGradient>
-
-                                    <linearGradient id="scorpTailGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-                                        <stop offset="0%" stop-color="#1E40AF"/>
-                                        <stop offset="40%" stop-color="#38BDF8"/>
-                                        <stop offset="80%" stop-color="#A855F7"/>
-                                        <stop offset="100%" stop-color="#EC4899"/>
-                                    </linearGradient>
-
-                                    <radialGradient id="venomGlow" cx="50%" cy="50%" r="50%">
-                                        <stop offset="0%" stop-color="#00F0FF" stop-opacity="1"/>
-                                        <stop offset="45%" stop-color="#10B981" stop-opacity="0.8"/>
-                                        <stop offset="75%" stop-color="#8B5CF6" stop-opacity="0.4"/>
-                                        <stop offset="100%" stop-color="#EC4899" stop-opacity="0"/>
-                                    </radialGradient>
-
-                                    <filter id="neonGlowClaw" x="-30%" y="-30%" width="160%" height="160%">
-                                        <feGaussianBlur stdDeviation="2.5" result="blur"/>
-                                        <feMerge>
-                                            <feMergeNode in="blur"/>
-                                            <feMergeNode in="SourceGraphic"/>
-                                        </feMerge>
-                                    </filter>
-
-                                    <filter id="stingerPlasma" x="-60%" y="-60%" width="220%" height="220%">
-                                        <feGaussianBlur stdDeviation="3.5" result="blur1"/>
-                                        <feGaussianBlur stdDeviation="7" result="blur2"/>
-                                        <feMerge>
-                                            <feMergeNode in="blur2"/>
-                                            <feMergeNode in="blur1"/>
-                                            <feMergeNode in="SourceGraphic"/>
-                                        </feMerge>
-                                    </filter>
-                                </defs>
-
-                                <!-- Walking Legs -->
-                                <g class="scorp-legs-group">
-                                    <g class="scorp-leg-pair l1">
-                                        <path d="M90 92 Q68 85 52 98 Q40 108 34 122" stroke="#38BDF8" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.85"/>
-                                        <circle cx="34" cy="122" r="2" fill="#00F0FF"/>
-                                    </g>
-                                    <g class="scorp-leg-pair l2">
-                                        <path d="M88 102 Q64 98 48 114 Q36 126 30 140" stroke="#3B82F6" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.85"/>
-                                        <circle cx="30" cy="140" r="2" fill="#38BDF8"/>
-                                    </g>
-                                    <g class="scorp-leg-pair l3">
-                                        <path d="M88 112 Q66 112 52 128 Q42 142 38 156" stroke="#2563EB" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.85"/>
-                                        <circle cx="38" cy="156" r="2" fill="#818CF8"/>
-                                    </g>
-                                    <g class="scorp-leg-pair l4">
-                                        <path d="M90 120 Q72 126 62 144 Q54 158 52 170" stroke="#1D4ED8" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.85"/>
-                                        <circle cx="52" cy="170" r="2" fill="#A855F7"/>
-                                    </g>
-
-                                    <g class="scorp-leg-pair r1">
-                                        <path d="M130 92 Q152 85 168 98 Q180 108 186 122" stroke="#38BDF8" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.85"/>
-                                        <circle cx="186" cy="122" r="2" fill="#00F0FF"/>
-                                    </g>
-                                    <g class="scorp-leg-pair r2">
-                                        <path d="M132 102 Q156 98 172 114 Q184 126 190 140" stroke="#3B82F6" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.85"/>
-                                        <circle cx="190" cy="140" r="2" fill="#38BDF8"/>
-                                    </g>
-                                    <g class="scorp-leg-pair r3">
-                                        <path d="M132 112 Q154 112 168 128 Q178 142 182 156" stroke="#2563EB" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.85"/>
-                                        <circle cx="182" cy="156" r="2" fill="#818CF8"/>
-                                    </g>
-                                    <g class="scorp-leg-pair r4">
-                                        <path d="M130 120 Q148 126 158 144 Q166 158 168 170" stroke="#1D4ED8" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.85"/>
-                                        <circle cx="168" cy="170" r="2" fill="#A855F7"/>
-                                    </g>
-                                </g>
-
-                                <!-- Body Plates -->
-                                <g class="scorp-body">
-                                    <path d="M94 134 Q110 138 126 134 L123 144 Q110 148 97 144 Z" fill="#0B192C" stroke="#38BDF8" stroke-width="1.5"/>
-                                    <path d="M92 124 Q110 129 128 124 L126 133 Q110 137 94 133 Z" fill="#0E2442" stroke="#38BDF8" stroke-width="1.5"/>
-                                    <path d="M90 114 Q110 119 130 114 L128 123 Q110 127 92 123 Z" fill="#13335C" stroke="#00F0FF" stroke-width="1.5"/>
-                                    <path d="M88 104 Q110 109 132 104 L130 113 Q110 117 90 113 Z" fill="#184275" stroke="#38BDF8" stroke-width="1.5"/>
-                                    <path d="M86 94 Q110 99 134 94 L132 103 Q110 107 88 103 Z" fill="#1C4F8C" stroke="#00F0FF" stroke-width="1.8"/>
-
-                                    <path d="M88 94 Q110 74 132 94 L130 74 Q110 66 90 74 Z" fill="url(#scorpCarapace)" stroke="#00F0FF" stroke-width="2" filter="url(#neonGlowClaw)"/>
-                                    <line x1="110" y1="72" x2="110" y2="140" stroke="#00F0FF" stroke-width="2" stroke-dasharray="3 2" opacity="0.9"/>
-
-                                    <!-- Eyes -->
-                                    <circle class="scorp-eye-l" cx="106" cy="74" r="2.2" fill="#FF0055" filter="url(#stingerPlasma)"/>
-                                    <circle class="scorp-eye-r" cx="114" cy="74" r="2.2" fill="#FF0055" filter="url(#stingerPlasma)"/>
-                                    <circle cx="103" cy="78" r="1.4" fill="#00F0FF"/>
-                                    <circle cx="117" cy="78" r="1.4" fill="#00F0FF"/>
-                                </g>
-
-                                <!-- Left Claw -->
-                                <g class="scorp-claw-left" filter="url(#neonGlowClaw)">
-                                    <path d="M90 80 Q70 65 54 52" stroke="#38BDF8" stroke-width="4.5" fill="none" stroke-linecap="round"/>
-                                    <path d="M54 52 Q42 42 36 34" stroke="url(#scorpClawGrad)" stroke-width="5" fill="none" stroke-linecap="round"/>
-                                    <circle cx="54" cy="52" r="3.5" fill="#8B5CF6"/>
-                                    <ellipse cx="32" cy="28" rx="8" ry="11" transform="rotate(-30 32 28)" fill="url(#scorpClawGrad)" stroke="#00F0FF" stroke-width="1.5"/>
-                                    <path d="M26 22 Q22 10 30 2" stroke="#00F0FF" stroke-width="3" fill="none" stroke-linecap="round"/>
-                                    <path class="scorp-jaw-l" d="M36 20 Q40 8 32 2" stroke="#EC4899" stroke-width="2.8" fill="none" stroke-linecap="round"/>
-                                    <circle cx="31" cy="2" r="1.8" fill="#00F0FF"/>
-                                </g>
-
-                                <!-- Right Claw -->
-                                <g class="scorp-claw-right" filter="url(#neonGlowClaw)">
-                                    <path d="M130 80 Q150 65 166 52" stroke="#38BDF8" stroke-width="4.5" fill="none" stroke-linecap="round"/>
-                                    <path d="M166 52 Q178 42 184 34" stroke="url(#scorpClawGrad)" stroke-width="5" fill="none" stroke-linecap="round"/>
-                                    <circle cx="166" cy="52" r="3.5" fill="#8B5CF6"/>
-                                    <ellipse cx="188" cy="28" rx="8" ry="11" transform="rotate(30 188 28)" fill="url(#scorpClawGrad)" stroke="#00F0FF" stroke-width="1.5"/>
-                                    <path d="M194 22 Q198 10 190 2" stroke="#00F0FF" stroke-width="3" fill="none" stroke-linecap="round"/>
-                                    <path class="scorp-jaw-r" d="M184 20 Q180 8 188 2" stroke="#EC4899" stroke-width="2.8" fill="none" stroke-linecap="round"/>
-                                    <circle cx="189" cy="2" r="1.8" fill="#00F0FF"/>
-                                </g>
-
-                                <!-- Tail & Stinger -->
-                                <g class="scorp-tail-assembly">
-                                    <g class="scorp-tail-sway">
-                                        <ellipse cx="110" cy="148" rx="7" ry="5" fill="#1E3A8A" stroke="#38BDF8" stroke-width="1.8"/>
-                                        <ellipse cx="110" cy="158" rx="6.5" ry="4.5" fill="#2563EB" stroke="#00F0FF" stroke-width="1.8"/>
-                                        <ellipse cx="108" cy="168" rx="6" ry="4.5" fill="#3B82F6" stroke="#8B5CF6" stroke-width="1.8"/>
-                                        
-                                        <path d="M108 168 Q90 160 84 135 Q76 100 85 70 Q92 45 106 30" stroke="url(#scorpTailGrad)" stroke-width="5.5" fill="none" stroke-linecap="round"/>
-                                        <path d="M108 168 Q90 160 84 135 Q76 100 85 70 Q92 45 106 30" stroke="#00F0FF" stroke-width="1.5" stroke-dasharray="3 3" fill="none"/>
-
-                                        <circle cx="84" cy="135" r="4.5" fill="#2563EB" stroke="#00F0FF" stroke-width="1.5"/>
-                                        <circle cx="80" cy="100" r="4.2" fill="#4F46E5" stroke="#8B5CF6" stroke-width="1.5"/>
-                                        <circle cx="88" cy="65" r="4" fill="#7C3AED" stroke="#EC4899" stroke-width="1.5"/>
-                                        <circle cx="98" cy="42" r="3.8" fill="#A855F7" stroke="#00F0FF" stroke-width="1.5"/>
-
-                                        <ellipse cx="108" cy="28" rx="7.5" ry="6" fill="#C026D3" stroke="#00F0FF" stroke-width="2" filter="url(#stingerPlasma)"/>
-                                        <path class="scorp-stinger-needle" d="M114 26 Q126 24 130 34" stroke="#00F0FF" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#stingerPlasma)"/>
-                                        <circle class="scorp-venom-flare" cx="130" cy="34" r="5" fill="url(#venomGlow)" filter="url(#stingerPlasma)"/>
-                                        <line class="scorp-venom-spark" x1="130" y1="34" x2="136" y2="40" stroke="#00F0FF" stroke-width="2" stroke-linecap="round"/>
-                                    </g>
-                                </g>
-                            </svg>
-                        </div>
-
-                        <!-- 2. CYBER SPIDER SENTINEL -->
-                        <div class="cyber-creature-wrap" id="spiderSentinel" style="display:none;" title="Cyber Spider Sentinel Active — Click to Alternate" onclick="toggleSentinelMode()">
-                            <div class="creature-ambient-aura"></div>
-                            <svg class="cyber-creature-svg" viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <linearGradient id="spiderBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stop-color="#00F0FF"/>
-                                        <stop offset="50%" stop-color="#4F46E5"/>
-                                        <stop offset="100%" stop-color="#0B132B"/>
-                                    </linearGradient>
-
-                                    <linearGradient id="spiderAbdomenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stop-color="#1E1B4B"/>
-                                        <stop offset="40%" stop-color="#6366F1"/>
-                                        <stop offset="70%" stop-color="#A855F7"/>
-                                        <stop offset="100%" stop-color="#EC4899"/>
-                                    </linearGradient>
-
-                                    <linearGradient id="spiderLegGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stop-color="#00F0FF"/>
-                                        <stop offset="50%" stop-color="#3B82F6"/>
-                                        <stop offset="100%" stop-color="#8B5CF6"/>
-                                    </linearGradient>
-
-                                    <radialGradient id="spiderWebGlow" cx="50%" cy="50%" r="50%">
-                                        <stop offset="0%" stop-color="rgba(56, 189, 248, 0.25)"/>
-                                        <stop offset="70%" stop-color="rgba(99, 102, 241, 0.08)"/>
-                                        <stop offset="100%" stop-color="transparent"/>
-                                    </radialGradient>
-                                </defs>
-
-                                <!-- Glowing Hex Web Radar -->
-                                <g class="spider-web-bg" opacity="0.45">
-                                    <line x1="110" y1="90" x2="20" y2="20" stroke="#38BDF8" stroke-width="1" stroke-dasharray="2 3"/>
-                                    <line x1="110" y1="90" x2="200" y2="20" stroke="#38BDF8" stroke-width="1" stroke-dasharray="2 3"/>
-                                    <line x1="110" y1="90" x2="20" y2="160" stroke="#38BDF8" stroke-width="1" stroke-dasharray="2 3"/>
-                                    <line x1="110" y1="90" x2="200" y2="160" stroke="#38BDF8" stroke-width="1" stroke-dasharray="2 3"/>
-                                    <polygon points="110,45 155,68 155,112 110,135 65,112 65,68" fill="none" stroke="#6366F1" stroke-width="1.2" opacity="0.6"/>
-                                    <polygon points="110,25 180,58 180,122 110,155 40,122 40,58" fill="none" stroke="#38BDF8" stroke-width="1" opacity="0.4"/>
-                                </g>
-
-                                <!-- 8 Articulated Robotic Legs -->
-                                <g class="spider-legs-group">
-                                    <g class="spider-leg sl1">
-                                        <path d="M96 74 Q68 40 45 44 Q30 48 18 68" stroke="url(#spiderLegGrad)" stroke-width="3" fill="none" stroke-linecap="round"/>
-                                        <circle cx="45" cy="44" r="3" fill="#00F0FF"/>
-                                        <circle cx="18" cy="68" r="2" fill="#EC4899"/>
-                                    </g>
-                                    <g class="spider-leg sl2">
-                                        <path d="M94 82 Q60 62 38 78 Q22 92 12 114" stroke="url(#spiderLegGrad)" stroke-width="3" fill="none" stroke-linecap="round"/>
-                                        <circle cx="38" cy="78" r="3" fill="#00F0FF"/>
-                                        <circle cx="12" cy="114" r="2" fill="#EC4899"/>
-                                    </g>
-                                    <g class="spider-leg sl3">
-                                        <path d="M94 92 Q62 98 42 118 Q28 135 22 154" stroke="url(#spiderLegGrad)" stroke-width="3" fill="none" stroke-linecap="round"/>
-                                        <circle cx="42" cy="118" r="3" fill="#8B5CF6"/>
-                                        <circle cx="22" cy="154" r="2" fill="#00F0FF"/>
-                                    </g>
-                                    <g class="spider-leg sl4">
-                                        <path d="M96 100 Q72 124 55 145 Q44 162 40 174" stroke="url(#spiderLegGrad)" stroke-width="3" fill="none" stroke-linecap="round"/>
-                                        <circle cx="55" cy="145" r="3" fill="#8B5CF6"/>
-                                        <circle cx="40" cy="174" r="2" fill="#00F0FF"/>
-                                    </g>
-
-                                    <g class="spider-leg sr1">
-                                        <path d="M124 74 Q152 40 175 44 Q190 48 202 68" stroke="url(#spiderLegGrad)" stroke-width="3" fill="none" stroke-linecap="round"/>
-                                        <circle cx="175" cy="44" r="3" fill="#00F0FF"/>
-                                        <circle cx="202" cy="68" r="2" fill="#EC4899"/>
-                                    </g>
-                                    <g class="spider-leg sr2">
-                                        <path d="M126 82 Q160 62 182 78 Q198 92 208 114" stroke="url(#spiderLegGrad)" stroke-width="3" fill="none" stroke-linecap="round"/>
-                                        <circle cx="182" cy="78" r="3" fill="#00F0FF"/>
-                                        <circle cx="208" cy="114" r="2" fill="#EC4899"/>
-                                    </g>
-                                    <g class="spider-leg sr3">
-                                        <path d="M126 92 Q158 98 178 118 Q192 135 198 154" stroke="url(#spiderLegGrad)" stroke-width="3" fill="none" stroke-linecap="round"/>
-                                        <circle cx="178" cy="118" r="3" fill="#8B5CF6"/>
-                                        <circle cx="198" cy="154" r="2" fill="#00F0FF"/>
-                                    </g>
-                                    <g class="spider-leg sr4">
-                                        <path d="M124 100 Q148 124 165 145 Q176 162 180 174" stroke="url(#spiderLegGrad)" stroke-width="3" fill="none" stroke-linecap="round"/>
-                                        <circle cx="165" cy="145" r="3" fill="#8B5CF6"/>
-                                        <circle cx="180" cy="174" r="2" fill="#00F0FF"/>
-                                    </g>
-                                </g>
-
-                                <!-- Abdomen -->
-                                <g class="spider-abdomen">
-                                    <ellipse cx="110" cy="122" rx="22" ry="28" fill="url(#spiderAbdomenGrad)" stroke="#00F0FF" stroke-width="2"/>
-                                    <path class="spider-core-emblem" d="M102 110 L118 110 L104 134 L116 134 Z" fill="#00F0FF" opacity="0.95"/>
-                                    <line x1="110" y1="100" x2="110" y2="145" stroke="#EC4899" stroke-width="2" stroke-dasharray="3 2"/>
-                                    <path d="M92 120 Q110 128 128 120" stroke="#00F0FF" stroke-width="1.5" fill="none" opacity="0.7"/>
-                                    <path d="M96 132 Q110 138 124 132" stroke="#38BDF8" stroke-width="1.5" fill="none" opacity="0.7"/>
-                                </g>
-
-                                <!-- Cephalothorax -->
-                                <g class="spider-cephalothorax">
-                                    <ellipse cx="110" cy="85" rx="16" ry="14" fill="url(#spiderBodyGrad)" stroke="#00F0FF" stroke-width="2"/>
-                                    
-                                    <!-- 8 Cyber Eyes -->
-                                    <g class="spider-eyes">
-                                        <circle class="spider-eye-main" cx="106" cy="78" r="3" fill="#00F0FF"/>
-                                        <circle class="spider-eye-main" cx="114" cy="78" r="3" fill="#00F0FF"/>
-                                        <circle cx="106" cy="78" r="1.2" fill="#FFFFFF"/>
-                                        <circle cx="114" cy="78" r="1.2" fill="#FFFFFF"/>
-                                        <circle cx="100" cy="77" r="2" fill="#FF0055"/>
-                                        <circle cx="120" cy="77" r="2" fill="#FF0055"/>
-                                        <circle cx="102" cy="84" r="1.8" fill="#10B981"/>
-                                        <circle cx="118" cy="84" r="1.8" fill="#10B981"/>
-                                        <circle cx="107" cy="85" r="1.5" fill="#F59E0B"/>
-                                        <circle cx="113" cy="85" r="1.5" fill="#F59E0B"/>
-                                    </g>
-
-                                    <!-- Fangs & Venom -->
-                                    <g class="spider-fangs">
-                                        <path class="spider-fang-l" d="M104 94 Q100 102 103 108" stroke="#10B981" stroke-width="3" fill="none" stroke-linecap="round"/>
-                                        <path class="spider-fang-r" d="M116 94 Q120 102 117 108" stroke="#10B981" stroke-width="3" fill="none" stroke-linecap="round"/>
-                                        <circle class="spider-venom-drop l" cx="103" cy="108" r="2.5" fill="#10B981"/>
-                                        <circle class="spider-venom-drop r" cx="117" cy="108" r="2.5" fill="#10B981"/>
-                                    </g>
-
-                                    <!-- Pedipalps -->
-                                    <g class="spider-palps">
-                                        <path d="M100 86 Q92 76 90 70" stroke="#00F0FF" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                                        <path d="M120 86 Q128 76 130 70" stroke="#00F0FF" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                                        <circle cx="90" cy="70" r="1.8" fill="#EC4899"/>
-                                        <circle cx="130" cy="70" r="1.8" fill="#EC4899"/>
-                                    </g>
-                                </g>
-                            </svg>
-                        </div>
+                    <div class="avatar-container">
+                        <div class="avatar-glow-ring"></div>
+                        <img src="assets/img/Joash.jpeg" alt="Administrator" class="avatar-img" onerror="this.src='../assets/img/profile.png'">
+                        <div class="status-dot"></div>
                     </div>
-<h1 class="brand-title">Admin <span>Portal</span></h1>
+                    <h1 class="brand-title">Admin <span>Portal</span></h1>
                     <div class="portal-badge">
                         <span class="badge-pulse"></span>
                         <span id="portalBadgeText">Portfolio Management System</span>
@@ -2775,36 +1883,6 @@
             btn.disabled = false;
             btn.querySelector('span').textContent = 'Update Password & Sign In';
         }
-    }
-
-    
-    // ==========================================================================
-    // CYBER SENTINEL CONTROLLER: CYBER SCORPION & NEON SPIDER
-    // ==========================================================================
-    let currentSentinel = 'scorpion';
-
-    function setSentinelMode(mode) {
-        currentSentinel = mode;
-        const scorpEl = document.getElementById('scorpSentinel');
-        const spiderEl = document.getElementById('spiderSentinel');
-        const btnScorp = document.getElementById('btnScorpMode');
-        const btnSpider = document.getElementById('btnSpiderMode');
-
-        if (mode === 'spider') {
-            if (scorpEl) scorpEl.style.display = 'none';
-            if (spiderEl) spiderEl.style.display = 'flex';
-            btnScorp?.classList.remove('active');
-            btnSpider?.classList.add('active');
-        } else {
-            if (spiderEl) spiderEl.style.display = 'none';
-            if (scorpEl) scorpEl.style.display = 'flex';
-            btnSpider?.classList.remove('active');
-            btnScorp?.classList.add('active');
-        }
-    }
-
-    function toggleSentinelMode() {
-        setSentinelMode(currentSentinel === 'scorpion' ? 'spider' : 'scorpion');
     }
 
     window.addEventListener('hashchange', checkForResetToken);
