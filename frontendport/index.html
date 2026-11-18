@@ -1,8 +1,13 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#060b14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="assets/img/profile.png">
     <meta name="description" content="Professional portfolio of a Diploma in Computer Science student specializing in Java Spring Boot, full-stack web development, and Microsoft SQL Server databases.">
     <meta name="author" content="Joash Odiwuor">
     <meta name="api-base-url" content="https://joash-portfolio-backend.onrender.com">
@@ -24,19 +29,20 @@
     <link rel="stylesheet" href="assets/css/responsive.css">
 </head>
 <body>
+    <a href="#main" class="skip-link">Skip to main content</a>
 
     <!-- ================= HEADER & NAVIGATION ================= -->
     <header>
         <nav class="navbar">
             <a href="#home" class="logo">
-                <img src="assets/img/profile.png" alt="Joash Odiwuor" class="logo-avatar" onerror="this.src='assets/img/Joash.jpeg'">
+                <img src="assets/img/profile.png" alt="Joash Odiwuor" class="logo-avatar" width="40" height="40" onerror="this.src='assets/img/Joash.jpeg'">
                 <span id="brandName">Joash Odiwuor</span>
                 <span class="logo-dot">.</span>
             </a>
 
-            <button class="menu-toggle" aria-label="Toggle navigation menu">☰</button>
+            <button class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primaryNav">☰</button>
 
-            <ul class="nav-links">
+            <ul class="nav-links" id="primaryNav">
                 <li><a href="#home" class="active"><span class="nav-icon">🏠</span>Home</a></li>
                 <li><a href="#about"><span class="nav-icon">👤</span>About</a></li>
                 <li><a href="#skills"><span class="nav-icon">⚡</span>Skills</a></li>
@@ -52,6 +58,7 @@
         </nav>
     </header>
 
+    <main id="main">
     <!-- ================= HERO SECTION ================= -->
     <section id="home" class="hero">
         <div class="hero-content">
@@ -407,6 +414,8 @@
         </div>
     </div>
 
+    </main>
+
     <!-- ================= FOOTER ================= -->
     <footer class="site-footer">
         <div class="footer-top">
@@ -508,5 +517,15 @@
     <!-- Scripts -->
     <script src="assets/js/api.js"></script>
     <script src="assets/js/main.js"></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('./sw.js', { scope: './' })
+                    .then(function(reg) { console.log('[PWA] SW registered:', reg.scope); })
+                    .catch(function(err) { console.warn('[PWA] SW registration failed:', err); });
+            });
+        }
+    </script>
 </body>
 </html>

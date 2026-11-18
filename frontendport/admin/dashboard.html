@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#040810">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../assets/img/profile.png">
     <meta name="api-base-url" content="https://joash-portfolio-backend.onrender.com">
     <title>Administrator Dashboard | Portfolio Management System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,6 +29,7 @@
                 <strong>Admin Portal</strong>
                 <span>Portfolio System</span>
             </div>
+            <button class="sidebar-close-btn" onclick="closeSidebar()" aria-label="Close menu" title="Close sidebar">✕</button>
         </div>
 
         <!-- Admin profile strip -->

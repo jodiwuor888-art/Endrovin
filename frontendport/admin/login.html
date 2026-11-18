@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#030712">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../assets/img/profile.png">
     <meta name="api-base-url" content="https://joash-portfolio-backend.onrender.com">
     <title>Administrator Portal | Secure Login</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -882,22 +887,103 @@
         }
 
         /* ==========================================================================
-           RESPONSIVE ADJUSTMENTS
+           RESPONSIVE & CROSS-PLATFORM ADJUSTMENTS
            ========================================================================== */
+        *, *::before, *::after {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: max(1.5rem, env(safe-area-inset-top, 0px)) max(1rem, env(safe-area-inset-right, 0px)) max(1.5rem, env(safe-area-inset-bottom, 0px)) max(1rem, env(safe-area-inset-left, 0px));
+        }
+
+        .btn-submit,
+        .btn-subtle,
+        .method-btn,
+        .toggle-password {
+            touch-action: manipulation;
+            min-height: 44px;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .form-control,
+            input[type="text"],
+            input[type="password"],
+            input[type="email"] {
+                font-size: 16px !important; /* Prevents iOS Safari auto-zoom on input focus */
+            }
+        }
+
         @media (max-width: 480px) {
             body {
-                padding: 1rem 0.75rem;
+                padding: max(1rem, env(safe-area-inset-top, 0px)) 0.75rem max(1rem, env(safe-area-inset-bottom, 0px));
+            }
+            .login-card {
+                border-radius: 18px;
             }
             .card-body {
-                padding: 1.85rem 1.4rem;
+                padding: 1.5rem 1.15rem;
             }
             .brand-title {
-                font-size: 1.45rem;
+                font-size: 1.35rem;
+            }
+            .brand-subtitle {
+                font-size: 0.78rem;
+            }
+            .method-selector {
+                gap: 0.35rem;
+            }
+            .method-btn {
+                font-size: 0.8rem;
+                padding: 0.65rem 0.5rem;
+            }
+            .fingerprint-scanner-box {
+                width: 100px;
+                height: 100px;
+            }
+            .scanner-core {
+                width: 80px;
+                height: 80px;
+            }
+            .fingerprint-svg {
+                width: 44px;
+                height: 44px;
             }
             .trust-badges {
                 flex-direction: column;
                 align-items: center;
                 gap: 0.4rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .card-body {
+                padding: 1.25rem 0.85rem;
+            }
+            .brand-title {
+                font-size: 1.2rem;
+            }
+            .method-btn {
+                font-size: 0.74rem;
+                padding: 0.6rem 0.35rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .laser-sweep, .laser-stripe, .ambient-orb {
+                animation: none !important;
             }
         }
     </style>
@@ -1217,27 +1303,80 @@
     let isEnrollmentMode = false;
     let pendingLoginToken = null;
 
+    // Cross-Platform Device & Biometric Capability Detector
+    function getDeviceAuthInfo() {
+        const ua = navigator.userAgent;
+        const isWindows = /Windows/i.test(ua);
+        const isIOS = /iPhone|iPad|iPod/i.test(ua);
+        const isMac = /Macintosh|Mac OS X/i.test(ua) && !isIOS;
+        const isAndroid = /Android/i.test(ua);
+
+        if (isWindows) {
+            return {
+                platform: 'windows',
+                name: 'Lenovo / Windows Hello Fingerprint Sensor',
+                tabLabel: 'Fingerprint Login',
+                prompt: 'Touch Your Fingerprint Sensor',
+                sub: 'Windows Hello is active on this PC. Touch your laptop sensor to authenticate.',
+                btnText: 'Verify with Sensor',
+                registerPrompt: 'Touch Sensor to Register This PC'
+            };
+        } else if (isIOS) {
+            return {
+                platform: 'ios',
+                name: 'Apple Face ID / Touch ID',
+                tabLabel: 'Face / Touch ID',
+                prompt: 'Authenticate with Face ID / Touch ID',
+                sub: 'Use your Apple biometric sensor or device passcode to authenticate.',
+                btnText: 'Verify with Face ID / Touch ID',
+                registerPrompt: 'Link Face ID / Touch ID'
+            };
+        } else if (isMac) {
+            return {
+                platform: 'mac',
+                name: 'macOS Touch ID / Apple Passkey',
+                tabLabel: 'Touch ID Login',
+                prompt: 'Touch Your Mac Touch ID Sensor',
+                sub: 'Touch ID / Apple Passkey is active on your Mac.',
+                btnText: 'Verify with Touch ID',
+                registerPrompt: 'Register Mac Touch ID'
+            };
+        } else if (isAndroid) {
+            return {
+                platform: 'android',
+                name: 'Android Biometric / Fingerprint Sensor',
+                tabLabel: 'Fingerprint Login',
+                prompt: 'Touch Your Fingerprint Sensor',
+                sub: 'Touch your device fingerprint sensor or confirm system prompt.',
+                btnText: 'Verify with Fingerprint',
+                registerPrompt: 'Register Android Sensor'
+            };
+        }
+        return {
+            platform: 'generic',
+            name: 'Device Biometric Authenticator',
+            tabLabel: 'Biometric Login',
+            prompt: 'Verify with Device Biometrics',
+            sub: 'Touch your device sensor or confirm system security prompt.',
+            btnText: 'Verify Biometrics',
+            registerPrompt: 'Register Device Biometrics'
+        };
+    }
+
     // Detect internal device biometric hardware on load
     document.addEventListener('DOMContentLoaded', async () => {
         const badge = document.getElementById('sensorStatusBadge');
         const text  = document.getElementById('sensorStatusText');
-        const isWindows = /Windows/i.test(navigator.userAgent);
-        const isMobile  = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
+        const dev   = getDeviceAuthInfo();
+
+        const tabPasskeyLabel = document.getElementById('tabPasskeyLabel');
+        if (tabPasskeyLabel) tabPasskeyLabel.textContent = dev.tabLabel;
 
         if (typeof isPlatformFingerprintAvailable === 'function') {
             const hasSensor = await isPlatformFingerprintAvailable();
             if (hasSensor) {
                 badge.className = 'hardware-pill';
-                text.textContent = isWindows
-                    ? 'Lenovo Fingerprint Sensor (Windows Hello) Active'
-                    : (isMobile ? 'Phone Fingerprint Sensor Active' : 'Device Biometric Authenticator Active');
-
-                const btnSpan = document.getElementById('directPasskeyBtn')?.querySelector('span');
-                if (btnSpan) {
-                    btnSpan.textContent = isWindows
-                        ? 'Sign in with Lenovo Fingerprint Sensor'
-                        : (isMobile ? 'Sign in with Phone Fingerprint' : 'Sign in with Device Biometrics');
-                }
+                text.textContent = `${dev.name} Active`;
             } else {
                 badge.className = 'hardware-pill unavailable';
                 text.textContent = 'Biometric Authenticator Ready';
@@ -1272,6 +1411,8 @@
         pnlRst?.classList.add('hidden');
         hideAlert();
 
+        const dev = getDeviceAuthInfo();
+
         if (method === 'passkey') {
             tabPwd?.classList.remove('active');
             tabFp?.classList.add('active');
@@ -1296,14 +1437,11 @@
             const fpTitle = document.getElementById('fpTitle');
             const fpSubtitle = document.getElementById('fpSubtitle');
             const fpBtn = document.getElementById('fpBtn');
-            const isWindows = /Windows/i.test(navigator.userAgent);
-            if (fpTitle) fpTitle.textContent = isWindows ? 'Touch Your Lenovo Fingerprint Sensor' : 'Touch Device Fingerprint';
-            if (fpSubtitle) fpSubtitle.textContent = isWindows
-                ? 'Enter your username above, then touch your laptop\'s built-in fingerprint sensor.'
-                : 'Enter your username above, then touch your phone\'s fingerprint sensor.';
+            if (fpTitle) fpTitle.textContent = dev.prompt;
+            if (fpSubtitle) fpSubtitle.textContent = dev.sub;
             if (fpBtn) {
                 fpBtn.disabled = false;
-                fpBtn.querySelector('span').textContent = isWindows ? 'Touch Sensor to Sign In' : 'Touch Fingerprint to Sign In';
+                fpBtn.querySelector('span').textContent = dev.btnText;
             }
             document.getElementById('btnSkipEnroll') && (document.getElementById('btnSkipEnroll').style.display = 'none');
             setScannerState('idle');
@@ -1339,22 +1477,17 @@
         if (initialEl) initialEl.textContent = initial;
         if (userEl) userEl.textContent = username || 'Administrator';
 
-        const isWindows = /Windows/i.test(navigator.userAgent);
-        const isMobile  = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
+        const dev = getDeviceAuthInfo();
 
         if (isEnrollmentMode) {
-            document.getElementById('fpTitle').textContent = isWindows ? 'Link Your Lenovo Fingerprint Sensor' : 'Link Device Fingerprint';
-            document.getElementById('fpSubtitle').textContent = isWindows
-                ? 'Touch the sensor on your laptop keyboard/deck to register this machine independently.'
-                : 'Touch your phone\'s fingerprint sensor to register this device independently.';
-            document.getElementById('fpBtn').querySelector('span').textContent = 'Touch Sensor to Register';
+            document.getElementById('fpTitle').textContent = `Link Your ${dev.tabLabel}`;
+            document.getElementById('fpSubtitle').textContent = `Touch the sensor on this device to enroll it independently.`;
+            document.getElementById('fpBtn').querySelector('span').textContent = dev.registerPrompt;
             document.getElementById('btnSkipEnroll').style.display = 'flex';
         } else {
-            document.getElementById('fpTitle').textContent = isWindows ? 'Touch Your Lenovo Fingerprint Sensor' : 'Touch Device Fingerprint';
-            document.getElementById('fpSubtitle').textContent = isWindows
-                ? 'Windows Hello is active on this laptop. Touch the sensor to authenticate.'
-                : 'Touch your phone\'s fingerprint sensor to authenticate directly.';
-            document.getElementById('fpBtn').querySelector('span').textContent = 'Verify with Sensor';
+            document.getElementById('fpTitle').textContent = dev.prompt;
+            document.getElementById('fpSubtitle').textContent = dev.sub;
+            document.getElementById('fpBtn').querySelector('span').textContent = dev.btnText;
             document.getElementById('btnSkipEnroll').style.display = 'none';
         }
 
@@ -1365,12 +1498,13 @@
         const scanner = document.getElementById('fpScanner');
         const title = document.getElementById('fpTitle');
         const desc  = document.getElementById('fpSubtitle');
+        const dev   = getDeviceAuthInfo();
 
         scanner.className = 'fingerprint-scanner-box';
         if (state === 'scanning') {
             scanner.classList.add('scanning');
-            title.textContent = isEnrollmentMode ? 'Sensor Active... Touch Now' : 'Scanning... Touch Lenovo Sensor';
-            desc.textContent = 'Keep your finger steady on the laptop sensor. Windows Hello is authenticating.';
+            title.textContent = isEnrollmentMode ? 'Sensor Active... Touch Now' : `Scanning... ${dev.btnText}`;
+            desc.textContent = 'Keep your finger steady on the sensor. Biometric authentication in progress.';
         } else if (state === 'success') {
             scanner.classList.add('success');
             title.textContent = isEnrollmentMode ? 'Sensor Linked Successfully!' : 'Identity Confirmed!';

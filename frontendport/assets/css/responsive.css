@@ -1,51 +1,195 @@
 /* ==========================================================================
-   RESPONSIVE DESIGN RULES (Mobile, Tablet, Desktop)
+   CROSS-PLATFORM RESPONSIVE DESIGN RULES v4.0
+   Mobile-First · Android · iOS/iPadOS · Windows · macOS · Touch & Accessibility
+   Theme: Cyber Sapphire & Neon Glassmorphism (Preserving Dark Navy #060b14)
    ========================================================================== */
 
-/* Clean desktop navbar spacing for 1025px - 1200px */
-@media (min-width: 1025px) and (max-width: 1200px) {
-    .nav-links a {
-        font-size: 0.80rem;
-        padding: 0.4rem 0.5rem;
+/* --------------------------------------------------------------------------
+   0. CROSS-PLATFORM BASE NORMALIZATION & ACCESSIBILITY
+   -------------------------------------------------------------------------- */
+
+:root {
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --min-touch-target: 44px;
+}
+
+/* iOS tap highlight removal & smooth touch response */
+*, *::before, *::after {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent horizontal overflow strictly on all screens */
+html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+/* Support Dynamic Viewport Units for mobile address bars */
+body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+}
+
+/* Touch targets: min 44px x 44px for accessibility (WCAG 2.2 AA) */
+button,
+a.btn,
+.nav-links a,
+.menu-toggle,
+.social-icon,
+.filter-btn,
+.sidebar-toggle,
+.btn-admin {
+    touch-action: manipulation;
+    min-height: var(--min-touch-target);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Visible accessible focus indicator */
+:focus-visible {
+    outline: 2px solid var(--accent-electric, #38bdf8);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* Accessible skip-link for keyboard & screen reader navigation */
+.skip-link {
+    position: absolute;
+    top: -100px;
+    left: 1rem;
+    background: var(--accent-electric, #38bdf8);
+    color: #040810;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 700;
+    z-index: 99999;
+    text-decoration: none;
+    transition: top 0.2s ease;
+}
+.skip-link:focus {
+    top: 1rem;
+}
+
+/* Fluid responsive typography */
+h1, .hero-content h1 {
+    font-size: clamp(2rem, 5.5vw + 0.5rem, 3.8rem);
+    line-height: 1.15;
+    word-break: break-word;
+}
+h2, .section-title h2 {
+    font-size: clamp(1.5rem, 4vw + 0.3rem, 2.6rem);
+    line-height: 1.25;
+    word-break: break-word;
+}
+h3 {
+    font-size: clamp(1.2rem, 2.5vw + 0.3rem, 1.85rem);
+    line-height: 1.3;
+}
+p {
+    font-size: clamp(0.9rem, 1.2vw + 0.5rem, 1.05rem);
+}
+
+/* --------------------------------------------------------------------------
+   1. LARGE DESKTOPS & HIGH-RESOLUTION MONITORS (>= 1440px)
+   -------------------------------------------------------------------------- */
+@media (min-width: 1440px) {
+    .navbar,
+    .hero,
+    .section-container,
+    .footer-container {
+        max-width: 1380px;
+        margin-left: auto;
+        margin-right: auto;
     }
-    .nav-links {
-        gap: 0.1rem;
+    .projects-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
     }
 }
 
-/* Tablet & Mobile Navigation Breakpoint (<= 1024px) */
+/* --------------------------------------------------------------------------
+   2. STANDARD LAPTOPS & DESKTOPS (1025px - 1439px)
+   -------------------------------------------------------------------------- */
+@media (min-width: 1025px) and (max-width: 1280px) {
+    .nav-links a {
+        font-size: 0.82rem;
+        padding: 0.4rem 0.55rem;
+    }
+    .nav-links {
+        gap: 0.15rem;
+    }
+    .hero {
+        padding: 4rem 1.5rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   3. TABLETS & MOBILE NAVIGATION OVERLAY (<= 1024px)
+   -------------------------------------------------------------------------- */
 @media (max-width: 1024px) {
+    .navbar {
+        padding: 0.75rem 1.25rem;
+        padding-left: max(1.25rem, var(--safe-left));
+        padding-right: max(1.25rem, var(--safe-right));
+    }
+
     .menu-toggle {
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 1001;
-        position: relative;
+        width: 44px;
+        height: 44px;
+        background: rgba(11, 20, 36, 0.85);
+        border: 1px solid var(--border-color, rgba(56, 189, 248, 0.25));
+        border-radius: 10px;
+        color: var(--accent-electric, #38bdf8);
+        font-size: 1.35rem;
+        cursor: pointer;
+        z-index: 1002;
+        transition: all 0.25s ease;
+    }
+    .menu-toggle:hover,
+    .menu-toggle:focus {
+        background: rgba(56, 189, 248, 0.15);
+        border-color: var(--accent-electric, #38bdf8);
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
     }
 
+    /* Off-Canvas Mobile Navigation Drawer with Dynamic Viewport Height */
     .nav-links {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(6, 11, 20, 0.96);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        background: rgba(4, 8, 16, 0.97);
+        backdrop-filter: blur(28px);
+        -webkit-backdrop-filter: blur(28px);
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        padding: 2.5rem 1.5rem;
-        gap: 0.45rem;
+        justify-content: flex-start;
+        padding: 5.5rem 1.75rem 3rem;
+        padding-top: max(5.5rem, calc(var(--safe-top) + 4.5rem));
+        padding-bottom: max(2rem, var(--safe-bottom));
+        gap: 0.5rem;
         border: none;
         box-shadow: none;
         transform: translateX(100%);
-        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
         opacity: 0;
         pointer-events: none;
-        z-index: 999;
-        width: 100%;
+        z-index: 1000;
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .nav-links.active {
@@ -56,25 +200,32 @@
 
     .nav-links li {
         width: 100%;
-        max-width: 340px;
+        max-width: 360px;
     }
 
     .nav-links a {
-        font-size: 1rem;
-        padding: 0.70rem 1.25rem;
+        font-size: 1.05rem;
+        padding: 0.8rem 1.25rem;
         width: 100%;
-        display: block;
-        text-align: center;
-        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.65rem;
+        border-radius: 12px;
         font-weight: 500;
-        color: var(--text-secondary);
+        color: var(--text-secondary, #cbd5e1);
+        border: 1px solid transparent;
+        background: transparent;
+        transition: all 0.2s ease;
     }
 
     .nav-links a:hover,
+    .nav-links a:focus,
     .nav-links a.active {
-        background: rgba(56, 189, 248, 0.15);
-        color: var(--accent-electric) !important;
-        text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+        background: rgba(56, 189, 248, 0.12);
+        color: var(--accent-electric, #38bdf8) !important;
+        border-color: rgba(56, 189, 248, 0.25);
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
     }
 
     .nav-links a::after {
@@ -84,28 +235,69 @@
     .nav-button {
         width: 100%;
         text-align: center;
-        margin-top: 0.5rem;
-        font-size: 0.95rem !important;
-        padding: 0.75rem 1.5rem !important;
+        margin-top: 0.75rem;
+        font-size: 1rem !important;
+        padding: 0.85rem 1.5rem !important;
+        border-radius: 12px;
+    }
+
+    /* Grids on Tablets (<= 1024px) */
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    .skills-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    .education-grid, .experience-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    .certificates-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
     }
 }
 
+/* --------------------------------------------------------------------------
+   4. MEDIUM SCREENS & TABLETS (<= 992px)
+   -------------------------------------------------------------------------- */
 @media (max-width: 992px) {
     .hero {
         grid-template-columns: 1fr;
         text-align: center;
-        gap: 3rem;
-        padding-top: 3rem;
+        gap: 2.5rem;
+        padding: 3rem 1.25rem;
     }
 
     .hero-content .intro,
     .hero-description {
         margin-left: auto;
         margin-right: auto;
+        max-width: 580px;
     }
 
     .hero-buttons {
         justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+    }
+
+    .hero-image {
+        order: -1;
+        display: flex;
+        justify-content: center;
+    }
+
+    .image-circle {
+        width: clamp(200px, 42vw, 320px);
+        height: clamp(200px, 42vw, 320px);
+        margin: 0 auto;
     }
 
     .social-links {
@@ -114,15 +306,27 @@
 
     .about-container {
         grid-template-columns: 1fr;
+        gap: 2.5rem;
+        text-align: center;
     }
 
     .about-image {
-        max-width: 380px;
+        max-width: 340px;
         margin: 0 auto;
+    }
+
+    .about-content {
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+    .about-stats {
+        justify-content: center;
     }
 
     .contact-container {
         grid-template-columns: 1fr;
+        gap: 2.5rem;
     }
 
     .footer-top {
@@ -135,23 +339,60 @@
     }
 }
 
+/* --------------------------------------------------------------------------
+   5. SMARTPHONES & SMALL TABLETS (<= 768px)
+   -------------------------------------------------------------------------- */
 @media (max-width: 768px) {
+    /* Prevent iOS Safari auto-zoom on input focus: font-size must be at least 16px */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="search"],
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+
+    /* Single-column layouts on mobile */
     .form-row {
         grid-template-columns: 1fr;
+        gap: 1rem;
     }
 
     .contact-form {
-        padding: 1.5rem;
+        padding: 1.5rem 1.25rem;
+        border-radius: 16px;
     }
 
-    .image-circle {
-        width: 250px;
-        height: 250px;
+    .services-grid,
+    .projects-grid,
+    .skills-container,
+    .certificates-grid,
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
     }
 
+    /* Filter buttons wrap cleanly on mobile */
+    .project-filters {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .filter-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.88rem;
+    }
+
+    /* Mobile Footer Alignment */
     .footer-top {
         grid-template-columns: 1fr;
-        gap: 2.25rem;
+        gap: 2rem;
         text-align: center;
     }
 
@@ -208,15 +449,16 @@
     }
 
     .footer-admin-card {
-        max-width: 300px;
+        max-width: 320px;
         margin: 0 auto;
         text-align: center;
+        width: 100%;
     }
 
     .copyright, .footer-bottom {
         flex-direction: column;
         text-align: center;
-        gap: 1.25rem;
+        gap: 1rem;
     }
 
     .footer-copyright {
@@ -225,14 +467,149 @@
     }
 }
 
+/* --------------------------------------------------------------------------
+   6. SMALL SMARTPHONES (<= 480px: iPhone SE, Galaxy S, Pixel)
+   -------------------------------------------------------------------------- */
 @media (max-width: 480px) {
-    .footer-top {
-        gap: 2rem;
+    .navbar {
+        padding: 0.6rem 0.9rem;
     }
-    .footer-admin-card {
+
+    .logo-avatar {
+        width: 32px;
+        height: 32px;
+    }
+
+    #brandName {
+        font-size: 1.05rem;
+    }
+
+    .hero {
+        padding: 2.25rem 0.75rem 2rem;
+        gap: 1.75rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
         width: 100%;
     }
-    .navbar {
-        padding: 0.6rem 1rem;
+
+    .hero-buttons .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .image-circle {
+        width: 190px;
+        height: 190px;
+    }
+
+    /* Section padding on small phones */
+    section {
+        padding: 3rem 0.85rem;
+    }
+
+    .section-title {
+        margin-bottom: 2rem;
+    }
+
+    /* Cards spacing on mobile */
+    .project-card,
+    .service-card,
+    .skill-card,
+    .testimonial-card,
+    .timeline-item {
+        padding: 1.25rem 1rem;
+        border-radius: 14px;
+    }
+
+    .project-card-image {
+        height: 180px;
+    }
+
+    /* About section stats 2-col wrap */
+    .about-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+        width: 100%;
+    }
+
+    .stat-item {
+        padding: 0.85rem 0.5rem;
+        border-radius: 10px;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+    }
+
+    /* Footer adjustments */
+    .footer-top {
+        gap: 1.75rem;
+    }
+
+    .site-footer {
+        padding: 2.5rem 0.75rem 1.5rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   7. ULTRA-COMPACT SCREENS (<= 360px: Small Androids, Wearables, Foldables)
+   -------------------------------------------------------------------------- */
+@media (max-width: 360px) {
+    #brandName {
+        font-size: 0.95rem;
+    }
+
+    .hero-content h1 {
+        font-size: 1.85rem;
+    }
+
+    .image-circle {
+        width: 160px;
+        height: 160px;
+    }
+
+    .about-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.88rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   8. ACCESSIBILITY: PREFERS REDUCED MOTION
+   Respects battery saver, e-ink, and users with vestibular disorders
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    .laser-sweep,
+    .ambient-orb,
+    .avatar-glow-ring {
+        animation: none !important;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   9. HIGH-DPI / RETINA DISPLAYS (iPhone, Mac Retina, Pixel)
+   -------------------------------------------------------------------------- */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .logo-avatar,
+    .image-circle img,
+    .project-card-image img {
+        image-rendering: -webkit-optimize-contrast;
     }
 }

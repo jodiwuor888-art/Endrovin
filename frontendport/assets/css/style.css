@@ -1,4 +1,4 @@
-/* ==========================================================================
+﻿/* ==========================================================================
    PORTFOLIO MANAGEMENT SYSTEM - CORE STYLESHEET
    Design Theme: Cyber Sapphire & Neon Indigo Glassmorphism
    Ultra-attractive futuristic luxury aesthetic with glowing accents & glass depth
@@ -1884,3 +1884,14 @@ footer::before {
     color: #fff;
 }
 
+
+
+/* ============================================================
+   iOS / Mobile Safari: background-attachment:fixed is broken
+   on WebKit — switch to scroll on touch devices / mobile
+   ============================================================ */
+@media (max-width: 1024px), (hover: none) {
+    body {
+        background-attachment: scroll;
+    }
+}

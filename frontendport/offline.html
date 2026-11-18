@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#060b14">
+    <title>Offline | Joash Odiwuor Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #060b14;
+            --accent-electric: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.35);
+            --text-main: #f1f5f9;
+            --text-sub: #94a3b8;
+            --card-bg: rgba(11, 20, 36, 0.85);
+            --border: rgba(56, 189, 248, 0.2);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .offline-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .offline-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--accent-electric);
+        }
+        h1 {
+            font-size: 1.6rem;
+            margin-bottom: 0.75rem;
+            color: #fff;
+        }
+        p {
+            color: var(--text-sub);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        .btn-retry {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #0284c7, var(--accent-electric));
+            color: #040810;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.85rem 2rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 0 20px var(--accent-glow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            min-height: 44px;
+            min-width: 44px;
+        }
+        .btn-retry:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-card">
+        <div class="offline-icon" aria-hidden="true">📡</div>
+        <h1>You are Currently Offline</h1>
+        <p>It looks like you've lost your internet connection. Cached public pages remain accessible, and the full portfolio will automatically reconnect once your network is restored.</p>
+        <button class="btn-retry" onclick="checkConnection()">
+            <span>🔄 Try Reconnecting</span>
+        </button>
+    </div>
+    <script>
+        function checkConnection() {
+            if (navigator.onLine) {
+                window.location.reload();
+            } else {
+                alert('Still offline. Please check your Wi-Fi or cellular mobile data connection.');
+            }
+        }
+        window.addEventListener('online', () => {
+            window.location.reload();
+        });
+    </script>
+</body>
+</html>

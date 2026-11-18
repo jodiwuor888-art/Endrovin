@@ -1,0 +1,57 @@
+{
+  "name": "Joash Odiwuor | Computer Science & Software Developer Portfolio",
+  "short_name": "Joash Portfolio",
+  "description": "Professional Computer Science and Software Developer portfolio of Joash Odiwuor. Explore projects, engineering skills, services, and credentials.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#060b14",
+  "theme_color": "#060b14",
+  "categories": ["portfolio", "developer", "technology"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "assets/img/profile.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/img/profile.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/img/Joash.jpeg",
+      "sizes": "180x180",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Projects",
+      "short_name": "Projects",
+      "description": "View software projects and case studies",
+      "url": "./projects.html",
+      "icons": [{ "src": "assets/img/profile.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Contact Me",
+      "short_name": "Contact",
+      "description": "Send an inquiry or project proposal",
+      "url": "./contact.html",
+      "icons": [{ "src": "assets/img/profile.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "About Joash",
+      "short_name": "About",
+      "description": "Biography, education and technical background",
+      "url": "./about.html",
+      "icons": [{ "src": "assets/img/profile.png", "sizes": "96x96" }]
+    }
+  ]
+}
