@@ -1341,6 +1341,277 @@
             }
         }
 
+
+        /* ==========================================================================
+           CYBER CREATURE STAGE: SCORPION & SPIDER SENTINELS
+           ========================================================================== */
+        .cyber-creature-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.15rem;
+            position: relative;
+        }
+
+        .creature-toggle-pill {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 20px;
+            padding: 3px;
+            gap: 4px;
+            margin-bottom: 0.85rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            z-index: 2;
+        }
+
+        .creature-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted, #94a3b8);
+            font-size: 0.74rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            padding: 4px 12px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+        }
+
+        .creature-btn:hover {
+            color: #ffffff;
+            background: rgba(56, 189, 248, 0.12);
+        }
+
+        .creature-btn.active {
+            color: #ffffff;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.35) 0%, rgba(99, 102, 241, 0.35) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+        }
+
+        .cyber-creature-wrap {
+            position: relative;
+            width: 140px;
+            height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: creature-levitate 4.5s ease-in-out infinite alternate;
+        }
+
+        .cyber-creature-wrap:hover {
+            transform: scale(1.08) translateY(-4px);
+        }
+
+        .cyber-creature-wrap:active {
+            transform: scale(0.96);
+        }
+
+        @keyframes creature-levitate {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(0.6deg); }
+            100% { transform: translateY(3px) rotate(-0.6deg); }
+        }
+
+        /* Ambient Pulsing Aura */
+        .creature-ambient-aura {
+            position: absolute;
+            inset: -14px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.28) 0%, rgba(139, 92, 246, 0.18) 45%, rgba(236, 72, 153, 0.12) 70%, transparent 85%);
+            filter: blur(16px);
+            pointer-events: none;
+            z-index: 0;
+            animation: creature-aura-pulse 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes creature-aura-pulse {
+            0% { transform: scale(0.85); opacity: 0.6; filter: blur(14px) hue-rotate(0deg); }
+            50% { transform: scale(1.15); opacity: 0.95; filter: blur(18px) hue-rotate(50deg); }
+            100% { transform: scale(0.9); opacity: 0.7; filter: blur(14px) hue-rotate(100deg); }
+        }
+
+        /* SVG Creature General */
+        .cyber-creature-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.6)) drop-shadow(0 0 25px rgba(139, 92, 246, 0.4));
+            transition: filter 0.35s ease;
+        }
+
+        .cyber-creature-wrap:hover .cyber-creature-svg {
+            filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.9)) drop-shadow(0 0 35px rgba(236, 72, 153, 0.65));
+        }
+
+        /* -------------------------------------------------------------
+           SCORPION SPECIFIC ANIMATIONS
+           ------------------------------------------------------------- */
+        .scorp-tail-sway {
+            transform-origin: 110px 148px;
+            animation: scorp-tail-sway 3.2s ease-in-out infinite alternate;
+        }
+        @keyframes scorp-tail-sway {
+            0% { transform: rotate(-5deg); }
+            50% { transform: rotate(3deg); }
+            100% { transform: rotate(-3deg); }
+        }
+
+        .scorp-claw-left {
+            transform-origin: 90px 80px;
+            animation: scorp-claw-l 3.6s ease-in-out infinite alternate;
+        }
+        .scorp-claw-right {
+            transform-origin: 130px 80px;
+            animation: scorp-claw-r 3.6s ease-in-out infinite alternate 0.4s;
+        }
+        @keyframes scorp-claw-l {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(-6deg); }
+            100% { transform: rotate(3deg); }
+        }
+        @keyframes scorp-claw-r {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(6deg); }
+            100% { transform: rotate(-3deg); }
+        }
+
+        .scorp-jaw-l {
+            transform-origin: 32px 28px;
+            animation: scorp-jaw-snap-l 2.8s ease-in-out infinite;
+        }
+        .scorp-jaw-r {
+            transform-origin: 188px 28px;
+            animation: scorp-jaw-snap-r 2.8s ease-in-out infinite 0.3s;
+        }
+        @keyframes scorp-jaw-snap-l {
+            0%, 100% { transform: rotate(0deg); }
+            30% { transform: rotate(12deg); }
+            50% { transform: rotate(-4deg); }
+        }
+        @keyframes scorp-jaw-snap-r {
+            0%, 100% { transform: rotate(0deg); }
+            30% { transform: rotate(-12deg); }
+            50% { transform: rotate(4deg); }
+        }
+
+        .scorp-leg-pair.l1, .scorp-leg-pair.r3 { animation: scorp-leg-twitch 3s ease-in-out infinite alternate; }
+        .scorp-leg-pair.l2, .scorp-leg-pair.r4 { animation: scorp-leg-twitch 3.4s ease-in-out infinite alternate 0.5s; }
+        .scorp-leg-pair.l3, .scorp-leg-pair.r1 { animation: scorp-leg-twitch 2.8s ease-in-out infinite alternate 1s; }
+        .scorp-leg-pair.l4, .scorp-leg-pair.r2 { animation: scorp-leg-twitch 3.2s ease-in-out infinite alternate 1.5s; }
+        @keyframes scorp-leg-twitch {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-1.5px) scale(1.02); }
+            100% { transform: translateY(0.8px); }
+        }
+
+        .scorp-venom-flare {
+            transform-origin: 130px 34px;
+            animation: scorp-venom-pulse 2s infinite ease-in-out;
+        }
+        @keyframes scorp-venom-pulse {
+            0%, 100% { transform: scale(0.8); opacity: 0.75; filter: drop-shadow(0 0 4px #00F0FF); }
+            40% { transform: scale(1.8); opacity: 1; filter: drop-shadow(0 0 12px #10B981) drop-shadow(0 0 20px #00F0FF); }
+            70% { transform: scale(1.4); opacity: 0.9; filter: drop-shadow(0 0 16px #EC4899); }
+        }
+
+        .scorp-venom-spark {
+            animation: scorp-spark-flash 2.4s infinite ease-in-out;
+        }
+        @keyframes scorp-spark-flash {
+            0%, 85%, 100% { opacity: 0; stroke-dasharray: 2 10; }
+            88% { opacity: 1; stroke-dasharray: 6 2; stroke: #00F0FF; }
+            92% { opacity: 0.3; stroke-dasharray: 1 4; stroke: #EC4899; }
+            96% { opacity: 1; stroke-dasharray: 8 2; stroke: #10B981; }
+        }
+
+        .scorp-eye-l, .scorp-eye-r {
+            animation: scorp-eyes-pulse 2.2s infinite ease-in-out;
+        }
+        @keyframes scorp-eyes-pulse {
+            0%, 100% { opacity: 0.75; filter: drop-shadow(0 0 3px #FF0055); }
+            50% { opacity: 1; filter: drop-shadow(0 0 8px #FF0055) drop-shadow(0 0 14px #FF0055); }
+        }
+
+        /* -------------------------------------------------------------
+           SPIDER SPECIFIC ANIMATIONS
+           ------------------------------------------------------------- */
+        .spider-leg.sl1, .spider-leg.sr3 { animation: spider-step-a 3.2s ease-in-out infinite alternate; }
+        .spider-leg.sl2, .spider-leg.sr4 { animation: spider-step-b 3s ease-in-out infinite alternate 0.4s; }
+        .spider-leg.sl3, .spider-leg.sr1 { animation: spider-step-c 3.4s ease-in-out infinite alternate 0.8s; }
+        .spider-leg.sl4, .spider-leg.sr2 { animation: spider-step-d 2.8s ease-in-out infinite alternate 1.2s; }
+
+        @keyframes spider-step-a {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-3px) rotate(-1.5deg); }
+            100% { transform: translateY(1px); }
+        }
+        @keyframes spider-step-b {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(2.5px) rotate(1deg); }
+            100% { transform: translateY(-1.5px); }
+        }
+        @keyframes spider-step-c {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-2px) rotate(1.5deg); }
+            100% { transform: translateY(2px); }
+        }
+        @keyframes spider-step-d {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(2px) rotate(-1deg); }
+            100% { transform: translateY(-2px); }
+        }
+
+        .spider-core-emblem {
+            animation: spider-core-glow 2.2s ease-in-out infinite alternate;
+        }
+        @keyframes spider-core-glow {
+            0% { opacity: 0.6; filter: drop-shadow(0 0 4px #00F0FF); }
+            100% { opacity: 1; filter: drop-shadow(0 0 14px #EC4899) drop-shadow(0 0 22px #00F0FF); }
+        }
+
+        .spider-eye-main {
+            animation: spider-main-eyes 2s infinite ease-in-out;
+        }
+        @keyframes spider-main-eyes {
+            0%, 100% { filter: drop-shadow(0 0 2px #00F0FF); }
+            50% { filter: drop-shadow(0 0 8px #00F0FF) drop-shadow(0 0 14px #38BDF8); }
+        }
+
+        .spider-fangs {
+            animation: spider-fangs-flex 2.6s ease-in-out infinite alternate;
+            transform-origin: 110px 94px;
+        }
+        @keyframes spider-fangs-flex {
+            0% { transform: scale(0.95); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(0.98); }
+        }
+
+        .spider-venom-drop {
+            animation: spider-drop-pulse 1.8s infinite ease-in-out;
+        }
+        @keyframes spider-drop-pulse {
+            0%, 100% { opacity: 0.6; transform: scale(0.8); filter: drop-shadow(0 0 2px #10B981); }
+            50% { opacity: 1; transform: scale(1.4); filter: drop-shadow(0 0 8px #10B981) drop-shadow(0 0 14px #34D399); }
+        }
+
+        @media (max-width: 480px) {
+            .cyber-creature-wrap {
+                width: 120px;
+                height: 95px;
+            }
+        }
+
 </style>
 </head>
 <body>
