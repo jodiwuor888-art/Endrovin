@@ -152,10 +152,36 @@
         <!-- ================= HEADER & NAVIGATION ================= -->
     <header>
         <nav class="navbar">
-            <a href="index.html#home" class="logo">
-                <img src="assets/img/profile.png" alt="Joash Odiwuor" class="logo-avatar" width="40" height="40" onerror="this.src='assets/img/Joash.jpeg'">
-                <span id="brandName">Joash Odiwuor</span>
-                <span class="logo-dot">.</span>
+            <a href="index.html#home" class="logo" aria-label="Joash Odiwuor - Portfolio Home">
+                <div class="logo-mark">
+                    <svg class="logo-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="logoBorderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#38BDF8" />
+                                <stop offset="50%" stop-color="#3B82F6" />
+                                <stop offset="100%" stop-color="#2563EB" />
+                            </linearGradient>
+                            <linearGradient id="logoBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#0B1730" />
+                                <stop offset="100%" stop-color="#050B16" />
+                            </linearGradient>
+                            <linearGradient id="joGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#38BDF8" />
+                                <stop offset="100%" stop-color="#60A5FA" />
+                            </linearGradient>
+                        </defs>
+                        <rect x="2" y="2" width="40" height="40" rx="12" fill="url(#logoBgGrad)" stroke="url(#logoBorderGrad)" stroke-width="1.8" />
+                        <path d="M18 13V24.5C18 28 15.5 29.5 12 28.5" stroke="url(#joGrad)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M14.5 13H20.5" stroke="#38BDF8" stroke-width="2.4" stroke-linecap="round" />
+                        <rect x="22.5" y="14" width="13" height="15.5" rx="5" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" />
+                        <circle cx="29" cy="14" r="2" fill="#38BDF8" />
+                    </svg>
+                    <span class="logo-status-beacon" title="Available for projects"></span>
+                </div>
+                <div class="logo-text-wrap">
+                    <span class="logo-title"><span id="brandName">Joash Odiwuor</span><span class="logo-dot">.</span></span>
+                    <span class="logo-subtitle"><span class="logo-sub-badge">DEV</span> Software Engineer</span>
+                </div>
             </a>
 
             <button class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primaryNav">☰</button>
