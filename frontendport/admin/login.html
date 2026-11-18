@@ -1017,7 +1017,7 @@
                     <!-- Real-Time Hardware Detection Status -->
                     <div id="sensorStatusBadge" class="hardware-pill">
                         <span class="hardware-icon">⚡</span>
-                        <span id="sensorStatusText">Detecting Lenovo Fingerprint Sensor...</span>
+                        <span id="sensorStatusText">Detecting Biometric Hardware...</span>
                     </div>
                 </div>
 
@@ -1142,7 +1142,7 @@
                             </div>
                         </div>
 
-                        <h3 class="scanner-title" id="fpTitle">Touch Your Lenovo Fingerprint Sensor</h3>
+                        <h3 class="scanner-title" id="fpTitle">Touch Your Biometric Sensor</h3>
                         <p class="scanner-desc" id="fpSubtitle">
                             Windows Hello is active. Place your enrolled finger on the laptop's built-in reader to authenticate.
                         </p>
@@ -1263,7 +1263,7 @@
                         </div>
                         <div class="trust-item">
                             <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                            <span>Lenovo Hardware Ready</span>
+                            <span>Native Biometrics</span>
                         </div>
                         <div class="trust-item">
                             <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
@@ -1314,10 +1314,10 @@
         if (isWindows) {
             return {
                 platform: 'windows',
-                name: 'Lenovo / Windows Hello Fingerprint Sensor',
+                name: 'Windows Hello / Fingerprint Sensor',
                 tabLabel: 'Fingerprint Login',
                 prompt: 'Touch Your Fingerprint Sensor',
-                sub: 'Windows Hello is active on this PC. Touch your laptop sensor to authenticate.',
+                sub: 'Windows Hello is active on this PC. Touch your device sensor to authenticate.',
                 btnText: 'Verify with Sensor',
                 registerPrompt: 'Touch Sensor to Register This PC'
             };
