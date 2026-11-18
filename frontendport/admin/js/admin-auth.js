@@ -140,9 +140,13 @@ function uint8ArrayToBase64url(uint8Array) {
  * Helper to ensure relying party ID is a valid domain per W3C specification
  */
 function normalizeRpId(rpId) {
-    if (!rpId || rpId === '127.0.0.1' || rpId === '::1') {
-        const host = window.location.hostname;
-        return (host === '127.0.0.1' || host === '::1' || !host) ? 'localhost' : host;
+    const host = window.location.hostname;
+    if (!host || host === '127.0.0.1' || host === '::1') {
+        return 'localhost';
+    }
+    // In production (e.g. *.vercel.app), RP ID must match current hostname or be a valid suffix
+    if (!rpId || rpId === 'localhost' || rpId === '127.0.0.1' || !host.endsWith(rpId)) {
+        return host;
     }
     return rpId;
 }

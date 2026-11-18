@@ -1119,27 +1119,6 @@
                     </form>
                 </div>
 
-                <!-- First-Time Administrator Provisioning Drawer -->
-                <details class="setup-drawer" id="setupDrawer">
-                    <summary class="setup-summary">
-                        <span>⚙️</span> First-Time Administrator Provisioning
-                    </summary>
-                    <div class="setup-content">
-                        <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.75rem; line-height:1.5;">
-                            If setting up for the first time on a fresh database, create your initial root administrator account here:
-                        </p>
-                        <form onsubmit="event.preventDefault(); handleFirstTimeSetup();">
-                            <input type="text" id="setupUsername" class="form-control" placeholder="Admin Username (e.g. admin)" style="margin-bottom:0.5rem; height:42px; font-size:0.85rem;" required>
-                            <input type="email" id="setupEmail" class="form-control" placeholder="Email Address" style="margin-bottom:0.5rem; height:42px; font-size:0.85rem;" required>
-                            <input type="password" id="setupPassword" class="form-control" placeholder="Strong Password (min 8 chars)" style="margin-bottom:0.5rem; height:42px; font-size:0.85rem;" required>
-                            <input type="text" id="setupFullName" class="form-control" placeholder="Full Display Name (e.g. Joash Odiwuor)" style="margin-bottom:0.75rem; height:42px; font-size:0.85rem;" required>
-                            <button type="submit" class="btn-submit" id="setupBtn" style="height:42px; font-size:0.85rem;">
-                                🛡️ Create Administrator
-                            </button>
-                        </form>
-                    </div>
-                </details>
-
                 <!-- Footer & Trust Badges -->
                 <div class="auth-footer">
                     <div class="trust-badges">
@@ -1494,73 +1473,6 @@
         }
     });
 
-    // Auto-check if first administrator setup is needed on fresh database
-    (async function checkSetupNeeded() {
-        try {
-            const res = await fetch(`${API_BASE}/api/auth/status`);
-            const json = await res.json();
-            if (json.success && json.data && json.data.setupNeeded) {
-                const drawer = document.getElementById('setupDrawer');
-                if (drawer) {
-                    drawer.open = true;
-                }
-                showAlert('✨ Fresh Database: No admin account exists yet. Create your administrator account below.', 'info');
-            }
-        } catch (e) {
-            // ignore
-        }
-    })();
-
-    // First-Time Setup Handler
-    async function handleFirstTimeSetup() {
-        const btn = document.getElementById('setupBtn');
-        const payload = {
-            username: document.getElementById('setupUsername').value.trim(),
-            email: document.getElementById('setupEmail').value.trim(),
-            password: document.getElementById('setupPassword').value,
-            fullName: document.getElementById('setupFullName').value.trim()
-        };
-
-        if (!payload.username || !payload.email || !payload.password || !payload.fullName) {
-            showAlert('Please complete all administrator fields.', 'error');
-            return;
-        }
-
-        btn.disabled = true;
-        btn.textContent = 'Provisioning Administrator...';
-
-        try {
-            const res = await fetch(`${API_BASE}/api/auth/setup-first-admin`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const json = await res.json();
-            if (json.success) {
-                showAlert('Master Administrator created successfully! Logging you in...', 'success');
-                if (json.data && json.data.token) {
-                    localStorage.setItem('adminToken', json.data.token);
-                    localStorage.setItem('adminUser', JSON.stringify(json.data));
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 1200);
-                } else {
-                    document.getElementById('username').value = payload.username;
-                    document.getElementById('password').value = payload.password;
-                    document.getElementById('setupDrawer').removeAttribute('open');
-                }
-            } else {
-                showAlert(json.message || 'Setup provisioning failed.', 'error');
-                btn.disabled = false;
-                btn.textContent = '🛡️ Create Administrator';
-            }
-        } catch (err) {
-            showAlert('Cannot reach server during setup provisioning.', 'error');
-            btn.disabled = false;
-            btn.textContent = '🛡️ Create Administrator';
-        }
-    }
-
     // ==========================================================================
     // RECOVERY & PASSWORD RESET CONTROLLERS
     // ==========================================================================
@@ -1569,8 +1481,6 @@
         document.getElementById('step2Panel').classList.add('hidden');
         document.getElementById('resetPasswordPanel').classList.add('hidden');
         document.getElementById('recoveryPanel').classList.remove('hidden');
-        const drawer = document.getElementById('setupDrawer');
-        if (drawer) drawer.style.display = 'none';
         hideAlert();
     }
 
@@ -1579,8 +1489,6 @@
         document.getElementById('resetPasswordPanel').classList.add('hidden');
         document.getElementById('step2Panel').classList.add('hidden');
         document.getElementById('step1Panel').classList.remove('hidden');
-        const drawer = document.getElementById('setupDrawer');
-        if (drawer) drawer.style.display = '';
         hideAlert();
     }
 
@@ -1625,8 +1533,6 @@
                 document.getElementById('step2Panel').classList.add('hidden');
                 document.getElementById('recoveryPanel').classList.add('hidden');
                 document.getElementById('resetPasswordPanel').classList.remove('hidden');
-                const drawer = document.getElementById('setupDrawer');
-                if (drawer) drawer.style.display = 'none';
                 showAlert('One-time recovery link verified. Please enter your new password below.', 'info');
             }
         }
