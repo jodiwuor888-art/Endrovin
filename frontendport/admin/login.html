@@ -1399,6 +1399,23 @@
         }
     });
 
+    // Auto-check if first administrator setup is needed on fresh database
+    (async function checkSetupNeeded() {
+        try {
+            const res = await fetch(`${API_BASE}/api/auth/status`);
+            const json = await res.json();
+            if (json.success && json.data && json.data.setupNeeded) {
+                const drawer = document.getElementById('setupDrawer');
+                if (drawer) {
+                    drawer.open = true;
+                }
+                showAlert('✨ Fresh Database: No admin account exists yet. Create your administrator account below.', 'info');
+            }
+        } catch (e) {
+            // ignore
+        }
+    })();
+
     // First-Time Setup Handler
     async function handleFirstTimeSetup() {
         const btn = document.getElementById('setupBtn');
