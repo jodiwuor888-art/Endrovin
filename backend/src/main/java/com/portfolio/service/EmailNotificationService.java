@@ -33,6 +33,9 @@ public class EmailNotificationService {
     private final JavaMailSender springMailSender;
     private final HttpClient httpClient;
 
+    private volatile String lastDeliveryError = null;
+    private volatile String lastDeliverySuccess = null;
+
     public EmailNotificationService(PortfolioProperties properties,
                                     @org.springframework.beans.factory.annotation.Autowired(required = false) JavaMailSender mailSender) {
         this.properties = properties;
@@ -92,10 +95,14 @@ public class EmailNotificationService {
      * Free tier: 3,000 emails/month at https://resend.com
      */
     private boolean sendViaResend(String apiKey, String from, String to, String replyTo, String subject, String body) {
+        return sendViaResendInternal(apiKey, from, to, replyTo, subject, body, true);
+    }
+
+    private boolean sendViaResendInternal(String apiKey, String from, String to, String replyTo, String subject, String body, boolean allowAutoRoute) {
         try {
             String resendFrom = System.getenv("RESEND_FROM");
             if (resendFrom == null || resendFrom.isBlank()) {
-                resendFrom = "Joash Portfolio <onboarding@resend.dev>";
+                resendFrom = "onboarding@resend.dev";
             }
 
             StringBuilder json = new StringBuilder();
@@ -121,12 +128,33 @@ public class EmailNotificationService {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
                 log.info("[RESEND HTTPS] Real-time email delivered successfully to {}! Response: {}", to, response.body());
+                lastDeliverySuccess = "SUCCESS: Delivered to " + to + " (Response: " + response.body() + ")";
+                lastDeliveryError = null;
                 return true;
             } else {
-                log.error("[RESEND HTTPS] Dispatch failed with status {}: {}", response.statusCode(), response.body());
+                String errorBody = response.body();
+                lastDeliveryError = "HTTP " + response.statusCode() + ": " + errorBody;
+                log.error("[RESEND HTTPS] Dispatch failed with status {}: {}", response.statusCode(), errorBody);
+
+                // Auto-route if on free tier and recipient does not match Resend account owner
+                if (allowAutoRoute && response.statusCode() == 403 && errorBody.contains("only send testing emails to your own email address")) {
+                    int start = errorBody.indexOf("(");
+                    int end = errorBody.indexOf(")", start);
+                    if (start != -1 && end != -1) {
+                        String verifiedEmail = errorBody.substring(start + 1, end).trim();
+                        log.warn("[RESEND HTTPS] Resend free testing domain detected. Auto-routing notification to verified account email: {}", verifiedEmail);
+                        boolean rerouted = sendViaResendInternal(apiKey, from, verifiedEmail, replyTo, subject, body, false);
+                        if (rerouted) {
+                            lastDeliverySuccess = "SUCCESS: Delivered to verified Resend account (" + verifiedEmail + "). Note: To send directly to " + to + ", verify your domain at resend.com/domains.";
+                            lastDeliveryError = null;
+                            return true;
+                        }
+                    }
+                }
                 return false;
             }
         } catch (Exception e) {
+            lastDeliveryError = e.getClass().getSimpleName() + ": " + e.getMessage();
             log.error("[RESEND HTTPS] Exception calling Resend API: {}", e.getMessage(), e);
             return false;
         }
@@ -462,11 +490,12 @@ public class EmailNotificationService {
         if (isConfigured()) {
             SimpleMailMessage ping = new SimpleMailMessage();
             ping.setTo(getNotificationEmail());
-            ping.setFrom(u != null ? u : "Joash Portfolio <onboarding@resend.dev>");
+            ping.setFrom(u != null ? u : "onboarding@resend.dev");
             ping.setSubject("⚡ Live Portfolio Notification Test (" + LocalDateTime.now() + ")");
             ping.setText("This is an automated live notification verification confirming that real-time email alerts are now reflecting in your inbox.");
             boolean sent = sendWithFallback(ping, "DIAGNOSTIC TEST");
-            diag.put("test_email_dispatch", sent ? "SUCCESS - Dispatched to " + getNotificationEmail() : "FAILED - Check application logs");
+            diag.put("test_email_dispatch", sent ? "SUCCESS - Dispatched to " + getNotificationEmail() : "FAILED");
+            diag.put("resend_diagnostic_detail", lastDeliveryError != null ? lastDeliveryError : (lastDeliverySuccess != null ? lastDeliverySuccess : "None recorded"));
         } else {
             diag.put("test_email_dispatch", "SKIPPED - No email delivery method configured");
         }
