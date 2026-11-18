@@ -301,6 +301,47 @@
             font-size: 0.85rem;
         }
 
+        /* Login Method Selector: Password vs Fingerprint */
+        .method-selector {
+            display: flex;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 1.25rem;
+            gap: 4px;
+        }
+        .method-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 8px 12px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .method-btn:hover {
+            color: #ffffff;
+            background: rgba(56, 189, 248, 0.08);
+        }
+        .method-btn.active {
+            color: #ffffff;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+        }
+        .method-btn.active svg {
+            stroke: var(--primary);
+        }
+
         /* ==========================================================================
            STEPPER NAVIGATOR
            ========================================================================== */
@@ -900,6 +941,24 @@
                     <span id="alertText"></span>
                 </div>
 
+                <!-- Login Method Selector: Password vs Fingerprint -->
+                <div class="method-selector">
+                    <button type="button" class="method-btn active" id="tabPassword" onclick="switchLoginMethod('password')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        <span>Password Login</span>
+                    </button>
+                    <button type="button" class="method-btn" id="tabPasskey" onclick="switchLoginMethod('passkey')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 11c0 3.866-3.134 7-7 7m14 0c-3.866 0-7-3.134-7-7m0 0a7 7 0 1 1 14 0c0 3.866-3.134 7-7 7z"></path>
+                            <path d="M12 2v2m0 16v2M2 12h2m16 0h2"></path>
+                        </svg>
+                        <span id="tabPasskeyLabel">Fingerprint Login</span>
+                    </button>
+                </div>
+
                 <!-- ==============================================================
                      STEP 1: PASSWORD & USERNAME CREDENTIALS
                      ============================================================== -->
@@ -1197,37 +1256,58 @@
         document.getElementById('alertBox').className = 'alert-box';
     }
 
+    // Method Switcher: Password vs Fingerprint
+    function switchLoginMethod(method) {
+        const tabPwd = document.getElementById('tabPassword');
+        const tabFp  = document.getElementById('tabPasskey');
+        const pnlPwd = document.getElementById('step1Panel');
+        const pnlFp  = document.getElementById('step2Panel');
+        const pnlRec = document.getElementById('recoveryPanel');
+        const pnlRst = document.getElementById('resetPasswordPanel');
+
+        pnlRec?.classList.add('hidden');
+        pnlRst?.classList.add('hidden');
+        hideAlert();
+
+        if (method === 'passkey') {
+            tabPwd?.classList.remove('active');
+            tabFp?.classList.add('active');
+            pnlPwd?.classList.add('hidden');
+            pnlFp?.classList.remove('hidden');
+
+            const un = document.getElementById('username').value.trim() || localStorage.getItem('lastAdminUsername') || '';
+            showStep2(un, 'verify');
+        } else {
+            tabFp?.classList.remove('active');
+            tabPwd?.classList.add('active');
+            pnlFp?.classList.add('hidden');
+            pnlPwd?.classList.remove('hidden');
+            showStep1();
+        }
+    }
+
     // Stepper views
     function showStep1() {
         isEnrollmentMode = false;
         pendingLoginToken = null;
-        document.getElementById('step1Panel').classList.remove('hidden');
-        document.getElementById('step2Panel').classList.add('hidden');
-        document.getElementById('progressBar').classList.remove('step-2');
-
-        document.getElementById('stepIndicator1').className = 'step-item active';
-        document.getElementById('stepBubble1').textContent = '1';
-        document.getElementById('stepIndicator2').className = 'step-item';
-        document.getElementById('stepConnector').className = 'step-connector';
-
-        document.getElementById('btnSkipEnroll').style.display = 'none';
+        document.getElementById('step1Panel')?.classList.remove('hidden');
+        document.getElementById('step2Panel')?.classList.add('hidden');
+        document.getElementById('progressBar')?.classList.remove('step-2');
+        document.getElementById('btnSkipEnroll') && (document.getElementById('btnSkipEnroll').style.display = 'none');
         hideAlert();
     }
 
     function showStep2(username, mode = 'verify') {
         isEnrollmentMode = (mode === 'enroll');
-        document.getElementById('step1Panel').classList.add('hidden');
-        document.getElementById('step2Panel').classList.remove('hidden');
-        document.getElementById('progressBar').classList.add('step-2');
-
-        document.getElementById('stepIndicator1').className = 'step-item completed';
-        document.getElementById('stepBubble1').textContent = '✓';
-        document.getElementById('stepIndicator2').className = 'step-item active';
-        document.getElementById('stepConnector').className = 'step-connector active';
+        document.getElementById('step1Panel')?.classList.add('hidden');
+        document.getElementById('step2Panel')?.classList.remove('hidden');
+        document.getElementById('progressBar')?.classList.add('step-2');
 
         const initial = (username || 'A')[0].toUpperCase();
-        document.getElementById('fpUserInitial').textContent = initial;
-        document.getElementById('fpUsername').textContent = username;
+        const initialEl = document.getElementById('fpUserInitial');
+        const userEl    = document.getElementById('fpUsername');
+        if (initialEl) initialEl.textContent = initial;
+        if (userEl) userEl.textContent = username || 'Administrator';
 
         const isWindows = /Windows/i.test(navigator.userAgent);
         const isMobile  = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
@@ -1242,7 +1322,7 @@
         } else {
             document.getElementById('fpTitle').textContent = isWindows ? 'Touch Your Lenovo Fingerprint Sensor' : 'Touch Device Fingerprint';
             document.getElementById('fpSubtitle').textContent = isWindows
-                ? 'Windows Hello is waiting. Place your finger on the laptop reader to authenticate independently.'
+                ? 'Windows Hello is active on this laptop. Touch the sensor to authenticate.'
                 : 'Touch your phone\'s fingerprint sensor to authenticate directly.';
             document.getElementById('fpBtn').querySelector('span').textContent = 'Verify with Sensor';
             document.getElementById('btnSkipEnroll').style.display = 'none';
@@ -1334,6 +1414,14 @@
                     localStorage.setItem('adminUser', JSON.stringify(res.data));
                     showAlert('Sign in successful! Entering dashboard...', 'success');
                     setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
+                    return;
+                }
+
+                // If backend requires biometric touch
+                if (res.data.pendingAuthToken || res.data.mfaRequired) {
+                    mfaState = res.data;
+                    switchLoginMethod('passkey');
+                    setTimeout(() => doPasskeyAuth(), 350);
                     return;
                 }
             }

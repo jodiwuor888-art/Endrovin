@@ -60,9 +60,6 @@ public class AdminPasskeyController {
         String ip = getClientIp(httpRequest);
         String origin = getOrigin(httpRequest);
         AuthResponse response = authService.login(request, ip, origin);
-        if (response.isMfaRequired()) {
-            return ResponseEntity.ok(ApiResponse.ok("Biometric verification required", response));
-        }
         return ResponseEntity.ok(ApiResponse.ok("Login successful", response));
     }
 
