@@ -389,81 +389,337 @@ p {
         font-size: 0.88rem;
     }
 
-    /* Mobile Footer Alignment */
-    .footer-top {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-        text-align: center;
+    /* ==========================================================================
+       MOBILE & ANDROID FOOTER REDESIGN (<= 768px)
+       Clean 2-column directory, native touch chips, Android safe-area insets
+       ========================================================================== */
+    .site-footer {
+        padding: 3rem 1.25rem max(1.75rem, calc(env(safe-area-inset-bottom, 0px) + 1.25rem));
+        background: rgba(4, 9, 18, 0.95);
+        border-top: 1px solid rgba(56, 189, 248, 0.20);
     }
 
+    .footer-top {
+        grid-template-columns: 1fr 1fr;
+        gap: 1.75rem 1.15rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid rgba(56, 189, 248, 0.12);
+        text-align: left;
+    }
+
+    /* Column 1: Brand & Social spans full width as a sleek card */
     .footer-brand {
-        align-items: center;
+        grid-column: 1 / -1;
+        align-items: flex-start;
+        text-align: left;
+        background: rgba(56, 189, 248, 0.03);
+        border: 1px solid rgba(56, 189, 248, 0.12);
+        border-radius: 16px;
+        padding: 1.25rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     }
 
     .footer-brand-header {
-        flex-direction: column;
-        text-align: center;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.9rem;
+        text-align: left;
+        width: 100%;
+    }
+
+    .footer-avatar {
+        width: 48px;
+        height: 48px;
+        border: 2px solid var(--accent-electric);
+        box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+        flex-shrink: 0;
     }
 
     .footer-brand-info {
-        align-items: center;
+        align-items: flex-start;
+        gap: 0.2rem;
+        text-align: left;
+    }
+
+    .footer-brand-name {
+        font-size: 1.25rem;
+        line-height: 1.2;
+    }
+
+    .footer-status-badge {
+        font-size: 0.72rem;
+        padding: 0.2rem 0.55rem;
     }
 
     .footer-brand .footer-tagline {
         max-width: 100%;
-        text-align: center;
+        text-align: left;
+        font-size: 0.85rem;
+        line-height: 1.55;
+        color: var(--text-muted);
+        margin: 0.4rem 0 0 0;
     }
 
     .footer-social-block {
-        align-items: center;
+        align-items: flex-start;
+        width: 100%;
+        margin-top: 0.75rem;
+        padding-top: 0.85rem;
+        border-top: 1px solid rgba(56, 189, 248, 0.10);
+    }
+
+    .footer-social-label {
+        font-size: 0.70rem;
+        letter-spacing: 1px;
+        color: var(--accent-electric);
     }
 
     .footer-social {
-        justify-content: center;
-    }
-
-    .footer-col-title::after {
-        left: 50%;
-        transform: translateX(-50%);
-    }
-
-    .footer-links-list li a {
-        justify-content: center;
-    }
-
-    .footer-action-col {
-        align-items: center;
-    }
-
-    .footer-contact-info {
-        align-items: center;
-    }
-
-    .footer-contact-item {
-        justify-content: center;
-        text-align: center;
-    }
-
-    .fci-content {
-        align-items: center;
-    }
-
-    .footer-admin-card {
-        max-width: 320px;
-        margin: 0 auto;
-        text-align: center;
+        justify-content: flex-start;
+        gap: 0.65rem;
         width: 100%;
     }
 
+    .footer-social-link {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        font-size: 1.1rem;
+        border-radius: 50%;
+        background: rgba(56, 189, 248, 0.08);
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .footer-social-link:active {
+        background: var(--accent-electric);
+        color: #060b14;
+        transform: scale(0.94);
+    }
+
+    /* Columns 2 & 3: Explore and Credentials in a neat 2-column app directory */
+    .footer-nav-col {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 14px;
+        padding: 1.15rem 1rem;
+        text-align: left;
+    }
+
+    .footer-col-title {
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-align: left;
+        margin-bottom: 0.25rem;
+        padding-bottom: 0.45rem;
+        color: var(--accent-electric);
+        position: relative;
+    }
+
+    .footer-col-title::after {
+        left: 0;
+        transform: none;
+        width: 22px;
+    }
+
+    .footer-links-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .footer-links-list li a {
+        justify-content: flex-start;
+        text-align: left;
+        font-size: 0.84rem;
+        padding: 0.4rem 0.35rem;
+        min-height: 40px;
+        color: #94a3b8;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+    }
+
+    .footer-links-list li a:active {
+        background: rgba(56, 189, 248, 0.12);
+        color: var(--accent-electric);
+        transform: translateX(4px);
+    }
+
+    .footer-links-list li a .ficon {
+        font-size: 0.95em;
+        opacity: 0.9;
+        flex-shrink: 0;
+    }
+
+    /* Column 4: Contact & Administration spans full width */
+    .footer-action-col {
+        grid-column: 1 / -1;
+        align-items: stretch;
+        width: 100%;
+        gap: 1.25rem;
+        text-align: left;
+    }
+
+    .footer-action-col .footer-col-title {
+        margin-bottom: -0.25rem;
+    }
+
+    .footer-contact-info {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        width: 100%;
+    }
+
+    .footer-contact-item {
+        background: rgba(56, 189, 248, 0.04);
+        border: 1px solid rgba(56, 189, 248, 0.14);
+        border-radius: 12px;
+        padding: 0.85rem 1.1rem;
+        justify-content: flex-start;
+        text-align: left;
+        gap: 0.85rem;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .footer-contact-item:active {
+        background: rgba(56, 189, 248, 0.08);
+        border-color: rgba(56, 189, 248, 0.35);
+    }
+
+    .footer-contact-item .fci {
+        font-size: 1.25rem;
+        margin-top: 0;
+        flex-shrink: 0;
+    }
+
+    .fci-content {
+        align-items: flex-start;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    .fci-label {
+        font-size: 0.70rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--accent-electric);
+        font-weight: 600;
+    }
+
+    .fci-value {
+        font-size: 0.86rem;
+        color: #f1f5f9;
+        word-break: break-all;
+    }
+
+    .footer-admin-card {
+        max-width: 100%;
+        width: 100%;
+        background: linear-gradient(135deg, rgba(8, 18, 36, 0.95), rgba(6, 11, 20, 0.98));
+        border: 1px solid rgba(56, 189, 248, 0.22);
+        border-radius: 14px;
+        padding: 1.15rem;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        text-align: left;
+    }
+
+    .footer-admin-card .fac-meta {
+        text-align: left;
+    }
+
+    .footer-admin-btn {
+        width: 100%;
+        min-height: 46px;
+        font-size: 0.88rem;
+        border-radius: 10px;
+        justify-content: center;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+    }
+
+    .footer-admin-btn:active {
+        transform: scale(0.98);
+    }
+
+    /* Footer Bottom Bar: Copyright & Modern Android Pill Back-to-Top */
     .copyright, .footer-bottom {
         flex-direction: column;
         text-align: center;
-        gap: 1rem;
+        gap: 1.25rem;
+        margin-top: 1.75rem;
+        align-items: center;
+        width: 100%;
     }
 
     .footer-copyright {
         align-items: center;
         text-align: center;
+        gap: 0.35rem;
+    }
+
+    .footer-copyright p {
+        font-size: 0.84rem;
+        color: #94a3b8;
+    }
+
+    .footer-subtext {
+        font-size: 0.76rem;
+        color: rgba(148, 163, 184, 0.75);
+    }
+
+    .footer-back-to-top-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .footer-back-to-top {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.55rem;
+        padding: 0.7rem 1.6rem;
+        border-radius: 9999px;
+        background: rgba(56, 189, 248, 0.08);
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        color: var(--accent-electric);
+        font-size: 0.84rem;
+        font-weight: 600;
+        min-height: 44px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+        transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+        text-decoration: none;
+    }
+
+    .footer-back-to-top:active {
+        background: rgba(56, 189, 248, 0.25);
+        transform: scale(0.96);
+        box-shadow: 0 0 20px rgba(56, 189, 248, 0.45);
     }
 }
 
@@ -548,13 +804,23 @@ p {
         font-size: 0.75rem;
     }
 
-    /* Footer adjustments */
+    /* Footer adjustments for compact Android smartphones */
     .footer-top {
-        gap: 1.75rem;
+        gap: 1.5rem 0.85rem;
     }
 
     .site-footer {
-        padding: 2.5rem 0.75rem 1.5rem;
+        padding: 2.5rem 0.85rem max(1.75rem, calc(env(safe-area-inset-bottom, 0px) + 1.25rem));
+    }
+
+    .footer-nav-col {
+        padding: 1rem 0.75rem;
+    }
+
+    .footer-links-list li a {
+        font-size: 0.80rem;
+        gap: 0.4rem;
+        padding: 0.35rem 0.15rem;
     }
 }
 
@@ -582,6 +848,20 @@ p {
     .btn {
         padding: 0.75rem 1rem;
         font-size: 0.88rem;
+    }
+
+    /* Footer for ultra-compact 360px Android screens */
+    .footer-top {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    .footer-brand {
+        padding: 1rem;
+    }
+
+    .footer-nav-col {
+        padding: 1rem;
     }
 }
 
