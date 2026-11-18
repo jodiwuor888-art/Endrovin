@@ -257,7 +257,7 @@ async function loadAuditLogs() {
     if (!tableBody) return;
 
     if (!res || !res.success || !res.data || res.data.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--admin-text-muted);">No audit events recorded yet.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--admin-text-muted);">No audit events recorded yet.</td></tr>`;
         return;
     }
 
@@ -268,8 +268,41 @@ async function loadAuditLogs() {
             <td>${escapeHtml(log.details || '')}</td>
             <td>${escapeHtml(log.adminUsername)}</td>
             <td>${new Date(log.timestamp).toLocaleString()}</td>
+            <td style="text-align:center;">
+                <button type="button" class="btn-admin btn-admin-danger btn-sm" onclick="deleteAuditLogEntry(${log.id})" title="Delete audit log record" style="padding:4px 8px; font-size:0.8rem;">🗑️</button>
+            </td>
         </tr>
     `).join('');
+}
+
+async function deleteAuditLogEntry(id) {
+    if (!confirm(`Are you sure you want to delete audit log #${id}?`)) return;
+    try {
+        const res = await adminFetch(`/api/admin/dashboard/audit-logs/${id}`, { method: 'DELETE' });
+        if (res && res.success) {
+            showToast('Audit log entry deleted successfully', 'success');
+            loadAuditLogs();
+        } else {
+            showToast((res && res.message) || 'Failed to delete audit log', 'error');
+        }
+    } catch (err) {
+        showToast(err.message || 'Error deleting audit log', 'error');
+    }
+}
+
+async function confirmClearAllAuditLogs() {
+    if (!confirm('⚠️ Are you sure you want to clear ALL security and administrative audit logs? This action cannot be undone.')) return;
+    try {
+        const res = await adminFetch('/api/admin/dashboard/audit-logs', { method: 'DELETE' });
+        if (res && res.success) {
+            showToast('All audit logs cleared successfully', 'success');
+            loadAuditLogs();
+        } else {
+            showToast((res && res.message) || 'Failed to clear audit logs', 'error');
+        }
+    } catch (err) {
+        showToast(err.message || 'Error clearing audit logs', 'error');
+    }
 }
 
 function setStatText(id, val) {
@@ -1732,12 +1765,12 @@ async function handleSettingsImport(e) {
 
 async function openSettingsAuditModal() {
     const tbody = document.getElementById('settingsAuditTableBody');
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:1.5rem; color:var(--admin-text-muted);">Loading audit trail...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:1.5rem; color:var(--admin-text-muted);">Loading audit trail...</td></tr>`;
     openModal('settingsAuditModal');
 
     const res = await adminFetch('/api/admin/settings/audit');
     if (!res || !res.success || !res.data || res.data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:1.5rem; color:var(--admin-text-muted);">No settings modification logs found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:1.5rem; color:var(--admin-text-muted);">No settings modification logs found.</td></tr>`;
         return;
     }
 
@@ -1748,8 +1781,26 @@ async function openSettingsAuditModal() {
             <td><strong>${escapeHtml(l.changedBy || 'admin')}</strong></td>
             <td><code>${escapeHtml(l.ipAddress || '-')}</code></td>
             <td>${escapeHtml(l.details || '-')}</td>
+            <td style="text-align:center;">
+                <button type="button" class="btn-admin btn-admin-danger btn-sm" onclick="deleteSettingsAuditEntry(${l.id})" title="Delete entry" style="padding:4px 8px; font-size:0.8rem;">🗑️</button>
+            </td>
         </tr>
     `).join('');
+}
+
+async function deleteSettingsAuditEntry(id) {
+    if (!confirm(`Are you sure you want to delete settings audit record #${id}?`)) return;
+    try {
+        const res = await adminFetch(`/api/admin/settings/audit/${id}`, { method: 'DELETE' });
+        if (res && res.success) {
+            showToast('Settings audit record deleted', 'success');
+            openSettingsAuditModal();
+        } else {
+            showToast((res && res.message) || 'Failed to delete settings audit record', 'error');
+        }
+    } catch (err) {
+        showToast(err.message || 'Error deleting settings audit record', 'error');
+    }
 }
 
 function previewSettingsLive() {
