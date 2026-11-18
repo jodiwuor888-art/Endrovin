@@ -2772,6 +2772,36 @@
         }
     }
 
+    
+    // ==========================================================================
+    // CYBER SENTINEL CONTROLLER: CYBER SCORPION & NEON SPIDER
+    // ==========================================================================
+    let currentSentinel = 'scorpion';
+
+    function setSentinelMode(mode) {
+        currentSentinel = mode;
+        const scorpEl = document.getElementById('scorpSentinel');
+        const spiderEl = document.getElementById('spiderSentinel');
+        const btnScorp = document.getElementById('btnScorpMode');
+        const btnSpider = document.getElementById('btnSpiderMode');
+
+        if (mode === 'spider') {
+            if (scorpEl) scorpEl.style.display = 'none';
+            if (spiderEl) spiderEl.style.display = 'flex';
+            btnScorp?.classList.remove('active');
+            btnSpider?.classList.add('active');
+        } else {
+            if (spiderEl) spiderEl.style.display = 'none';
+            if (scorpEl) scorpEl.style.display = 'flex';
+            btnSpider?.classList.remove('active');
+            btnScorp?.classList.add('active');
+        }
+    }
+
+    function toggleSentinelMode() {
+        setSentinelMode(currentSentinel === 'scorpion' ? 'spider' : 'scorpion');
+    }
+
     window.addEventListener('hashchange', checkForResetToken);
     document.addEventListener('DOMContentLoaded', checkForResetToken);
     </script>
