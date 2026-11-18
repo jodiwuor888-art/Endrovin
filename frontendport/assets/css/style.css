@@ -1945,7 +1945,7 @@ footer::before {
 }
 
 /* ==========================================================================
-   PUBLIC MAINTENANCE MODE FULLSCREEN DISPLAY
+   PUBLIC MAINTENANCE MODE FULLSCREEN DISPLAY (MODERNIZED)
    ========================================================================== */
 .maintenance-screen {
     position: fixed;
@@ -1955,80 +1955,140 @@ footer::before {
     bottom: 0;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     z-index: 9999999;
-    background: radial-gradient(circle at 50% 20%, rgba(11, 20, 36, 0.98) 0%, rgba(6, 11, 20, 0.99) 75%, #030712 100%);
-    display: none; /* strictly hidden by default - only activated when explicitly initialized and approved by administrator in Web Settings */
+    background: radial-gradient(circle at 50% 15%, rgba(11, 23, 48, 0.98) 0%, rgba(7, 17, 31, 0.99) 55%, #030810 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: none; /* activated when general.maintenanceMode is true in admin settings */
     align-items: center;
     justify-content: center;
     padding: 1.5rem;
     overflow-y: auto;
     text-align: center;
+    isolation: isolate;
 }
 
 .maintenance-screen.active {
     display: flex;
 }
 
+/* Ambient glow orbs behind the maintenance card */
+.maintenance-glow-orb {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(80px);
+    z-index: 0;
+    animation: maint-orb-float 9s ease-in-out infinite alternate;
+}
+
+.maintenance-glow-orb.orb-1 {
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.22) 0%, transparent 70%);
+    top: 10%;
+    right: 15%;
+}
+
+.maintenance-glow-orb.orb-2 {
+    width: 420px;
+    height: 420px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.16) 0%, transparent 70%);
+    bottom: 5%;
+    left: 10%;
+    animation-duration: 12s;
+}
+
+@keyframes maint-orb-float {
+    0% { transform: translate(0, 0) scale(0.95); opacity: 0.6; }
+    100% { transform: translate(25px, -20px) scale(1.1); opacity: 0.95; }
+}
+
 .maintenance-container {
-    max-width: 620px;
+    max-width: 580px;
     width: 100%;
-    background: rgba(11, 20, 36, 0.88);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(56, 189, 248, 0.35);
-    border-radius: 20px;
-    padding: 3rem 2.25rem;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(56, 189, 248, 0.25);
+    background: rgba(11, 23, 48, 0.85);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(56, 189, 248, 0.28);
+    border-radius: 24px;
+    padding: 2.75rem 2.25rem 2.25rem;
+    box-shadow: 
+        0 30px 80px -15px rgba(0, 0, 0, 0.9),
+        0 0 50px rgba(37, 99, 235, 0.15),
+        inset 0 1px 1px rgba(255, 255, 255, 0.12);
     animation: fadeInModal 0.4s ease-out;
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+    z-index: 1;
 }
 
 .maintenance-avatar-wrap {
     position: relative;
-    width: 90px;
-    height: 90px;
+    width: 84px;
+    height: 84px;
     margin-bottom: 1.25rem;
 }
 
+.maintenance-avatar-ring {
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue-primary, #2563EB), var(--cyan-accent, #38BDF8));
+    opacity: 0.6;
+    filter: blur(5px);
+    animation: maint-pulse-ring 3s infinite ease-in-out;
+}
+
+@keyframes maint-pulse-ring {
+    0%, 100% { opacity: 0.45; transform: scale(1); }
+    50% { opacity: 0.85; transform: scale(1.08); }
+}
+
 .maintenance-avatar {
-    width: 90px;
-    height: 90px;
+    width: 84px;
+    height: 84px;
     border-radius: 50%;
     object-fit: cover;
     object-position: top center;
-    border: 3px solid var(--accent-electric);
+    border: 2.5px solid rgba(255, 255, 255, 0.85);
     box-shadow: 0 0 25px rgba(56, 189, 248, 0.45);
     display: block;
+    position: relative;
+    z-index: 1;
+    background: #091322;
 }
 
 .maintenance-status-dot {
     position: absolute;
     bottom: 2px;
     right: 2px;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     background: #f59e0b;
-    border: 3px solid #0f172a;
+    border: 2.5px solid #07111F;
     box-shadow: 0 0 10px #f59e0b;
+    z-index: 2;
 }
 
 .maintenance-badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 14px;
-    border-radius: 20px;
+    padding: 6px 16px;
+    border-radius: 30px;
     background: rgba(245, 158, 11, 0.12);
     border: 1px solid rgba(245, 158, 11, 0.35);
     color: #fbbf24;
-    font-size: 0.82rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.6px;
     text-transform: uppercase;
-    margin-bottom: 1rem;
+    margin-bottom: 0.85rem;
 }
 
 .pulse-indicator {
@@ -2048,38 +2108,118 @@ footer::before {
 
 .maintenance-title {
     font-size: 1.85rem;
-    font-weight: 700;
+    font-weight: 800;
     color: #ffffff;
+    letter-spacing: -0.025em;
     margin-bottom: 0.25rem;
+    line-height: 1.2;
 }
 
 .maintenance-headline {
-    font-size: 0.95rem;
-    color: var(--accent-electric);
+    font-size: 0.92rem;
+    color: var(--cyan-accent, #38BDF8);
     font-weight: 500;
-    margin-bottom: 1.75rem;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.2px;
 }
 
 .maintenance-message-card {
-    background: rgba(15, 23, 42, 0.75);
-    border: 1px solid rgba(56, 189, 248, 0.15);
-    border-radius: 12px;
-    padding: 1.5rem 1.75rem;
-    margin-bottom: 1.75rem;
+    background: rgba(7, 17, 31, 0.75);
+    border: 1px solid rgba(56, 189, 248, 0.18);
+    border-radius: 16px;
+    padding: 1.6rem 1.8rem;
+    margin-bottom: 1.35rem;
     width: 100%;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
 }
 
-.maintenance-icon {
-    font-size: 1.8rem;
-    margin-bottom: 0.75rem;
+.maintenance-icon-wrap {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 0.75rem;
+    border-radius: 50%;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cyan-accent, #38BDF8);
+}
+
+.maintenance-gear-svg {
+    width: 24px;
+    height: 24px;
+    animation: maint-spin 14s linear infinite;
+}
+
+@keyframes maint-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.maintenance-msg-heading {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.015em;
 }
 
 .maintenance-text {
-    font-size: 1.15rem;
-    line-height: 1.6;
-    color: #f8fafc;
-    font-weight: 500;
-    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: #cbd5e1;
+    font-weight: 400;
+    margin: 0 0 1.25rem 0;
+}
+
+/* Shimmer progress line indicating active maintenance */
+.maintenance-progress-bar {
+    height: 3px;
+    width: 100%;
+    background: rgba(56, 189, 248, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+}
+
+.maintenance-progress-fill {
+    height: 100%;
+    width: 45%;
+    background: linear-gradient(90deg, transparent, var(--cyan-accent, #38BDF8), var(--blue-primary, #2563EB), transparent);
+    position: absolute;
+    top: 0;
+    animation: maint-shimmer 2.2s ease-in-out infinite;
+}
+
+@keyframes maint-shimmer {
+    0% { left: -45%; }
+    100% { left: 100%; }
+}
+
+.maintenance-contact-hint {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-bottom: 1.35rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+}
+
+.maintenance-email-link {
+    color: var(--cyan-accent, #38BDF8);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.maintenance-email-link:hover {
+    color: #ffffff;
+    text-decoration: underline;
 }
 
 .maintenance-footer {
@@ -2087,32 +2227,47 @@ footer::before {
     flex-direction: column;
     align-items: center;
     gap: 0.85rem;
-}
-
-.maintenance-note {
-    font-size: 0.85rem;
-    color: #94a3b8;
-    margin: 0;
+    width: 100%;
 }
 
 .admin-portal-link {
     font-size: 0.82rem;
-    color: var(--accent-electric);
+    font-weight: 600;
+    color: #e2e8f0;
     text-decoration: none;
-    padding: 6px 14px;
-    border-radius: 6px;
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    background: rgba(16, 185, 129, 0.08);
-    transition: all 0.2s ease;
+    padding: 0.55rem 1.25rem;
+    border-radius: 30px;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    background: rgba(15, 23, 42, 0.8);
+    transition: all 0.25s ease;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .admin-portal-link:hover {
-    background: rgba(16, 185, 129, 0.2);
-    border-color: var(--accent-electric);
-    color: #fff;
+    background: rgba(37, 99, 235, 0.25);
+    border-color: var(--cyan-accent, #38BDF8);
+    color: #ffffff;
+    box-shadow: 0 0 18px rgba(56, 189, 248, 0.3);
+    transform: translateY(-1px);
+}
+
+.admin-portal-link svg {
+    color: var(--cyan-accent, #38BDF8);
+    transition: transform 0.2s ease;
+}
+
+.admin-portal-link:hover svg {
+    transform: scale(1.1);
+}
+
+.maintenance-note {
+    font-size: 0.78rem;
+    color: #64748b;
+    margin: 0;
+    letter-spacing: 0.2px;
 }
 
 

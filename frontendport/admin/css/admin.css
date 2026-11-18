@@ -1302,6 +1302,67 @@ textarea[class*="setting-input"]:focus {
     padding: 1.25rem;
     margin-bottom: 1.5rem;
 }
+.maintenance-avatar-ring {
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--c-primary, #2563EB), var(--c-accent, #38BDF8));
+    opacity: 0.6;
+    filter: blur(5px);
+    animation: maint-pulse-ring 3s infinite ease-in-out;
+}
+@keyframes maint-pulse-ring {
+    0%, 100% { opacity: 0.45; transform: scale(1); }
+    50% { opacity: 0.85; transform: scale(1.08); }
+}
+.maintenance-icon-wrap {
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 0.75rem;
+    border-radius: 50%;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--c-accent, #38BDF8);
+}
+.maintenance-gear-svg {
+    width: 22px;
+    height: 22px;
+    animation: maint-spin 14s linear infinite;
+}
+@keyframes maint-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.maintenance-msg-heading {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.4rem;
+}
+.maintenance-progress-bar {
+    height: 3px;
+    width: 100%;
+    background: rgba(56, 189, 248, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+    margin-top: 1rem;
+}
+.maintenance-progress-fill {
+    height: 100%;
+    width: 45%;
+    background: linear-gradient(90deg, transparent, var(--c-accent, #38BDF8), var(--c-primary, #2563EB), transparent);
+    position: absolute;
+    top: 0;
+    animation: maint-shimmer 2.2s ease-in-out infinite;
+}
+@keyframes maint-shimmer {
+    0% { left: -45%; }
+    100% { left: 100%; }
+}
 .maintenance-icon { font-size: 2rem; margin-bottom: 0.5rem; }
 .maintenance-text { font-size: 0.9rem; color: var(--c-text-sub); line-height: 1.6; }
 .maintenance-footer {}
