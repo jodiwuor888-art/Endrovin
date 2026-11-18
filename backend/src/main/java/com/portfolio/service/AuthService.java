@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
 @Service
 public class AuthService {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AuthService.class);
+
     private final AdminRepository adminRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -85,47 +87,48 @@ public class AuthService {
         }
         rateLimiterService.recordFailedAttempt(rateLimitKey);
 
-        String normalizedEmail = email.trim().toLowerCase(Locale.ROOT);
-        Admin admin = adminRepository.findByEmailIgnoreCase(normalizedEmail).orElse(null);
+        String normalizedInput = email.trim().toLowerCase(Locale.ROOT);
+        Admin admin = adminRepository.findByEmailIgnoreCase(normalizedInput)
+                .or(() -> adminRepository.findByUsernameIgnoreCase(normalizedInput))
+                .orElse(null);
         if (admin == null || !admin.isActive()) {
             auditLogService.logAction("anonymous", "PASSWORD_RESET_REQUESTED", "Admins", null,
-                    "Password recovery requested", ipAddress);
+                    "Password recovery requested for non-matching input: " + normalizedInput, ipAddress);
             return;
         }
 
-        byte[] tokenBytes = new byte[32];
-        secureRandom.nextBytes(tokenBytes);
-        String rawToken = Base64.getUrlEncoder().withoutPadding().encodeToString(tokenBytes);
+        // Generate a 6-digit numeric reset code
+        int codeNum = 100000 + secureRandom.nextInt(900000);
+        String resetCode = String.valueOf(codeNum);
 
-        admin.setPasswordResetToken(hashResetToken(rawToken));
+        admin.setPasswordResetToken(hashResetToken(resetCode));
         admin.setPasswordResetExpiry(LocalDateTime.now().plusMinutes(15));
         adminRepository.save(admin);
 
         String resetUrl = UriComponentsBuilder.fromUriString(java.util.Objects.requireNonNull(
                         properties.getSecurity().getPasswordResetUrl(), "Password reset URL must be configured"))
-                .fragment("resetToken=" + rawToken)
+                .fragment("resetToken=" + resetCode)
                 .build()
                 .encode()
                 .toUriString();
 
-        if (!emailNotificationService.sendPasswordResetEmail(admin, resetUrl)) {
-            admin.setPasswordResetToken(null);
-            admin.setPasswordResetExpiry(null);
-            adminRepository.save(admin);
+        if (!emailNotificationService.sendPasswordResetEmail(admin, resetCode, resetUrl)) {
+            log.warn("[PASSWORD RESET] Failed to send email with code to {}", admin.getEmail());
         }
 
         auditLogService.logAction("anonymous", "PASSWORD_RESET_REQUESTED", "Admins",
-                String.valueOf(admin.getId()), "Password recovery requested", ipAddress);
+                String.valueOf(admin.getId()), "Password recovery code generated for " + admin.getUsername(), ipAddress);
     }
 
     @Transactional
     public void resetPassword(CompletePasswordResetRequest request, String ipAddress) {
-        Admin admin = adminRepository.findByPasswordResetToken(hashResetToken(request.getToken()))
-                .orElseThrow(() -> new BadRequestException("Reset link is invalid or expired."));
+        String cleanToken = request.getToken() != null ? request.getToken().trim().replace(" ", "").replace("-", "") : "";
+        Admin admin = adminRepository.findByPasswordResetToken(hashResetToken(cleanToken))
+                .orElseThrow(() -> new BadRequestException("Reset code is invalid or expired. Please request a new code."));
 
         if (admin.getPasswordResetExpiry() == null
                 || !admin.getPasswordResetExpiry().isAfter(LocalDateTime.now())) {
-            throw new BadRequestException("Reset link is invalid or expired.");
+            throw new BadRequestException("Reset code is invalid or expired. Please request a new code.");
         }
 
         admin.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
