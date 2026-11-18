@@ -262,4 +262,52 @@ public class EmailNotificationService {
     public boolean sendPasswordResetEmail(Admin admin, String resetUrl) {
         return sendPasswordResetEmail(admin, "CODE", resetUrl);
     }
+
+    public java.util.Map<String, Object> runDiagnostics() {
+        java.util.Map<String, Object> diag = new java.util.LinkedHashMap<>();
+        String u = getSmtpUsername();
+        String p = getSmtpPassword();
+        diag.put("configured", isConfigured());
+        diag.put("username_set", u != null && !u.isBlank());
+        diag.put("password_set", p != null && !p.isBlank());
+        diag.put("password_length", p != null ? p.length() : 0);
+        diag.put("notification_recipient", getNotificationEmail());
+
+        String host = System.getenv("SMTP_HOST");
+        if (host == null || host.isBlank()) host = "smtp.gmail.com";
+        diag.put("smtp_host", host);
+
+        // Test TCP Socket to Port 465
+        long t0 = System.currentTimeMillis();
+        try (java.net.Socket s = new java.net.Socket()) {
+            s.connect(new java.net.InetSocketAddress(host, 465), 5000);
+            diag.put("tcp_port_465", "CONNECTED in " + (System.currentTimeMillis() - t0) + "ms");
+        } catch (Exception e) {
+            diag.put("tcp_port_465", "BLOCKED/FAILED: " + e.getClass().getSimpleName() + ": " + e.getMessage());
+        }
+
+        // Test TCP Socket to Port 587
+        t0 = System.currentTimeMillis();
+        try (java.net.Socket s = new java.net.Socket()) {
+            s.connect(new java.net.InetSocketAddress(host, 587), 5000);
+            diag.put("tcp_port_587", "CONNECTED in " + (System.currentTimeMillis() - t0) + "ms");
+        } catch (Exception e) {
+            diag.put("tcp_port_587", "BLOCKED/FAILED: " + e.getClass().getSimpleName() + ": " + e.getMessage());
+        }
+
+        // Test sending a live ping email if configured
+        if (isConfigured()) {
+            SimpleMailMessage ping = new SimpleMailMessage();
+            ping.setTo(getNotificationEmail());
+            ping.setFrom(u);
+            ping.setSubject("⚡ Live Portfolio Notification Test (" + java.time.LocalDateTime.now() + ")");
+            ping.setText("This is an automated live notification verification to confirm that real-time email alerts are arriving in your inbox.");
+            boolean sent = sendWithFallback(ping, "DIAGNOSTIC TEST");
+            diag.put("test_email_dispatch", sent ? "SUCCESS - Dispatched to " + getNotificationEmail() : "FAILED - Check application logs");
+        } else {
+            diag.put("test_email_dispatch", "SKIPPED - SMTP credentials not set");
+        }
+
+        return diag;
+    }
 }
