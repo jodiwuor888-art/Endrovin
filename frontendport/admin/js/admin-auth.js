@@ -393,8 +393,8 @@ async function triggerPasskeyRegistration(deviceName, deviceType, authTokenOverr
         id: credential.id,
         rawId: uint8ArrayToBase64url(credential.rawId),
         type: credential.type,
-        deviceName: deviceName || 'Lenovo Laptop Fingerprint Reader',
-        deviceType: deviceType || 'Laptop / Internal Biometric Sensor',
+        deviceName: deviceName || getPlatformDeviceInfo().name,
+        deviceType: deviceType || getPlatformDeviceInfo().type,
         response: {
             clientDataJSON: uint8ArrayToBase64url(credential.response.clientDataJSON),
             attestationObject: uint8ArrayToBase64url(credential.response.attestationObject),
