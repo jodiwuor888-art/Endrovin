@@ -63,6 +63,7 @@ public class PublicPortfolioService {
         this.emailNotificationService = emailNotificationService;
     }
 
+    @Cacheable(value = "publicPortfolio", unless = "#result == null")
     @Transactional(readOnly = true)
     public PublicPortfolioResponse getCompletePublicPortfolio() {
         PublicPortfolioResponse response = new PublicPortfolioResponse();
@@ -322,6 +323,7 @@ public class PublicPortfolioService {
        PUBLIC RECOMMENDATIONS & TESTIMONIALS
        ========================================================================== */
 
+    @Cacheable(value = "publicTestimonials", unless = "#result == null")
     @Transactional(readOnly = true)
     public List<PublicTestimonialResponse> getApprovedPublicTestimonials() {
         return testimonialRepository.findByStatusAndConsentToPublishTrueOrderByDisplayOrderAscSubmittedAtDesc("APPROVED")

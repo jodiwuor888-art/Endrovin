@@ -11,6 +11,9 @@ import com.portfolio.repository.WebsiteSettingRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import com.portfolio.controller.PublishVersionController;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -244,6 +247,10 @@ public class WebsiteSettingsService {
     /**
      * Batch save settings from admin form
      */
+    @CacheEvict(value = {
+        "publicPortfolio", "publicSettings", "publicTestimonials",
+        "publicServices", "publicProjects", "publicSkills"
+    }, allEntries = true)
     @Transactional
     public void batchSaveSettings(Map<String, String> newSettings, String username, String ip) {
         if (newSettings == null || newSettings.isEmpty()) {
@@ -381,7 +388,13 @@ public class WebsiteSettingsService {
      * Publish settings changes (logs action and verifies state)
      */
     @Transactional
+    @CacheEvict(value = {
+        "publicPortfolio", "publicSettings", "publicTestimonials",
+        "publicServices", "publicProjects", "publicSkills"
+    }, allEntries = true)
     public void publishSettings(String username, String ip) {
+        // Bump shared version counter so frontend polling detects the change instantly
+        PublishVersionController.VERSION.set(System.currentTimeMillis());
         auditLogService.logAction(username, "PUBLISH_SETTINGS", "WebsiteSettings", null,
                 "Published website configuration changes to live website", ip);
         log.info("Administrator [{}] published website settings to live visitors", username);
@@ -391,6 +404,7 @@ public class WebsiteSettingsService {
      * Publicly accessible settings for frontend theming, SEO, and section display.
      * NEVER returns passwords, secret keys, or private internal configurations.
      */
+    @Cacheable(value = "publicSettings", unless = "#result == null || #result.isEmpty()")
     @Transactional(readOnly = true)
     public Map<String, String> getPublicSettings() {
         Map<String, String> dbMap = loadDbSettingsMap();

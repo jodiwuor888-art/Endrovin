@@ -138,7 +138,23 @@ self.addEventListener('fetch', (event) => {
     })());
 });
 
-// Message handler: skip waiting on demand
+
+// Cache bust handler: admin publish triggers this in all public tabs
 self.addEventListener('message', (event) => {
-    if (event.data === 'SKIP_WAITING') self.skipWaiting();
+    if (event.data === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+    if (event.data === 'BUST_API_CACHE') {
+        // Delete all cached public API responses to force fresh fetch
+        caches.open(API_CACHE).then((cache) => {
+            cache.keys().then((keys) => {
+                keys.forEach((req) => {
+                    if (req.url.includes('/api/public/')) {
+                        cache.delete(req);
+                    }
+                });
+            });
+        });
+    }
 });
+

@@ -113,6 +113,12 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- AOP for auto publish version bump on admin writes -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
         <!-- Spring Boot Starter Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

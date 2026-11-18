@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.portfolio.controller.PublishVersionController;
 import java.util.Map;
 
 @RestController
@@ -54,6 +55,8 @@ public class AdminWebsiteSettingController {
         if (request != null && request.getSettings() != null) {
             settingsService.batchSaveSettings(request.getSettings(), userDetails.getUsername(), ip);
         }
+        // Bump publish version so public portal detects changes immediately
+        PublishVersionController.VERSION.set(System.currentTimeMillis());
         return ResponseEntity.ok(ApiResponse.ok("Settings saved successfully to database", null));
     }
 

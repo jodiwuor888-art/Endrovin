@@ -249,3 +249,58 @@ function _cachedFetch(key, fetchFn) {
         }).catch(() => {});
     }, 800);
 })();
+
+/* ==========================================================================
+   ADMIN PUBLISH API — Triggers instant cache eviction on the backend
+   Called automatically after every successful admin save/update/delete.
+   ========================================================================== */
+Object.assign(API, {
+    async publishChanges() {
+        try {
+            const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+            const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            const res = await fetch(`${API_BASE}/api/admin/publish`, {
+                method: 'POST',
+                headers,
+                cache: 'no-store'
+            });
+            const data = await res.json();
+            console.log('[PublishSync] Published — version:', data.version || data.data?.version);
+            return data;
+        } catch (err) {
+            console.warn('[PublishSync] Publish trigger failed (non-critical):', err);
+            return { published: false };
+        }
+    }
+});
+
+// ── Auto-intercept: wrap fetch to trigger publish on successful admin writes ──
+(function patchAdminFetch() {
+    const originalFetch = window.fetch;
+    window.fetch = async function(resource, options = {}) {
+        const response = await originalFetch(resource, options);
+
+        // Only intercept admin write endpoints that succeed
+        const url = typeof resource === 'string' ? resource : resource?.url || '';
+        const method = (options.method || 'GET').toUpperCase();
+        const isAdminWrite = url.includes('/api/admin/') &&
+                             ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) &&
+                             !url.includes('/api/admin/publish') &&
+                             !url.includes('/api/auth/') &&
+                             !url.includes('/api/admin/passkey');
+
+        if (isAdminWrite && response.ok) {
+            // Clone before consuming
+            const cloned = response.clone();
+            // Trigger publish asynchronously (don't block the admin UI)
+            setTimeout(() => {
+                if (typeof API !== 'undefined' && typeof API.publishChanges === 'function') {
+                    API.publishChanges().catch(() => {});
+                }
+            }, 200);
+            return cloned;
+        }
+        return response;
+    };
+})();

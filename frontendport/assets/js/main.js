@@ -1117,3 +1117,108 @@ if ('serviceWorker' in navigator) {
             .catch(() => {});
     });
 }
+
+/* ==========================================================================
+   INSTANT PUBLISH — Version polling for real-time public portal updates
+   Polls /api/public/version every 15 seconds. When admin publishes changes,
+   the version bumps and we reload portfolio data without a full page refresh.
+   ========================================================================== */
+(function startVersionPolling() {
+    if (typeof API_BASE === 'undefined') return;
+
+    let knownVersion = null;
+    let pollInterval = null;
+
+    async function checkVersion() {
+        try {
+            const res = await fetch(API_BASE + '/api/public/version', {
+                cache: 'no-store',
+                signal: AbortSignal.timeout ? AbortSignal.timeout(5000) : undefined
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            const serverVersion = data.version || data.data?.version;
+
+            if (knownVersion === null) {
+                // First poll — just record baseline version
+                knownVersion = serverVersion;
+                return;
+            }
+
+            if (serverVersion !== knownVersion) {
+                knownVersion = serverVersion;
+                console.log('[PublishSync] New version detected:', serverVersion, '— reloading portfolio data...');
+
+                // Evict SW API caches for public endpoints
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    for (const name of cacheNames) {
+                        const cache = await caches.open(name);
+                        const keys = await cache.keys();
+                        for (const req of keys) {
+                            if (req.url.includes('/api/public/')) {
+                                await cache.delete(req);
+                            }
+                        }
+                    }
+                }
+
+                // Re-fetch all portfolio data and re-render page sections
+                await reloadPublicData();
+            }
+        } catch (err) {
+            // Silently ignore network errors during polling
+        }
+    }
+
+    async function reloadPublicData() {
+        try {
+            // Re-run the same data loading functions used on first load
+            if (typeof loadPortfolioData === 'function') await loadPortfolioData();
+            if (typeof applyPublicSettings === 'function') await applyPublicSettings();
+            if (typeof updateDynamicSocialLinks === 'function') await updateDynamicSocialLinks();
+            // Briefly flash a subtle "Updated" badge so users see fresh content
+            showUpdateBadge();
+        } catch (err) {
+            console.warn('[PublishSync] Data reload failed:', err);
+        }
+    }
+
+    function showUpdateBadge() {
+        let badge = document.getElementById('publishSyncBadge');
+        if (!badge) {
+            badge = document.createElement('div');
+            badge.id = 'publishSyncBadge';
+            badge.style.cssText = [
+                'position:fixed', 'bottom:1.2rem', 'right:1.2rem',
+                'background:linear-gradient(135deg,#38BDF8,#2563EB)',
+                'color:#fff', 'padding:0.45rem 1rem', 'border-radius:999px',
+                'font-size:0.78rem', 'font-weight:600', 'letter-spacing:0.03em',
+                'box-shadow:0 4px 24px rgba(56,189,248,0.4)',
+                'z-index:9999', 'opacity:0',
+                'transition:opacity 0.4s ease',
+                'pointer-events:none'
+            ].join(';');
+            badge.textContent = '✦ Content Updated';
+            document.body.appendChild(badge);
+        }
+        badge.style.opacity = '1';
+        setTimeout(() => { badge.style.opacity = '0'; }, 3000);
+    }
+
+    // Start polling after a short delay (don't compete with initial load)
+    setTimeout(() => {
+        checkVersion(); // baseline
+        pollInterval = setInterval(checkVersion, 15000); // every 15s
+    }, 3000);
+
+    // Pause polling when tab is hidden, resume when visible
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            clearInterval(pollInterval);
+        } else {
+            checkVersion(); // immediate check on tab focus
+            pollInterval = setInterval(checkVersion, 15000);
+        }
+    });
+})();
