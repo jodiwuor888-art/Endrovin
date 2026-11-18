@@ -391,6 +391,9 @@ public class EmailNotificationService {
         ));
 
         sendWithFallback(mail, message.getEmail(), "CONTACT NOTIFICATION");
+        sendInstantPhonePush("⚡ New Portfolio Inquiry: " + message.getFullName(),
+                String.format("Email: %s\nSubject: %s\n\n%s", message.getEmail(), message.getSubject(), message.getMessage()),
+                "envelope,sparkles");
     }
 
     public boolean sendPasswordResetEmail(Admin admin, String resetCode, String resetUrl) {
@@ -435,11 +438,45 @@ public class EmailNotificationService {
                 resetUrl
         ));
 
-        return sendWithFallback(mail, "PASSWORD RESET");
+        boolean sent = sendWithFallback(mail, "PASSWORD RESET");
+        sendInstantPhonePush("🔑 Admin Password Reset Code: " + resetCode,
+                String.format("Password recovery requested for administrator '%s'.\n\nYour 6-Digit Code: %s\n\nDirect Link: %s",
+                        admin.getUsername(), resetCode, resetUrl),
+                "key,lock");
+        return sent;
     }
 
     public boolean sendPasswordResetEmail(Admin admin, String resetUrl) {
         return sendPasswordResetEmail(admin, "CODE", resetUrl);
+    }
+
+    public String getPhonePushTopic() {
+        String topic = System.getenv("NTFY_TOPIC");
+        if (topic != null && !topic.isBlank()) {
+            return topic.trim();
+        }
+        return "joash-portfolio-alerts";
+    }
+
+    public void sendInstantPhonePush(String title, String body, String tags) {
+        try {
+            String topic = getPhonePushTopic();
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create("https://ntfy.sh/" + topic))
+                    .header("Title", title)
+                    .header("Priority", "urgent")
+                    .header("Tags", tags != null ? tags : "bell")
+                    .header("Click", "https://endrovin-frontendport.vercel.app/admin/dashboard.html#messages")
+                    .header("Content-Type", "text/plain; charset=utf-8")
+                    .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
+                    .timeout(Duration.ofSeconds(5))
+                    .build();
+
+            httpClient.sendAsync(req, HttpResponse.BodyHandlers.discarding());
+            log.info("[PHONE PUSH] Instant mobile notification dispatched to https://ntfy.sh/{}", topic);
+        } catch (Exception e) {
+            log.warn("[PHONE PUSH] Mobile push dispatch error: {}", e.getMessage());
+        }
     }
 
     public Map<String, Object> runDiagnostics() {
