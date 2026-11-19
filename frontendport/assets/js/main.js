@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadPortfolioData();
     applyPublicSettings();
     initRecommendationCharCount();
-    initProjectFilters();
     updateDynamicSocialLinks();
 });
 
@@ -513,79 +512,21 @@ function renderServices(services) {
     `).join('');
 }
 
-let __allProjectsData = [];
-let __activeProjectCategory = 'ALL';
-
-function initProjectFilters() {
-    const filterBar = document.getElementById('projectFilterBar');
-    const searchInput = document.getElementById('projectSearchInput');
-
-    if (filterBar) {
-        filterBar.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterBar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                __activeProjectCategory = btn.dataset.category || 'ALL';
-                filterAndRenderProjects();
-            });
-        });
-    }
-
-    if (searchInput) {
-        searchInput.addEventListener('input', () => {
-            filterAndRenderProjects();
-        });
-    }
-}
-
-function filterAndRenderProjects() {
+function renderProjects(projects) {
     const container = document.getElementById('projectsContainer');
     if (!container) return;
 
-    if (!__allProjectsData || __allProjectsData.length === 0) {
+    if (!projects || projects.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">🚀</div>
-                <h4>No projects published yet</h4>
+                <h4>No projects have been added yet</h4>
                 <p>Projects, source code repositories, and live demonstration links will appear here once published.</p>
             </div>`;
         return;
     }
 
-    const searchInput = document.getElementById('projectSearchInput');
-    const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
-
-    const filtered = __allProjectsData.filter(p => {
-        const cat = (p.category || '').toLowerCase();
-        const title = (p.title || '').toLowerCase();
-        const desc = (p.shortDescription || '').toLowerCase();
-        const tech = (p.technologies || '').toLowerCase();
-
-        let matchesCat = true;
-        if (__activeProjectCategory !== 'ALL') {
-            const filterLower = __activeProjectCategory.toLowerCase();
-            matchesCat = cat.includes(filterLower) || tech.includes(filterLower) || title.includes(filterLower);
-        }
-
-        let matchesQuery = true;
-        if (query) {
-            matchesQuery = title.includes(query) || desc.includes(query) || tech.includes(query) || cat.includes(query);
-        }
-
-        return matchesCat && matchesQuery;
-    });
-
-    if (filtered.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state" style="grid-column: 1 / -1;">
-                <div class="empty-state-icon">🔍</div>
-                <h4>No matching projects found</h4>
-                <p>Try adjusting your search keywords or switching to "All Categories" to view available work.</p>
-            </div>`;
-        return;
-    }
-
-    container.innerHTML = filtered.map(p => {
+    container.innerHTML = projects.map(p => {
         const techBadges = p.technologies
             ? p.technologies.split(',').map(t => `<span>${escapeHtml(t.trim())}</span>`).join('')
             : '';
@@ -597,7 +538,7 @@ function filterAndRenderProjects() {
         return `
             <div class="project-card">
                 <div class="project-image">
-                    <span class="badge-cat">${escapeHtml(p.category || 'Software')}</span>
+                    <span class="badge-cat">${escapeHtml(p.category)}</span>
                     ${imageHtml}
                 </div>
                 <div class="project-content">
@@ -605,18 +546,13 @@ function filterAndRenderProjects() {
                     <p>${escapeHtml(p.shortDescription)}</p>
                     <div class="project-technologies">${techBadges}</div>
                     <div class="project-links">
-                        ${p.projectLink ? `<a href="${p.projectLink}" target="_blank" rel="noopener" class="project-link">Live Demo →</a>` : ''}
-                        ${p.githubUrl ? `<a href="${p.githubUrl}" target="_blank" rel="noopener" class="project-link">GitHub Code ↗</a>` : ''}
+                        ${p.projectLink ? `<a href="${p.projectLink}" target="_blank" class="project-link">Live Demo →</a>` : ''}
+                        ${p.githubUrl ? `<a href="${p.githubUrl}" target="_blank" class="project-link">GitHub Code ↗</a>` : ''}
                     </div>
                 </div>
             </div>
         `;
     }).join('');
-}
-
-function renderProjects(projects) {
-    __allProjectsData = Array.isArray(projects) ? projects : [];
-    filterAndRenderProjects();
 }
 
 function renderEducation(educationList) {
