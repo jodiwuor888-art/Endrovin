@@ -19,21 +19,22 @@ services:
 
     envVars:
       # ── Spring Profile ──────────────────────────────────────
+      # Use 'aws-mysql'   for AWS RDS MySQL Database
       # Use 'azure-mysql' for Azure Database for MySQL
       # Use 'azure-sql'   for Azure SQL Database (SQL Server)
       - key: SPRING_PROFILES_ACTIVE
-        value: azure-mysql     # Change to azure-sql if using Azure SQL
+        value: aws-mysql     # Change to azure-mysql or azure-sql as needed
 
-      # ── Azure Database Credentials ──────────────────────────
+      # ── Database Credentials (AWS RDS / Azure) ──────────────
       # Set all of these in Render Dashboard → Environment
       - key: DB_HOST
-        sync: false   # e.g. joash-portfolio.mysql.database.azure.com
+        sync: false   # e.g. xxx.cxxxxx.us-east-1.rds.amazonaws.com OR joash-portfolio.mysql.database.azure.com
       - key: DB_PORT
-        value: "3306" # 3306 for MySQL | 1433 for Azure SQL
+        value: "3306" # 3306 for MySQL (AWS RDS / Azure) | 1433 for Azure SQL
       - key: DB_NAME
         value: PortfolioDB
       - key: DB_USER
-        sync: false   # e.g. portfolioadmin   (NOT the full user@host format)
+        sync: false   # e.g. portfolioadmin
       - key: DB_PASSWORD
         sync: false
 

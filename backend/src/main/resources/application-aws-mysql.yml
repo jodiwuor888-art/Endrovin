@@ -1,11 +1,11 @@
 spring:
   # ============================================================
-  # AWS RDS MySQL Database
+  # AWS RDS MySQL Database (Encrypted In-Transit with TLS)
   # Free tier eligible: db.t3.micro / db.t4g.micro (750 hrs/month)
   # ============================================================
   datasource:
-    url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/${DB_NAME:PortfolioDB}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8&connectTimeout=30000&socketTimeout=60000
-    username: ${DB_USER:admin}
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/${DB_NAME:PortfolioDB}?useSSL=${DB_USE_SSL:true}&requireSSL=${DB_REQUIRE_SSL:false}&sslMode=${DB_SSL_MODE:PREFERRED}&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8&connectTimeout=30000&socketTimeout=60000
+    username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
