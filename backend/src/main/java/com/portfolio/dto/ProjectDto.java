@@ -29,6 +29,9 @@ public class ProjectDto {
     private boolean featured = false;
     private int displayOrder = 0;
     private String status = "PUBLISHED";
+    private String seoTitle;
+    private String seoDescription;
+    private long viewCount = 0;
     private List<String> additionalImages = new ArrayList<>();
 
     public ProjectDto() {
@@ -136,6 +139,30 @@ public class ProjectDto {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getSeoTitle() {
+        return seoTitle;
+    }
+
+    public void setSeoTitle(String seoTitle) {
+        this.seoTitle = seoTitle;
+    }
+
+    public String getSeoDescription() {
+        return seoDescription;
+    }
+
+    public void setSeoDescription(String seoDescription) {
+        this.seoDescription = seoDescription;
+    }
+
+    public long getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(long viewCount) {
+        this.viewCount = viewCount;
     }
 
     public List<String> getAdditionalImages() {

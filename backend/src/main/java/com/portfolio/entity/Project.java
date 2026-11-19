@@ -51,6 +51,15 @@ public class Project {
     @Column(name = "Status", nullable = false, length = 20)
     private String status = "PUBLISHED";
 
+    @Column(name = "SeoTitle", length = 250)
+    private String seoTitle;
+
+    @Column(name = "SeoDescription", length = 500)
+    private String seoDescription;
+
+    @Column(name = "ViewCount", nullable = false)
+    private long viewCount = 0;
+
     @Column(name = "CreatedAt", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -171,6 +180,30 @@ public class Project {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getSeoTitle() {
+        return seoTitle;
+    }
+
+    public void setSeoTitle(String seoTitle) {
+        this.seoTitle = seoTitle;
+    }
+
+    public String getSeoDescription() {
+        return seoDescription;
+    }
+
+    public void setSeoDescription(String seoDescription) {
+        this.seoDescription = seoDescription;
+    }
+
+    public long getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(long viewCount) {
+        this.viewCount = viewCount;
     }
 
     public LocalDateTime getCreatedAt() {

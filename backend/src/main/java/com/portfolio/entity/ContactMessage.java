@@ -31,6 +31,32 @@ public class ContactMessage {
     @Column(name = "Status", nullable = false, length = 20)
     private String status = "NEW"; // NEW, READ, ARCHIVED, DELETED
 
+    @Column(name = "Phone", length = 50)
+    private String phone;
+
+    @Column(name = "Company", length = 150)
+    private String company;
+
+    @Column(name = "ServiceInterest", length = 100)
+    private String serviceInterest;
+
+    @Column(name = "EstimatedBudget", length = 100)
+    private String estimatedBudget;
+
+    @Column(name = "LeadStatus", nullable = false, length = 30)
+    private String leadStatus = "NEW"; // NEW, CONTACTED, IN_DISCUSSION, QUOTATION_SENT, NEGOTIATING, WON, LOST
+
+    @Column(name = "FollowUpDate")
+    private LocalDateTime followUpDate;
+
+    @Lob
+    @Column(name = "InternalNotes", columnDefinition = "LONGTEXT")
+    private String internalNotes;
+
+    @Lob
+    @Column(name = "QuotationDetails", columnDefinition = "LONGTEXT")
+    private String quotationDetails;
+
     @Column(name = "ClientIp", length = 50)
     private String clientIp;
 
@@ -129,5 +155,69 @@ public class ContactMessage {
 
     public void setReadAt(LocalDateTime readAt) {
         this.readAt = readAt;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public String getServiceInterest() {
+        return serviceInterest;
+    }
+
+    public void setServiceInterest(String serviceInterest) {
+        this.serviceInterest = serviceInterest;
+    }
+
+    public String getEstimatedBudget() {
+        return estimatedBudget;
+    }
+
+    public void setEstimatedBudget(String estimatedBudget) {
+        this.estimatedBudget = estimatedBudget;
+    }
+
+    public String getLeadStatus() {
+        return leadStatus;
+    }
+
+    public void setLeadStatus(String leadStatus) {
+        this.leadStatus = leadStatus;
+    }
+
+    public LocalDateTime getFollowUpDate() {
+        return followUpDate;
+    }
+
+    public void setFollowUpDate(LocalDateTime followUpDate) {
+        this.followUpDate = followUpDate;
+    }
+
+    public String getInternalNotes() {
+        return internalNotes;
+    }
+
+    public void setInternalNotes(String internalNotes) {
+        this.internalNotes = internalNotes;
+    }
+
+    public String getQuotationDetails() {
+        return quotationDetails;
+    }
+
+    public void setQuotationDetails(String quotationDetails) {
+        this.quotationDetails = quotationDetails;
     }
 }

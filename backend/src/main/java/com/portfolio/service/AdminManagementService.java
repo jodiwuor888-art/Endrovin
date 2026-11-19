@@ -225,6 +225,9 @@ public class AdminManagementService {
         p.setFeatured(d.isFeatured());
         p.setDisplayOrder(d.getDisplayOrder());
         p.setStatus(d.getStatus() != null ? d.getStatus() : "PUBLISHED");
+        if (d.getSeoTitle() != null) p.setSeoTitle(d.getSeoTitle());
+        if (d.getSeoDescription() != null) p.setSeoDescription(d.getSeoDescription());
+        if (d.getViewCount() > 0) p.setViewCount(d.getViewCount());
     }
 
     private ProjectDto mapToProjectDto(Project p) {
@@ -242,6 +245,9 @@ public class AdminManagementService {
         d.setFeatured(p.isFeatured());
         d.setDisplayOrder(p.getDisplayOrder());
         d.setStatus(p.getStatus());
+        d.setSeoTitle(p.getSeoTitle());
+        d.setSeoDescription(p.getSeoDescription());
+        d.setViewCount(p.getViewCount());
         return d;
     }
 
@@ -814,6 +820,14 @@ public class AdminManagementService {
             r.setRead(m.isRead());
             r.setStatus(m.getStatus());
             r.setClientIp(m.getClientIp());
+            r.setPhone(m.getPhone());
+            r.setCompany(m.getCompany());
+            r.setServiceInterest(m.getServiceInterest());
+            r.setEstimatedBudget(m.getEstimatedBudget());
+            r.setLeadStatus(m.getLeadStatus());
+            r.setFollowUpDate(m.getFollowUpDate());
+            r.setInternalNotes(m.getInternalNotes());
+            r.setQuotationDetails(m.getQuotationDetails());
             r.setCreatedAt(m.getCreatedAt());
             r.setReadAt(m.getReadAt());
             return r;

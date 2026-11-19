@@ -48,6 +48,9 @@ public class Admin {
     @Column(name = "PasswordResetExpiry")
     private LocalDateTime passwordResetExpiry;
 
+    @Column(name = "TokensInvalidBefore")
+    private LocalDateTime tokensInvalidBefore;
+
     @Column(name = "CreatedAt", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -168,6 +171,14 @@ public class Admin {
 
     public void setPasswordResetExpiry(LocalDateTime passwordResetExpiry) {
         this.passwordResetExpiry = passwordResetExpiry;
+    }
+
+    public LocalDateTime getTokensInvalidBefore() {
+        return tokensInvalidBefore;
+    }
+
+    public void setTokensInvalidBefore(LocalDateTime tokensInvalidBefore) {
+        this.tokensInvalidBefore = tokensInvalidBefore;
     }
 
     public LocalDateTime getCreatedAt() {
