@@ -226,11 +226,38 @@
         </nav>
     </header>
 
+    <!-- ================= SUB-PAGE HERO BANNER ================= -->
+    <section class="page-banner">
+        <span class="page-banner-badge">PORTFOLIO SHOWCASE</span>
+        <h1>Featured Projects &amp; Code</h1>
+        <p class="page-banner-desc">
+            Explore software applications, full-stack systems, Java Spring Boot services, and database architectures engineered with high standards of security and reliability.
+        </p>
+        <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom:15px;">
+            <a href="https://github.com/jodiwuor888-art" target="_blank" rel="noopener" class="btn secondary-btn">GitHub Repositories ↗</a>
+            <a href="contact.html" class="btn primary-btn">Request a Custom Build 🚀</a>
+        </div>
+    </section>
+
+</header>
+
     <main id="main" class="section">
         <div class="section-title">
             <p>PORTFOLIO SHOWCASE</p>
             <h2>My Projects</h2>
         </div>
+                <div class="filter-bar" id="projectFilterBar">
+            <button class="filter-btn active" data-category="ALL">All Categories</button>
+            <button class="filter-btn" data-category="Full-Stack">Full-Stack</button>
+            <button class="filter-btn" data-category="Java">Java &amp; Spring Boot</button>
+            <button class="filter-btn" data-category="Web">Web Applications</button>
+            <button class="filter-btn" data-category="Database">Databases &amp; SQL</button>
+        </div>
+
+        <div class="search-box-wrap">
+            <input type="text" id="projectSearchInput" placeholder="Search projects by title, stack, or keywords...">
+        </div>
+
         <div id="projectsContainer" class="projects-container">
             <!-- Dynamically populated from REST API -->
         </div>
