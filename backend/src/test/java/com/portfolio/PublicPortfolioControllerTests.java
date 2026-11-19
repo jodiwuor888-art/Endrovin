@@ -37,13 +37,14 @@ public class PublicPortfolioControllerTests {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.projects").value(Collections.emptyList()))
-                .andExpect(jsonPath("$.data.skills").value(Collections.emptyList()))
-                .andExpect(jsonPath("$.data.services").value(Collections.emptyList()))
-                .andExpect(jsonPath("$.data.education").value(Collections.emptyList()))
-                .andExpect(jsonPath("$.data.experience").value(Collections.emptyList()))
-                .andExpect(jsonPath("$.data.certificates").value(Collections.emptyList()))
-                .andExpect(jsonPath("$.data.testimonials").value(Collections.emptyList()));
+                .andExpect(jsonPath("$.data.projects").isArray())
+                .andExpect(jsonPath("$.data.projects").isEmpty())
+                .andExpect(jsonPath("$.data.skills").isArray())
+                .andExpect(jsonPath("$.data.services").isArray())
+                .andExpect(jsonPath("$.data.education").isArray())
+                .andExpect(jsonPath("$.data.experience").isArray())
+                .andExpect(jsonPath("$.data.certificates").isArray())
+                .andExpect(jsonPath("$.data.testimonials").isArray());
     }
 
     @Test

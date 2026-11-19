@@ -51,7 +51,7 @@ public class EmailNotificationService {
     }
 
     public boolean isConfigured() {
-        return isHttpApiConfigured() || isSmtpConfigured();
+        return isHttpApiConfigured() || isSmtpConfigured() || this.springMailSender != null;
     }
 
     public boolean isHttpApiConfigured() {
@@ -243,49 +243,47 @@ public class EmailNotificationService {
     }
 
     private boolean sendViaSmtp(SimpleMailMessage mail, String context) {
-        if (!isSmtpConfigured()) {
-            return false;
-        }
+        if (isSmtpConfigured()) {
+            String portStr = System.getenv("SMTP_PORT");
+            int preferredPort = 465;
+            if (portStr != null && !portStr.isBlank()) {
+                try {
+                    preferredPort = Integer.parseInt(portStr.trim());
+                } catch (Exception ignored) {}
+            }
 
-        String portStr = System.getenv("SMTP_PORT");
-        int preferredPort = 465;
-        if (portStr != null && !portStr.isBlank()) {
-            try {
-                preferredPort = Integer.parseInt(portStr.trim());
-            } catch (Exception ignored) {}
-        }
+            int firstPort = (preferredPort == 587) ? 465 : preferredPort;
+            boolean firstSsl = (firstPort == 465);
+            int fallbackPort = (firstPort == 465) ? 587 : 465;
+            boolean fallbackSsl = (fallbackPort == 465);
 
-        int firstPort = (preferredPort == 587) ? 465 : preferredPort;
-        boolean firstSsl = (firstPort == 465);
-        int fallbackPort = (firstPort == 465) ? 587 : 465;
-        boolean fallbackSsl = (fallbackPort == 465);
+            // Attempt 1: Port 465 SMTPS (Direct SSL)
+            JavaMailSender primarySender = buildSender(firstPort, firstSsl);
+            if (primarySender != null) {
+                try {
+                    primarySender.send(mail);
+                    log.info("[{}] Email dispatched successfully via port {} (SSL={}) to {}", context, firstPort, firstSsl, mail.getTo());
+                    return true;
+                } catch (Exception e1) {
+                    log.warn("[{}] Primary dispatch via port {} (SSL={}) failed: {}. Retrying via fallback port {}...",
+                            context, firstPort, firstSsl, e1.getMessage(), fallbackPort);
+                }
+            }
 
-        // Attempt 1: Port 465 SMTPS (Direct SSL)
-        JavaMailSender primarySender = buildSender(firstPort, firstSsl);
-        if (primarySender != null) {
-            try {
-                primarySender.send(mail);
-                log.info("[{}] Email dispatched successfully via port {} (SSL={}) to {}", context, firstPort, firstSsl, mail.getTo());
-                return true;
-            } catch (Exception e1) {
-                log.warn("[{}] Primary dispatch via port {} (SSL={}) failed: {}. Retrying via fallback port {}...",
-                        context, firstPort, firstSsl, e1.getMessage(), fallbackPort);
+            // Attempt 2: Fallback Port
+            JavaMailSender fallbackSender = buildSender(fallbackPort, fallbackSsl);
+            if (fallbackSender != null) {
+                try {
+                    fallbackSender.send(mail);
+                    log.info("[{}] Fallback email dispatched successfully via port {} (SSL={}) to {}", context, fallbackPort, fallbackSsl, mail.getTo());
+                    return true;
+                } catch (Exception e2) {
+                    log.error("[{}] Fallback dispatch via port {} also failed: {}", context, fallbackPort, e2.getMessage());
+                }
             }
         }
 
-        // Attempt 2: Fallback Port
-        JavaMailSender fallbackSender = buildSender(fallbackPort, fallbackSsl);
-        if (fallbackSender != null) {
-            try {
-                fallbackSender.send(mail);
-                log.info("[{}] Fallback email dispatched successfully via port {} (SSL={}) to {}", context, fallbackPort, fallbackSsl, mail.getTo());
-                return true;
-            } catch (Exception e2) {
-                log.error("[{}] Fallback dispatch via port {} also failed: {}", context, fallbackPort, e2.getMessage());
-            }
-        }
-
-        // Attempt 3: Spring auto-configured sender bean
+        // Attempt 3: Spring auto-configured sender bean (or test mock)
         if (this.springMailSender != null) {
             try {
                 this.springMailSender.send(mail);
@@ -424,7 +422,7 @@ public class EmailNotificationService {
                 "==================================================\n" +
                 "ACCOUNT DETAILS\n" +
                 "==================================================\n" +
-                "Username:   %s\n" +
+                "Username: %s\n" +
                 "Expires In: 15 Minutes\n\n" +
                 "HOW TO SET YOUR NEW PASSWORD:\n" +
                 "Option 1 (Fastest): Return to the admin portal and type your 6-digit code: %s\n\n" +

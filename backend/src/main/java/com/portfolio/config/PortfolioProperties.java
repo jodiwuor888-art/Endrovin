@@ -57,7 +57,7 @@ public class PortfolioProperties {
         }
 
         public static class Jwt {
-            private String secret = "4c9b1397b98d4924a9d7249876fecba27931f82e5b7c8466e34458b688d0bcae";
+            private String secret = "";
             private long expirationMs = 86400000;
 
             public String getSecret() {

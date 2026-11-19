@@ -85,14 +85,14 @@ server:
 
   port: ${PORT:8080}
   error:
-    include-message: always
-    include-binding-errors: always
+    include-message: never
+    include-binding-errors: never
 
 # Portfolio Custom Application Properties
 portfolio:
   security:
     jwt:
-      secret: ${JWT_SECRET:4c9b1397b98d4924a9d7249876fecba27931f82e5b7c8466e34458b688d0bcae}
+      secret: ${JWT_SECRET:}
       expiration-ms: 86400000 # 24 hours
     rate-limit:
       max-attempts: 5
@@ -131,7 +131,7 @@ management:
         include: health,info,metrics
   endpoint:
     health:
-      show-details: always
+      show-details: when-authorized
 
 # OpenAPI / Swagger
 springdoc:

@@ -131,7 +131,7 @@ public class FileStorageService {
 
     private void validateImageMagicNumber(MultipartFile file, String extension) {
         try (InputStream is = file.getInputStream()) {
-            byte[] header = new byte[8];
+            byte[] header = new byte[12];
             int read = is.read(header);
             if (read < 4) {
                 throw new FileStorageException("Corrupt image file");
@@ -153,6 +153,13 @@ public class FileStorageService {
             else if ("gif".equalsIgnoreCase(extension)) {
                 if (header[0] != 0x47 || header[1] != 0x49 || header[2] != 0x46 || header[3] != 0x38) {
                     throw new FileStorageException("Invalid GIF signature");
+                }
+            }
+            // WebP signature: RIFF at 0-3 (52 49 46 46) and WEBP at 8-11 (57 45 42 50)
+            else if ("webp".equalsIgnoreCase(extension)) {
+                if (read < 12 || header[0] != 0x52 || header[1] != 0x49 || header[2] != 0x46 || header[3] != 0x46
+                        || header[8] != 0x57 || header[9] != 0x45 || header[10] != 0x42 || header[11] != 0x50) {
+                    throw new FileStorageException("Invalid WebP signature");
                 }
             }
         } catch (IOException e) {

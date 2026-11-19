@@ -221,7 +221,16 @@ public class AuthService {
             AdminUserDetails userDetails = (AdminUserDetails) authentication.getPrincipal();
             Admin admin = userDetails.getAdmin();
 
-            // Direct independent password login (user can log in via password OR biometric passkey independently)
+            // Enforce MFA if admin has registered WebAuthn / FIDO2 passkeys
+            var passkeys = credentialRepository.findByAdminAndRevokedAtIsNull(admin);
+            if (!passkeys.isEmpty()) {
+                String pendingToken = tokenProvider.generatePendingMfaToken(admin);
+                PasskeyAuthenticationOptionsResponse options = webAuthnService.getAuthenticationOptions(admin, origin);
+                auditLogService.logAction(username, "LOGIN_PASSWORD_VERIFIED", "Admins", String.valueOf(admin.getId()), "Password verified; prompting for second-factor WebAuthn passkey", ipAddress);
+                return AuthResponse.mfaRequired(pendingToken, admin.getId(), admin.getUsername(), admin.getEmail(), options);
+            }
+
+            // Direct password login when no passkey has been enrolled yet (first-time setup state)
             admin.setLastLoginAt(LocalDateTime.now());
             admin.setFailedLoginAttempts(0);
             admin.setLockoutUntil(null);

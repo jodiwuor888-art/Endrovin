@@ -46,7 +46,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         if (usePatterns) {
             registry.addMapping("/**")
-                    .allowedOriginPatterns("*")
+                    .allowedOriginPatterns("https://*.vercel.app", "http://localhost:*", "http://127.0.0.1:*")
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                     .allowedHeaders("*")
                     .allowCredentials(true)

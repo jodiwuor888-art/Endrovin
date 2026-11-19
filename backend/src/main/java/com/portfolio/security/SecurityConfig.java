@@ -60,9 +60,13 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers
-                    .frameOptions(frameOptions -> frameOptions.sameOrigin())
-                        .xssProtection(xss -> xss.disable()) // Modern browsers use CSP
-                        .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' http://localhost:* https:;"))
+                    .frameOptions(frameOptions -> frameOptions.deny())
+                    .httpStrictTransportSecurity(hsts -> hsts
+                            .maxAgeInSeconds(31536000)
+                            .includeSubDomains(true)
+                            .preload(true))
+                    .xssProtection(xss -> xss.disable()) // Modern browsers use CSP
+                    .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' http://localhost:* https:;"))
                 )
                 .authorizeHttpRequests(auth -> auth
                         // Public APIs
@@ -84,8 +88,8 @@ public class SecurityConfig {
                         .requestMatchers("/", "/index.html", "/*.html", "/*.css", "/*.js", "/*.ico", "/*.png", "/*.jpg", "/*.svg").permitAll()
                         .requestMatchers("/frontend/**", "/frontendport/**", "/assets/**", "/admin/**", "/uploads/**", "/static/**").permitAll()
 
-                        // Swagger / OpenAPI documentation
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        // Swagger / OpenAPI documentation (restricted to authenticated administrators)
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").hasRole("ADMIN")
 
                         // Forward and error dispatchers
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()

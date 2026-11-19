@@ -1,5 +1,6 @@
 package com.portfolio.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ public class Admin {
     @Column(name = "Email", nullable = false, unique = true, length = 120)
     private String email;
 
+    @JsonIgnore
     @Column(name = "PasswordHash", nullable = false, length = 255)
     private String passwordHash;
 
@@ -38,9 +40,11 @@ public class Admin {
     @Column(name = "LastLoginAt")
     private LocalDateTime lastLoginAt;
 
+    @JsonIgnore
     @Column(name = "PasswordResetToken", length = 100)
     private String passwordResetToken;
 
+    @JsonIgnore
     @Column(name = "PasswordResetExpiry")
     private LocalDateTime passwordResetExpiry;
 

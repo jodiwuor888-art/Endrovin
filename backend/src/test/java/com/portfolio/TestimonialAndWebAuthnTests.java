@@ -47,10 +47,19 @@ public class TestimonialAndWebAuthnTests {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired(required = false)
+    private org.springframework.cache.CacheManager cacheManager;
+
     private Admin testAdmin;
 
     @BeforeEach
     void setUp() {
+        if (cacheManager != null) {
+            for (String cacheName : cacheManager.getCacheNames()) {
+                var c = cacheManager.getCache(cacheName);
+                if (c != null) c.clear();
+            }
+        }
         testimonialRepository.deleteAll();
         recoveryCodeRepository.deleteAll();
         adminRepository.deleteAll();
@@ -75,6 +84,16 @@ public class TestimonialAndWebAuthnTests {
                 "Should reject submission without consent");
 
         req.setConsentToPublish(true);
+
+        // Solve captcha for valid submission
+        java.util.Map<String, String> captcha = publicPortfolioService.generateCaptcha();
+        String token = captcha.get("token");
+        byte[] bytes = java.util.Base64.getUrlDecoder().decode(token);
+        String payload = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
+        String answer = payload.split(":")[1];
+        req.setCaptchaToken(token);
+        req.setCaptchaAnswer(answer);
+
         String msg = publicPortfolioService.submitPublicRecommendation(req, "127.0.0.1");
         assertNotNull(msg);
 

@@ -1,28 +1,26 @@
-@REM ----------------------------------------------------------------------------
-@REM Maven Start Up Batch script
-@REM ----------------------------------------------------------------------------
-
 @IF "%DEBUG%" == "" @ECHO OFF
 @SETLOCAL EnableDelayedExpansion EnableExtensions
 
 SET "DIRNAME=%~dp0"
-IF "%DIRNAME%" == "" SET "DIRNAME=."
+IF "%DIRNAME:~-1%" == "\" SET "DIRNAME=%DIRNAME:~0,-1%"
 SET "MAVEN_PROJECTBASEDIR=%DIRNAME%"
 
-@REM Set JAVA_HOME if not already set and java is found
 IF NOT DEFINED JAVA_HOME (
-  FOR /F "tokens=* USEBACKQ" %%F IN (`where java 2^>nul`) DO (
-    SET "JAVA_EXE=%%F"
-    GOTO :found_java
+  IF EXIST "C:\Program Files\Java\jdk-25.0.5.0.3" (
+    SET "JAVA_HOME=C:\Program Files\Java\jdk-25.0.5.0.3"
   )
 )
-:found_java
+
+IF DEFINED JAVA_HOME (
+  SET "JAVA_EXE=%JAVA_HOME%\bin\java.exe"
+) ELSE (
+  SET "JAVA_EXE=java"
+)
 
 SET "WRAPPER_JAR=%DIRNAME%\.mvn\wrapper\maven-wrapper.jar"
-SET "WRAPPER_PROP=%DIRNAME%\.mvn\wrapper\maven-wrapper.properties"
 
 IF EXIST "%WRAPPER_JAR%" (
-  java -jar "%WRAPPER_JAR%" %*
+  "%JAVA_EXE%" -cp "%WRAPPER_JAR%" "-Dmaven.multiModuleProjectDirectory=%MAVEN_PROJECTBASEDIR%" org.apache.maven.wrapper.MavenWrapperMain %*
 ) ELSE (
   mvn %*
 )

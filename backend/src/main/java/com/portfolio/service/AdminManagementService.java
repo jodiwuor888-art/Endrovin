@@ -5,6 +5,7 @@ import com.portfolio.entity.*;
 import com.portfolio.exception.BadRequestException;
 import com.portfolio.exception.ResourceNotFoundException;
 import com.portfolio.repository.*;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -726,6 +727,7 @@ public class AdminManagementService {
         return mapToTestimonialDto(saved);
     }
 
+    @CacheEvict(value = {"publicPortfolio", "publicTestimonials"}, allEntries = true)
     public TestimonialDto updateApprovalStatus(Long id, String status, String username, String ip) {
         Long testimonialId = java.util.Objects.requireNonNull(id, "Testimonial id must not be null");
         Testimonial t = testimonialRepository.findById(testimonialId)
@@ -745,6 +747,7 @@ public class AdminManagementService {
     }
 
     @SuppressWarnings("null")
+    @CacheEvict(value = {"publicPortfolio", "publicTestimonials"}, allEntries = true)
     public TestimonialDto rejectTestimonial(Long id, String reason, String username, String ip) {
         Long testimonialId = java.util.Objects.requireNonNull(id, "Testimonial id must not be null");
         Testimonial t = testimonialRepository.findById(testimonialId)
@@ -758,6 +761,7 @@ public class AdminManagementService {
     }
 
     @SuppressWarnings("null")
+    @CacheEvict(value = {"publicPortfolio", "publicTestimonials"}, allEntries = true)
     public void deleteTestimonial(Long id, String username, String ip) {
         Long testimonialId = java.util.Objects.requireNonNull(id, "Testimonial id must not be null");
         Testimonial t = testimonialRepository.findById(testimonialId)
