@@ -27,6 +27,13 @@ if (-not (Test-Path -LiteralPath $jarPath -PathType Leaf)) {
     throw "Backend JAR not found at '$jarPath'. Build the backend before running this script."
 }
 
+if (-not $env:JAVA_HOME -and (Test-Path 'C:\Program Files\Java\jdk-25.0.5.0.3')) {
+    $env:JAVA_HOME = 'C:\Program Files\Java\jdk-25.0.5.0.3'
+}
+if ($env:JAVA_HOME -and (Test-Path "$env:JAVA_HOME\bin\java.exe")) {
+    $env:Path = "$env:JAVA_HOME\bin;$env:Path"
+}
+
 $java = Get-Command java -ErrorAction SilentlyContinue
 if (-not $java) {
     throw 'Java was not found on PATH. Install the project JDK and reopen PowerShell.'
