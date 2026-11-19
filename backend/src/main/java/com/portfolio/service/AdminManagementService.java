@@ -860,6 +860,42 @@ public class AdminManagementService {
         auditLogService.logAction(username, "DELETE_MESSAGE", "ContactMessages", String.valueOf(id), "Deleted contact message", ip);
     }
 
+    public ContactMessageResponse updateLeadDetails(Long id, ContactMessageResponse req, String username, String ip) {
+        ContactMessage m = messageRepository.findById(java.util.Objects.requireNonNull(id, "id must not be null"))
+                .orElseThrow(() -> new ResourceNotFoundException("Message / Lead not found: " + id));
+        if (req.getLeadStatus() != null && !req.getLeadStatus().isBlank()) m.setLeadStatus(req.getLeadStatus().toUpperCase());
+        if (req.getPhone() != null) m.setPhone(req.getPhone());
+        if (req.getCompany() != null) m.setCompany(req.getCompany());
+        if (req.getServiceInterest() != null) m.setServiceInterest(req.getServiceInterest());
+        if (req.getEstimatedBudget() != null) m.setEstimatedBudget(req.getEstimatedBudget());
+        if (req.getFollowUpDate() != null) m.setFollowUpDate(req.getFollowUpDate());
+        if (req.getInternalNotes() != null) m.setInternalNotes(req.getInternalNotes());
+        if (req.getQuotationDetails() != null) m.setQuotationDetails(req.getQuotationDetails());
+        ContactMessage saved = messageRepository.save(m);
+        auditLogService.logAction(username, "UPDATE_LEAD", "ContactMessages", String.valueOf(id), "Updated lead status to: " + saved.getLeadStatus(), ip);
+
+        ContactMessageResponse r = new ContactMessageResponse();
+        r.setId(saved.getId());
+        r.setFullName(saved.getFullName());
+        r.setEmail(saved.getEmail());
+        r.setSubject(saved.getSubject());
+        r.setMessage(saved.getMessage());
+        r.setRead(saved.isRead());
+        r.setStatus(saved.getStatus());
+        r.setClientIp(saved.getClientIp());
+        r.setPhone(saved.getPhone());
+        r.setCompany(saved.getCompany());
+        r.setServiceInterest(saved.getServiceInterest());
+        r.setEstimatedBudget(saved.getEstimatedBudget());
+        r.setLeadStatus(saved.getLeadStatus());
+        r.setFollowUpDate(saved.getFollowUpDate());
+        r.setInternalNotes(saved.getInternalNotes());
+        r.setQuotationDetails(saved.getQuotationDetails());
+        r.setCreatedAt(saved.getCreatedAt());
+        r.setReadAt(saved.getReadAt());
+        return r;
+    }
+
     // ==========================================
     // 12. SOCIAL LINKS CRUD
     // ==========================================
