@@ -410,19 +410,30 @@ public class WebAuthnService {
         }
         String normalizedClient = clientDataOrigin.trim().toLowerCase();
 
-        // Local development environments
+        // Local development environments always permitted
         if (normalizedClient.startsWith("http://localhost") || normalizedClient.startsWith("https://localhost")
                 || normalizedClient.startsWith("http://127.0.0.1") || normalizedClient.startsWith("https://127.0.0.1")) {
             return;
         }
 
-        // Production deployment domains (Vercel & Render)
-        if (normalizedClient.endsWith(".vercel.app") || normalizedClient.contains("onrender.com")) {
-            return;
+        // Check against configured allowed-origins list (supports wildcard suffix matching via *)
+        if (allowedOrigins != null && !allowedOrigins.isBlank()) {
+            for (String allowed : allowedOrigins.split(",")) {
+                String pattern = allowed.trim().toLowerCase();
+                if (pattern.isEmpty()) continue;
+                if (pattern.endsWith("*")) {
+                    // Wildcard prefix match: e.g. "https://*.vercel.app" or "https://*.onrender.com"
+                    String prefix = pattern.substring(0, pattern.length() - 1);
+                    if (normalizedClient.startsWith(prefix)) return;
+                } else if (normalizedClient.equals(pattern)) {
+                    return;
+                }
+            }
         }
 
-        // Exact match with HTTP request origin header
-        if (requestOrigin != null && !requestOrigin.isBlank() && normalizedClient.equalsIgnoreCase(requestOrigin.trim())) {
+        // Exact match with the HTTP request Origin header as a final fallback
+        if (requestOrigin != null && !requestOrigin.isBlank()
+                && normalizedClient.equalsIgnoreCase(requestOrigin.trim())) {
             return;
         }
 

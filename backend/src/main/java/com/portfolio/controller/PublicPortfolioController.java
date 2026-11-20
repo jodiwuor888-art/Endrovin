@@ -58,7 +58,7 @@ public class PublicPortfolioController {
             @Valid @RequestBody ContactMessageRequest request,
             HttpServletRequest httpRequest) {
 
-        String ip = getClientIp(httpRequest);
+        String ip = ipExtractor.extract(httpRequest);
         ContactMessageResponse response = publicPortfolioService.submitContactMessage(request, ip);
         return ResponseEntity.ok(ApiResponse.ok("Thank you! Your message has been received.", response));
     }
@@ -75,7 +75,7 @@ public class PublicPortfolioController {
             @Valid @RequestBody com.portfolio.dto.PublicTestimonialSubmissionRequest request,
             HttpServletRequest httpRequest) {
 
-        String ip = getClientIp(httpRequest);
+        String ip = ipExtractor.extract(httpRequest);
         String message = publicPortfolioService.submitPublicRecommendation(request, ip);
         return ResponseEntity.ok(ApiResponse.ok(message, message));
     }
@@ -86,7 +86,4 @@ public class PublicPortfolioController {
         return ResponseEntity.ok(ApiResponse.ok(publicPortfolioService.generateCaptcha()));
     }
 
-    private String getClientIp(HttpServletRequest request) {
-        return ipExtractor.extract(request);
-    }
 }

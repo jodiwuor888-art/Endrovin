@@ -4,12 +4,15 @@ import com.portfolio.dto.*;
 import com.portfolio.entity.*;
 import com.portfolio.exception.BadRequestException;
 import com.portfolio.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -21,9 +24,9 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 @Service
-    // Public data cached in-memory for performance
-
 public class PublicPortfolioService {
+
+    private static final Logger log = LoggerFactory.getLogger(PublicPortfolioService.class);
 
     private final PersonalProfileRepository personalProfileRepository;
     private final AboutInformationRepository aboutInformationRepository;
@@ -43,13 +46,29 @@ public class PublicPortfolioService {
     // Cryptographically secure RNG — never use java.util.Random for security-sensitive operations
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    @Value("${portfolio.security.captcha-secret:JoashPortfolioCaptchaHmacKey2026XyZ!@#}")
+    @Value("${portfolio.security.captcha-secret:}")
     private String captchaSecretRaw;
 
+    // Resolved at startup — never null after @PostConstruct
+    private byte[] captchaSecretBytes;
+
+    private static final byte[] CAPTCHA_FALLBACK_SECRET =
+            "JoashPortfolioCaptchaHmacKey2026XyZ!@#".getBytes(StandardCharsets.UTF_8);
+
+    @PostConstruct
+    void initCaptchaSecret() {
+        if (captchaSecretRaw != null && !captchaSecretRaw.isBlank()) {
+            captchaSecretBytes = captchaSecretRaw.getBytes(StandardCharsets.UTF_8);
+        } else {
+            log.warn("SECURITY: portfolio.security.captcha-secret is not configured — " +
+                     "using built-in fallback key. Set the PORTFOLIO_SECURITY_CAPTCHA_SECRET " +
+                     "environment variable on Render to harden this.");
+            captchaSecretBytes = CAPTCHA_FALLBACK_SECRET;
+        }
+    }
+
     private byte[] getCaptchaSecret() {
-        return (captchaSecretRaw != null && !captchaSecretRaw.isBlank())
-                ? captchaSecretRaw.getBytes(StandardCharsets.UTF_8)
-                : "JoashPortfolioCaptchaHmacKey2026XyZ!@#".getBytes(StandardCharsets.UTF_8);
+        return captchaSecretBytes;
     }
 
     public PublicPortfolioService(PersonalProfileRepository personalProfileRepository,
