@@ -97,6 +97,14 @@ public class JwtTokenProvider {
         return getClaimsFromJwt(token).getSubject();
     }
 
+    public Date getIssuedAtFromJwt(String token) {
+        try {
+            return getClaimsFromJwt(token).getIssuedAt();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public boolean isPendingMfa(String token) {
         try {
             Claims claims = getClaimsFromJwt(token);

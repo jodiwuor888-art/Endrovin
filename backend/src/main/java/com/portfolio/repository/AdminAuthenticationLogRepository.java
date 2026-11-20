@@ -13,4 +13,6 @@ public interface AdminAuthenticationLogRepository extends JpaRepository<AdminAut
     List<AdminAuthenticationLog> findByAdminIdOrderByEventTimestampDesc(Long adminId);
     Page<AdminAuthenticationLog> findAllByOrderByEventTimestampDesc(Pageable pageable);
     List<AdminAuthenticationLog> findTop20ByOrderByEventTimestampDesc();
+    List<AdminAuthenticationLog> findTop50ByOrderByEventTimestampDesc();
+    long countByAuthenticationStatusAndEventTimestampAfter(String authenticationStatus, java.time.LocalDateTime eventTimestamp);
 }

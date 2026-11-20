@@ -47,12 +47,15 @@
         </div>
 
         <nav class="sidebar-nav">
-            <div class="nav-section-label">Overview</div>
+            <div class="nav-section-label">Executive</div>
             <button class="nav-item active" data-view="overview">
-                <span class="nav-icon">📊</span> Dashboard
+                <span class="nav-icon">📊</span> Overview
+            </button>
+            <button class="nav-item" data-view="analytics">
+                <span class="nav-icon">📈</span> Analytics &amp; Traffic
             </button>
 
-            <div class="nav-section-label">Content</div>
+            <div class="nav-section-label">Portfolio Content</div>
             <button class="nav-item" data-view="profile">
                 <span class="nav-icon">👤</span> Personal Profile
             </button>
@@ -60,16 +63,14 @@
                 <span class="nav-icon">📄</span> About Me
             </button>
             <button class="nav-item" data-view="projects">
-                <span class="nav-icon">🚀</span> Projects
+                <span class="nav-icon">🚀</span> Projects &amp; SEO
             </button>
             <button class="nav-item" data-view="skills">
-                <span class="nav-icon">🛠️</span> Skills &amp; Categories
+                <span class="nav-icon">🛠️</span> Skills &amp; Stack
             </button>
             <button class="nav-item" data-view="services">
-                <span class="nav-icon">⚡</span> Services
+                <span class="nav-icon">⚡</span> Services Offered
             </button>
-
-            <div class="nav-section-label">Career</div>
             <button class="nav-item" data-view="education">
                 <span class="nav-icon">🎓</span> Education
             </button>
@@ -86,25 +87,39 @@
                 <span class="nav-icon">📋</span> CV Document
             </button>
 
-            <div class="nav-section-label">Community</div>
+            <div class="nav-section-label">Business &amp; CRM</div>
+            <button class="nav-item" data-view="leads">
+                <span class="nav-icon">👥</span> Client Leads &amp; CRM
+            </button>
+            <button class="nav-item" data-view="messages">
+                <span class="nav-icon">✉️</span> Inquiries
+                <span id="badgeUnreadMessages" class="nav-badge" style="display:none;">0</span>
+            </button>
             <button class="nav-item" data-view="testimonials">
                 <span class="nav-icon">⭐</span> Testimonials
                 <span id="badgePendingTestimonials" class="nav-badge" style="display:none;">0</span>
-            </button>
-            <button class="nav-item" data-view="messages">
-                <span class="nav-icon">✉️</span> Contact Inquiries
-                <span id="badgeUnreadMessages" class="nav-badge" style="display:none;">0</span>
             </button>
             <button class="nav-item" data-view="social">
                 <span class="nav-icon">🌐</span> Social Links
             </button>
 
-            <div class="nav-section-label">System</div>
-            <button class="nav-item" data-view="settings">
-                <span class="nav-icon">⚙️</span> Website Settings
+            <div class="nav-section-label">Privacy &amp; Legal</div>
+            <button class="nav-item" data-view="legal">
+                <span class="nav-icon">📜</span> Policies &amp; Terms
             </button>
-            <button class="nav-item" onclick="navigateToView('settings'); setTimeout(() => switchSettingsCategory('security'), 100);">
-                <span class="nav-icon">👆</span> Biometric Passkeys
+            <button class="nav-item" data-view="privacy">
+                <span class="nav-icon">🛡️</span> Privacy &amp; Compliance
+            </button>
+
+            <div class="nav-section-label">Security &amp; System</div>
+            <button class="nav-item" data-view="security">
+                <span class="nav-icon">🔒</span> Security Control
+            </button>
+            <button class="nav-item" data-view="ai-tools">
+                <span class="nav-icon">🤖</span> AI Assistant
+            </button>
+            <button class="nav-item" data-view="settings">
+                <span class="nav-icon">⚙️</span> System Settings
             </button>
         </nav>
 
@@ -119,6 +134,7 @@
         <!-- TOPBAR -->
         <header class="topbar">
             <div class="topbar-left">
+                <span id="viewBreadcrumb" style="font-size:0.75rem; color:var(--c-text-muted); display:block; margin-bottom:2px;">Control Centre / Overview</span>
                 <h1 id="viewTitle" class="topbar-title">Dashboard Overview</h1>
             </div>
             <div class="topbar-right">
@@ -126,6 +142,21 @@
                     <span class="dot"></span>
                     <span>Live</span>
                 </div>
+                <div style="position:relative;">
+                    <button type="button" class="btn-admin btn-admin-secondary" style="font-size:0.85rem; padding:0.4rem 0.75rem; position:relative;" onclick="toggleNotificationDrawer()" title="Notifications">
+                        🔔 <span id="topbarNotifBadge" style="display:none; background:#ef4444; color:#fff; border-radius:10px; padding:1px 6px; font-size:0.7rem; font-weight:700; margin-left:4px;">0</span>
+                    </button>
+                    <div id="notificationDropdown" style="display:none; position:absolute; right:0; top:42px; width:320px; background:#0f172a; border:1px solid rgba(56,189,248,0.25); border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); z-index:1000; padding:14px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:8px;">
+                            <strong style="color:#fff; font-size:0.88rem;">Notifications</strong>
+                            <button type="button" onclick="markAllNotificationsRead()" style="background:none; border:none; color:#38bdf8; cursor:pointer; font-size:0.75rem;">Mark all read</button>
+                        </div>
+                        <div id="notificationList" style="max-height:260px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+                            <p style="color:#94a3b8; font-size:0.82rem; text-align:center; margin:10px 0;">No new notifications</p>
+                        </div>
+                    </div>
+                </div>
+
                 <button type="button" class="btn-admin btn-admin-primary" style="font-size:0.78rem; padding:0.4rem 0.9rem;" onclick="openEnrollPasskeyModal()">👆 Fingerprint</button>
                 <button type="button" class="btn-admin btn-admin-secondary" style="font-size:0.78rem; padding:0.4rem 0.9rem;" onclick="openModal('passwordModal')">🔑 Password</button>
                 <div id="adminAvatarInitial" class="admin-avatar" title="Administrator">A</div>
@@ -178,153 +209,6 @@
                         </div>
                     </div>
                     
-                    <!-- ================= MAINTENANCE MODE SCREEN ================= -->
-    <div id="maintenanceScreen" class="maintenance-screen" style="display:none;" role="alertdialog" aria-modal="true" aria-label="Site under maintenance">
-        <div class="maint-laser-stripe"></div>
-        <div class="maint-cyber-grid"></div>
-        <div class="maintenance-glow-orb orb-1"></div>
-        <div class="maintenance-glow-orb orb-2"></div>
-        
-        <!-- Floating Digital Sparks -->
-        <div class="maint-particle p1"></div>
-        <div class="maint-particle p2"></div>
-        <div class="maint-particle p3"></div>
-        <div class="maint-particle p4"></div>
-        <div class="maint-particle p5"></div>
-        <div class="maint-particle p6"></div>
-
-        <div class="maintenance-container">
-            <!-- Cybernetic Corner HUD Accents -->
-            <div class="maint-corner tl"></div>
-            <div class="maint-corner tr"></div>
-            <div class="maint-corner bl"></div>
-            <div class="maint-corner br"></div>
-
-            <div class="maintenance-avatar-wrap">
-                <div class="maint-radar-ring"></div>
-                <div class="maint-hud-ring-outer"></div>
-                <div class="maint-hud-ring-inner"></div>
-                <!-- 3D Orbiting Satellite Beacon -->
-                <div class="maint-orbit-track">
-                    <div class="maint-orbit-node"></div>
-                </div>
-                <div class="maintenance-avatar-ring"></div>
-                <img src="../assets/img/Joash.jpeg" alt="Joash Odiwuor" class="maintenance-avatar" onerror="this.src='../assets/img/profile.png'" loading="eager" decoding="async">
-                <span class="maintenance-status-dot" title="Maintenance Active"></span>
-            </div>
-            
-            <div class="maintenance-badge">
-                <span class="pulse-indicator"></span>
-                <span>System Maintenance &amp; Upgrades</span>
-            </div>
-
-            <h1 class="maintenance-title">Joash Odiwuor</h1>
-            <p class="maintenance-headline">Web Designer</p>
-
-            <div class="maintenance-message-card">
-                <!-- Laser Sweep Line -->
-                <div class="maint-scanline"></div>
-
-                <!-- Dual Interlocking Animated Mechanical Gears -->
-                <div class="maint-quantum-scene">
-                    <div class="core-ambient-disc"></div>
-                    <svg class="maint-quantum-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <!-- HUD Brackets -->
-                        <g class="core-hud-brackets">
-                            <path d="M10 30 L10 10 L30 10" stroke="#38BDF8" stroke-width="2.5" fill="none" opacity="0.7"/>
-                            <path d="M170 10 L190 10 L190 30" stroke="#38BDF8" stroke-width="2.5" fill="none" opacity="0.7"/>
-                            <path d="M10 170 L10 190 L30 190" stroke="#38BDF8" stroke-width="2.5" fill="none" opacity="0.7"/>
-                            <path d="M190 170 L190 190 L170 190" stroke="#38BDF8" stroke-width="2.5" fill="none" opacity="0.7"/>
-                        </g>
-                        <!-- Cross-hair targeting lines -->
-                        <line x1="100" y1="20" x2="100" y2="45" stroke="#38BDF8" stroke-width="1" opacity="0.4" stroke-dasharray="4 3"/>
-                        <line x1="100" y1="155" x2="100" y2="180" stroke="#38BDF8" stroke-width="1" opacity="0.4" stroke-dasharray="4 3"/>
-                        <line x1="20" y1="100" x2="45" y2="100" stroke="#38BDF8" stroke-width="1" opacity="0.4" stroke-dasharray="4 3"/>
-                        <line x1="155" y1="100" x2="180" y2="100" stroke="#38BDF8" stroke-width="1" opacity="0.4" stroke-dasharray="4 3"/>
-                        <!-- Outer Gimbal Ring -->
-                        <ellipse class="core-gimbal-outer" cx="100" cy="100" rx="68" ry="68"
-                            stroke="url(#grad-outer)" stroke-width="3.5" fill="none" stroke-dasharray="12 5"/>
-                        <!-- Middle Gimbal Ring (tilted) -->
-                        <ellipse class="core-gimbal-mid" cx="100" cy="100" rx="68" ry="28"
-                            stroke="url(#grad-mid)" stroke-width="2.5" fill="none" stroke-dasharray="8 4"/>
-                        <!-- Inner Gimbal Ring (vertical tilt) -->
-                        <ellipse class="core-gimbal-inner" cx="100" cy="100" rx="28" ry="68"
-                            stroke="url(#grad-inner)" stroke-width="2" fill="none" stroke-dasharray="6 3"/>
-                        <!-- Laser Arms -->
-                        <line class="core-laser-beam-l" x1="100" y1="100" x2="32" y2="100"
-                            stroke="#00FFD1" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
-                        <line class="core-laser-beam-r" x1="100" y1="100" x2="168" y2="100"
-                            stroke="#FF00AA" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
-                        <!-- Laser Sparks -->
-                        <circle class="core-laser-spark-l" cx="32" cy="100" r="5" fill="#00FFD1" opacity="0.9"/>
-                        <circle class="core-laser-spark-r" cx="168" cy="100" r="5" fill="#FF00AA" opacity="0.9"/>
-                        <!-- Flux Nodes (orbiting particles) -->
-                        <circle class="core-flux-node node-a" cx="168" cy="100" r="4" fill="#38BDF8"/>
-                        <circle class="core-flux-node node-b" cx="32" cy="100" r="4" fill="#A78BFA"/>
-                        <circle class="core-flux-node node-c" cx="100" cy="32" r="3" fill="#34D399"/>
-                        <circle class="core-flux-node node-d" cx="100" cy="168" r="3" fill="#F472B6"/>
-                        <!-- Plasma Core -->
-                        <circle class="core-plasma-orb" cx="100" cy="100" r="16" fill="url(#grad-plasma)"/>
-                        <circle class="core-plasma-orb-inner" cx="100" cy="100" r="8" fill="white" opacity="0.9"/>
-                        <!-- Gradient Defs -->
-                        <defs>
-                            <radialGradient id="grad-plasma" cx="50%" cy="50%" r="50%">
-                                <stop offset="0%" stop-color="#FFFFFF"/>
-                                <stop offset="40%" stop-color="#38BDF8"/>
-                                <stop offset="100%" stop-color="#2563EB" stop-opacity="0"/>
-                            </radialGradient>
-                            <linearGradient id="grad-outer" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#38BDF8"/>
-                                <stop offset="50%" stop-color="#A78BFA"/>
-                                <stop offset="100%" stop-color="#38BDF8"/>
-                            </linearGradient>
-                            <linearGradient id="grad-mid" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stop-color="#00FFD1"/>
-                                <stop offset="100%" stop-color="#2563EB"/>
-                            </linearGradient>
-                            <linearGradient id="grad-inner" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" stop-color="#F472B6"/>
-                                <stop offset="100%" stop-color="#A78BFA"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
-
-                <h3 class="maintenance-msg-heading">We'll Be Right Back</h3>
-                <p class="maintenance-text" id="maintenanceMessageText">
-                    The portfolio is briefly undergoing scheduled updates. Please check back shortly.
-                </p>
-
-                <!-- Live Scrolling Cyber Telemetry Console Stream -->
-                <div class="maint-telemetry-console">
-                    <span class="telemetry-badge">LIVE SYNC</span>
-                    <div class="telemetry-marquee-wrap">
-                        <span class="telemetry-marquee">OPTIMIZING ASSETS // PIPELINE PASSING // CACHE PURGE 96% // ZERO DOWNTIME SSL // BACKEND CONNECTED // SECURE REST API ONLINE // </span>
-                    </div>
-                </div>
-
-                <!-- Live Diagnostics Progress Tracker -->
-                <div class="maintenance-progress-bar">
-                    <div class="maintenance-progress-fill"></div>
-                </div>
-
-                <div class="maint-status-pill">
-                    <span class="maint-live-dot"></span>
-                    <span>Deployment in progress &bull; Systems updating</span>
-                </div>
-            </div>
-
-            <div class="maintenance-contact-hint">
-                <span>Direct inquiries during updates:</span>
-                <a href="mailto:jodiwuor888@gmail.com" class="maintenance-email-link">jodiwuor888@gmail.com</a>
-            </div>
-
-            <div class="maintenance-footer">
-                <p class="maintenance-note">&copy; 2026 Joash Odiwuor. All rights reserved.</p>
-            </div>
-        </div>
-    </div>
-
                     <div class="stat-card">
                         <div class="stat-icon">📜</div>
                         <div class="stat-info">
@@ -1620,10 +1504,410 @@
                     </div>
                 </div>
             </section>
-        </main>
+        
+            <!-- ================= VIEW: ANALYTICS & TRAFFIC ================= -->
+            <section id="view-analytics" class="admin-view">
+                <div class="admin-card" style="margin-bottom:20px;">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <h2 class="card-title">Executive Analytics &amp; Visitor Tracking</h2>
+                        <div class="filter-bar" style="margin:0; gap:6px;">
+                            <button type="button" class="btn-admin btn-admin-secondary active" onclick="switchAnalyticsPeriod('today', this)">Today</button>
+                            <button type="button" class="btn-admin btn-admin-secondary" onclick="switchAnalyticsPeriod('yesterday', this)">Yesterday</button>
+                            <button type="button" class="btn-admin btn-admin-secondary" onclick="switchAnalyticsPeriod('7d', this)">Last 7 Days</button>
+                            <button type="button" class="btn-admin btn-admin-secondary" onclick="switchAnalyticsPeriod('30d', this)">Last 30 Days</button>
+                            <button type="button" class="btn-admin btn-admin-secondary" onclick="switchAnalyticsPeriod('90d', this)">Last 90 Days</button>
+                        </div>
+                    </div>
+                    <div class="stats-grid" style="margin-top:15px;">
+                        <div class="stat-card">
+                            <div class="stat-icon">👁️</div>
+                            <div class="stat-info"><h3 id="anaPageViews">0</h3><p>Page Views</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">👤</div>
+                            <div class="stat-info"><h3 id="anaUniqueVisitors">0</h3><p>Unique Visitors</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🚀</div>
+                            <div class="stat-info"><h3 id="anaProjectViews">0</h3><p>Project Views</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📥</div>
+                            <div class="stat-info"><h3 id="anaCvDownloads">0</h3><p>CV Downloads</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:20px;">
+                    <div class="admin-card">
+                        <h3 class="card-title" style="margin-bottom:12px;">Top Visited Pages</h3>
+                        <table class="admin-table">
+                            <thead><tr><th>Page URL</th><th style="text-align:right;">Views</th></tr></thead>
+                            <tbody id="anaTopPagesTable"><tr><td colspan="2" style="text-align:center; color:#94a3b8;">No visitor traffic in this period</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="admin-card">
+                        <h3 class="card-title" style="margin-bottom:12px;">Traffic Channels &amp; Referrers</h3>
+                        <table class="admin-table">
+                            <thead><tr><th>Referrer Source</th><th style="text-align:right;">Visits</th></tr></thead>
+                            <tbody id="anaTopReferrersTable"><tr><td colspan="2" style="text-align:center; color:#94a3b8;">Direct / Internal Traffic</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW: CLIENT LEADS & CRM ================= -->
+            <section id="view-leads" class="admin-view">
+                <div class="admin-card">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <div>
+                            <h2 class="card-title">Client Opportunities &amp; CRM Pipeline</h2>
+                            <p style="color:#94a3b8; font-size:0.85rem; margin:2px 0 0;">Manage inbound client inquiries, budget quotes, and communication milestones.</p>
+                        </div>
+                    </div>
+
+                    <div style="margin:15px 0; display:flex; gap:8px; flex-wrap:wrap;" id="leadStatusFilters">
+                        <button type="button" class="btn-admin btn-admin-secondary active" onclick="filterLeadsByStatus('ALL', this)">All</button>
+                        <button type="button" class="btn-admin btn-admin-secondary" onclick="filterLeadsByStatus('NEW', this)">New</button>
+                        <button type="button" class="btn-admin btn-admin-secondary" onclick="filterLeadsByStatus('CONTACTED', this)">Contacted</button>
+                        <button type="button" class="btn-admin btn-admin-secondary" onclick="filterLeadsByStatus('IN_DISCUSSION', this)">In Discussion</button>
+                        <button type="button" class="btn-admin btn-admin-secondary" onclick="filterLeadsByStatus('QUOTATION_SENT', this)">Quotation Sent</button>
+                        <button type="button" class="btn-admin btn-admin-secondary" onclick="filterLeadsByStatus('WON', this)">Won</button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Client Name</th>
+                                    <th>Email / Phone</th>
+                                    <th>Company / Org</th>
+                                    <th>Service Interest</th>
+                                    <th>Est. Budget</th>
+                                    <th>Pipeline Stage</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="crmLeadsTableBody">
+                                <tr><td colspan="8" style="text-align:center; color:#94a3b8;">Loading client leads...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW: LEGAL & POLICIES ================= -->
+            <section id="view-legal" class="admin-view">
+                <div class="admin-card" style="margin-bottom:20px;">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <h2 class="card-title">Legal Documents &amp; Policy Versions</h2>
+                            <p style="color:#94a3b8; font-size:0.85rem; margin:2px 0 0;">Configure public Privacy Policy, Terms of Service, and professional disclaimers.</p>
+                        </div>
+                        <button type="button" class="btn-admin btn-admin-primary" onclick="openLegalDocModal()">+ New Policy Document</button>
+                    </div>
+
+                    <div class="table-responsive" style="margin-top:15px;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Document Type</th>
+                                    <th>Title</th>
+                                    <th>Version</th>
+                                    <th>Status</th>
+                                    <th>Effective Date</th>
+                                    <th>Updated</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="legalDocsTableBody">
+                                <tr><td colspan="7" style="text-align:center; color:#94a3b8;">Loading legal documents...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW: PRIVACY & COMPLIANCE ================= -->
+            <section id="view-privacy" class="admin-view">
+                <div class="admin-card" style="margin-bottom:20px;">
+                    <h2 class="card-title">Cookie Consent &amp; Privacy Overview</h2>
+                    <p style="color:#94a3b8; font-size:0.85rem; margin:2px 0 15px;">Compliant with Kenya Data Protection Act, 2019 and international data privacy principles.</p>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">🛡️</div>
+                            <div class="stat-info"><h3 id="statConsentTotal">0</h3><p>Total Consents Logged</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">✅</div>
+                            <div class="stat-info"><h3 id="statConsentAccepted">0</h3><p>Accepted All</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🔒</div>
+                            <div class="stat-info"><h3 id="statConsentRejected">0</h3><p>Rejected Optional</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⚙️</div>
+                            <div class="stat-info"><h3 id="statConsentCustom">0</h3><p>Custom Preferences</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-card" style="margin-bottom:20px;">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <h3 class="card-title">Data Subject Access &amp; Deletion Requests (DSAR)</h3>
+                            <p style="color:#94a3b8; font-size:0.85rem; margin:2px 0 0;">Public inquiries regarding data access, rectification, objection, and erasure.</p>
+                        </div>
+                    </div>
+                    <div class="table-responsive" style="margin-top:12px;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Ticket #</th>
+                                    <th>Requester</th>
+                                    <th>Email</th>
+                                    <th>Request Type</th>
+                                    <th>Status</th>
+                                    <th>Statutory Deadline</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dsarTableBody">
+                                <tr><td colspan="7" style="text-align:center; color:#94a3b8;">No pending data subject requests</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:20px;">
+                    <div class="admin-card">
+                        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3 class="card-title">Third-Party Data Register</h3>
+                            <button type="button" class="btn-admin btn-admin-secondary" style="font-size:0.75rem;" onclick="openProcessorModal()">+ Add Processor</button>
+                        </div>
+                        <table class="admin-table" style="margin-top:10px;">
+                            <thead><tr><th>Provider</th><th>Purpose</th><th>Status</th></tr></thead>
+                            <tbody id="processorsTableBody"><tr><td colspan="3" style="text-align:center; color:#94a3b8;">Loading processors...</td></tr></tbody>
+                        </table>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3 class="card-title">Data Breach Incident Register</h3>
+                            <button type="button" class="btn-admin btn-admin-secondary" style="font-size:0.75rem;" onclick="openBreachModal()">+ Log Incident</button>
+                        </div>
+                        <table class="admin-table" style="margin-top:10px;">
+                            <thead><tr><th>Incident</th><th>Discovery Date</th><th>Risk</th><th>Status</th></tr></thead>
+                            <tbody id="breachesTableBody"><tr><td colspan="4" style="text-align:center; color:#94a3b8;">No security breaches on record</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW: SECURITY CONTROL CENTRE ================= -->
+            <section id="view-security" class="admin-view">
+                <div class="admin-card" style="margin-bottom:20px;">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <div>
+                            <h2 class="card-title">Security Posture &amp; Threat Defense</h2>
+                            <p style="color:#94a3b8; font-size:0.85rem; margin:2px 0 0;">Real-time authentication monitoring, biometric passkey authorization, and session isolation.</p>
+                        </div>
+                        <button type="button" class="btn-admin" style="background:#dc2626; color:#fff;" onclick="triggerEmergencyRevocation()">⚠️ Emergency Revoke All Sessions</button>
+                    </div>
+
+                    <div class="stats-grid" style="margin-top:15px;">
+                        <div class="stat-card">
+                            <div class="stat-icon">🛡️</div>
+                            <div class="stat-info"><h3 id="secScore">95%</h3><p>Security Posture Score</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">👆</div>
+                            <div class="stat-info"><h3 id="secMfaStatus">Enforced</h3><p>WebAuthn FIDO2 MFA</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">💻</div>
+                            <div class="stat-info"><h3 id="secActiveDevices">1</h3><p>Authorized Devices</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🚨</div>
+                            <div class="stat-info"><h3 id="secFailedLogins">0</h3><p>Failed Logins (24h)</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-card" style="margin-bottom:20px;">
+                    <div class="card-header">
+                        <h3 class="card-title">Authorized Administrator Devices</h3>
+                    </div>
+                    <table class="admin-table" style="margin-top:10px;">
+                        <thead>
+                            <tr><th>Device Name</th><th>Type</th><th>Registered</th><th>Last Active</th><th>Action</th></tr>
+                        </thead>
+                        <tbody id="secDevicesTableBody"><tr><td colspan="5" style="text-align:center; color:#94a3b8;">Loading authorized devices...</td></tr></tbody>
+                    </table>
+                </div>
+
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Authentication &amp; Login History</h3>
+                    </div>
+                    <table class="admin-table" style="margin-top:10px;">
+                        <thead>
+                            <tr><th>Timestamp</th><th>Method</th><th>Device Information</th><th>IP Address</th><th>Result</th></tr>
+                        </thead>
+                        <tbody id="secAuthLogsTableBody"><tr><td colspan="5" style="text-align:center; color:#94a3b8;">Loading login history...</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ================= VIEW: AI ASSISTANT ================= -->
+            <section id="view-ai-tools" class="admin-view">
+                <div class="admin-card" style="margin-bottom:20px;">
+                    <h2 class="card-title">AI-Powered Portfolio Assistant</h2>
+                    <p style="color:#94a3b8; font-size:0.85rem; margin:2px 0 0;">Assisted technical copywriting, SEO metadata generation, and portfolio quality auditing. Human review is always required before publishing.</p>
+                </div>
+
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap:20px;">
+                    <!-- Tool 1: Project Description Enhancer -->
+                    <div class="admin-card">
+                        <h3 class="card-title" style="margin-bottom:10px;">🚀 Enhance Project Description</h3>
+                        <div class="form-group" style="margin-bottom:10px;">
+                            <label>Project Title</label>
+                            <input type="text" id="aiProjectTitle" placeholder="e.g. Cloud Portfolio API" class="form-input">
+                        </div>
+                        <div class="form-group" style="margin-bottom:10px;">
+                            <label>Technologies Used</label>
+                            <input type="text" id="aiProjectTech" placeholder="e.g. Java 25, Spring Boot, MySQL" class="form-input">
+                        </div>
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label>Current Notes / Summary</label>
+                            <textarea id="aiProjectNotes" rows="3" placeholder="Brief outline of features..." class="form-input"></textarea>
+                        </div>
+                        <button type="button" class="btn-admin btn-admin-primary" onclick="runAiProjectEnhance()">✨ Polish Description</button>
+                        <div id="aiProjectResult" style="margin-top:14px; display:none; background:#08101e; padding:12px; border-radius:8px; border:1px solid rgba(56,189,248,0.2);">
+                            <strong style="color:#38bdf8; font-size:0.85rem;">Enhanced Copy:</strong>
+                            <p id="aiProjectResultText" style="color:#e2e8f0; font-size:0.88rem; margin:6px 0 0; line-height:1.5;"></p>
+                        </div>
+                    </div>
+
+                    <!-- Tool 2: SEO Metadata Generator -->
+                    <div class="admin-card">
+                        <h3 class="card-title" style="margin-bottom:10px;">🔍 SEO Metadata Generator</h3>
+                        <div class="form-group" style="margin-bottom:10px;">
+                            <label>Content Title / Topic</label>
+                            <input type="text" id="aiSeoTitle" placeholder="e.g. Full-Stack Web Architecture" class="form-input">
+                        </div>
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label>Category / Specialization</label>
+                            <input type="text" id="aiSeoCategory" placeholder="e.g. Backend Engineering" class="form-input">
+                        </div>
+                        <button type="button" class="btn-admin btn-admin-primary" onclick="runAiSeoGenerate()">✨ Generate SEO Tags</button>
+                        <div id="aiSeoResult" style="margin-top:14px; display:none; background:#08101e; padding:12px; border-radius:8px; border:1px solid rgba(56,189,248,0.2);">
+                            <strong style="color:#38bdf8; font-size:0.85rem;">SEO Title:</strong>
+                            <p id="aiSeoResultTitle" style="color:#fff; font-weight:600; font-size:0.88rem; margin:4px 0 8px;"></p>
+                            <strong style="color:#38bdf8; font-size:0.85rem;">Meta Description:</strong>
+                            <p id="aiSeoResultDesc" style="color:#94a3b8; font-size:0.84rem; margin:4px 0 0;"></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+</main>
     </div>
 
     <!-- ================= MODALS ================= -->
+
+    
+    <!-- LEAD EDIT MODAL -->
+    <div id="leadModal" class="admin-modal" style="display:none;">
+        <div class="modal-content" style="max-width:550px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Client Opportunity / Lead</h3>
+                <button type="button" class="modal-close" onclick="closeModal('leadModal')">&times;</button>
+            </div>
+            <form id="leadForm" onsubmit="handleSaveLead(event)">
+                <input type="hidden" id="leadId">
+                <div class="form-group">
+                    <label>Client Name</label>
+                    <input type="text" id="leadName" class="form-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Pipeline Stage</label>
+                    <select id="leadStatusSelect" class="form-input">
+                        <option value="NEW">New Lead</option>
+                        <option value="CONTACTED">Contacted</option>
+                        <option value="IN_DISCUSSION">In Discussion</option>
+                        <option value="QUOTATION_SENT">Quotation Sent</option>
+                        <option value="NEGOTIATING">Negotiating</option>
+                        <option value="WON">Won / Contract Signed</option>
+                        <option value="LOST">Lost</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Estimated Budget / Value</label>
+                    <input type="text" id="leadBudget" placeholder="e.g. <!-- PROJECT MODAL -->,500 / Negotiable" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>Internal Follow-up Notes</label>
+                    <textarea id="leadNotes" rows="3" placeholder="Next communication step, requirements..." class="form-input"></textarea>
+                </div>
+                <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:8px; margin-top:15px;">
+                    <button type="button" class="btn-admin btn-admin-secondary" onclick="closeModal('leadModal')">Cancel</button>
+                    <button type="submit" class="btn-admin btn-admin-primary">Save Lead Updates</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- LEGAL DOCUMENT MODAL -->
+    <div id="legalModal" class="admin-modal" style="display:none;">
+        <div class="modal-content" style="max-width:700px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="legalModalTitle">Edit Legal Document</h3>
+                <button type="button" class="modal-close" onclick="closeModal('legalModal')">&times;</button>
+            </div>
+            <form id="legalForm" onsubmit="handleSaveLegalDoc(event)">
+                <input type="hidden" id="legalDocId">
+                <div class="form-group">
+                    <label>Document Type</label>
+                    <select id="legalDocType" class="form-input">
+                        <option value="PRIVACY_POLICY">Privacy Policy</option>
+                        <option value="TERMS_AND_CONDITIONS">Terms &amp; Conditions</option>
+                        <option value="DISCLAIMER">Professional Disclaimer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Document Title</label>
+                    <input type="text" id="legalDocTitle" class="form-input" required>
+                </div>
+                <div class="form-row" style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1;">
+                        <label>Version Number</label>
+                        <input type="text" id="legalDocVersion" class="form-input" placeholder="e.g. 1.1" required>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>Publication Status</label>
+                        <select id="legalDocStatus" class="form-input">
+                            <option value="PUBLISHED">Published</option>
+                            <option value="DRAFT">Draft</option>
+                            <option value="ARCHIVED">Archived</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Document Content (Markdown / Text)</label>
+                    <textarea id="legalDocContent" rows="10" class="form-input" required></textarea>
+                </div>
+                <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:8px; margin-top:15px;">
+                    <button type="button" class="btn-admin btn-admin-secondary" onclick="closeModal('legalModal')">Cancel</button>
+                    <button type="submit" class="btn-admin btn-admin-primary">Save Document</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- PROJECT MODAL -->
     <div id="projectModal" class="modal-backdrop">

@@ -4,6 +4,7 @@ import com.portfolio.dto.ApiResponse;
 import com.portfolio.dto.ContactMessageRequest;
 import com.portfolio.dto.ContactMessageResponse;
 import com.portfolio.dto.PublicPortfolioResponse;
+import com.portfolio.security.IpAddressExtractor;
 import com.portfolio.service.PublicPortfolioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,13 +21,16 @@ public class PublicPortfolioController {
     private final PublicPortfolioService publicPortfolioService;
     private final com.portfolio.service.WebsiteSettingsService settingsService;
     private final com.portfolio.service.EmailNotificationService emailNotificationService;
+    private final IpAddressExtractor ipExtractor;
 
     public PublicPortfolioController(PublicPortfolioService publicPortfolioService,
                                    com.portfolio.service.WebsiteSettingsService settingsService,
-                                   com.portfolio.service.EmailNotificationService emailNotificationService) {
+                                   com.portfolio.service.EmailNotificationService emailNotificationService,
+                                   IpAddressExtractor ipExtractor) {
         this.publicPortfolioService = publicPortfolioService;
         this.settingsService = settingsService;
         this.emailNotificationService = emailNotificationService;
+        this.ipExtractor = ipExtractor;
     }
 
     @GetMapping("/smtp-status")
@@ -83,10 +87,6 @@ public class PublicPortfolioController {
     }
 
     private String getClientIp(HttpServletRequest request) {
-        String xf = request.getHeader("X-Forwarded-For");
-        if (xf != null && !xf.isBlank()) {
-            return xf.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
+        return ipExtractor.extract(request);
     }
 }

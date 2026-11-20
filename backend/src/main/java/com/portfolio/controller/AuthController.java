@@ -1,6 +1,7 @@
 package com.portfolio.controller;
 
 import com.portfolio.dto.*;
+import com.portfolio.security.IpAddressExtractor;
 import com.portfolio.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,9 +20,11 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+    private final IpAddressExtractor ipAddressExtractor;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, IpAddressExtractor ipAddressExtractor) {
         this.authService = authService;
+        this.ipAddressExtractor = ipAddressExtractor;
     }
 
     @GetMapping("/status")
@@ -37,7 +40,7 @@ public class AuthController {
             @Valid @RequestBody FirstAdminRequest request,
             HttpServletRequest httpRequest) {
 
-        String ip = getClientIp(httpRequest);
+        String ip = ipAddressExtractor.extract(httpRequest);
         AuthResponse response = authService.setupFirstAdmin(request, ip);
         return ResponseEntity.ok(ApiResponse.created("Administrator account created successfully", response));
     }
@@ -48,7 +51,7 @@ public class AuthController {
             @Valid @RequestBody AuthRequest request,
             HttpServletRequest httpRequest) {
 
-        String ip = getClientIp(httpRequest);
+        String ip = ipAddressExtractor.extract(httpRequest);
         String origin = httpRequest.getHeader("Origin");
         AuthResponse response = authService.login(request, ip, origin);
         return ResponseEntity.ok(ApiResponse.ok("Login successful", response));
@@ -60,7 +63,7 @@ public class AuthController {
             @Valid @RequestBody PasswordResetRequest request,
             HttpServletRequest httpRequest) {
 
-        authService.requestPasswordReset(request.getEmail(), getClientIp(httpRequest));
+        authService.requestPasswordReset(request.getEmail(), ipAddressExtractor.extract(httpRequest));
         return ResponseEntity.ok(ApiResponse.ok(
                 "If an administrator account matches that email, recovery instructions will be sent.", null));
     }
@@ -71,7 +74,7 @@ public class AuthController {
             @Valid @RequestBody CompletePasswordResetRequest request,
             HttpServletRequest httpRequest) {
 
-        authService.resetPassword(request, getClientIp(httpRequest));
+        authService.resetPassword(request, ipAddressExtractor.extract(httpRequest));
         return ResponseEntity.ok(ApiResponse.ok("Password reset successfully. You can now sign in.", null));
     }
 
@@ -82,16 +85,8 @@ public class AuthController {
             @Valid @RequestBody PasswordChangeRequest request,
             HttpServletRequest httpRequest) {
 
-        String ip = getClientIp(httpRequest);
+        String ip = ipAddressExtractor.extract(httpRequest);
         authService.changePassword(userDetails.getUsername(), request, ip);
         return ResponseEntity.ok(ApiResponse.ok("Password changed successfully", null));
-    }
-
-    private String getClientIp(HttpServletRequest request) {
-        String xf = request.getHeader("X-Forwarded-For");
-        if (xf != null && !xf.isBlank()) {
-            return xf.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
     }
 }

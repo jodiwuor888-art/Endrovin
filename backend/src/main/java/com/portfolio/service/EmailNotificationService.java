@@ -31,7 +31,7 @@ public class EmailNotificationService {
 
     private final PortfolioProperties properties;
     private final JavaMailSender springMailSender;
-    private final HttpClient httpClient;
+    private HttpClient httpClient;
 
     private volatile String lastDeliveryError = null;
     private volatile String lastDeliverySuccess = null;
@@ -40,9 +40,29 @@ public class EmailNotificationService {
                                     @org.springframework.beans.factory.annotation.Autowired(required = false) JavaMailSender mailSender) {
         this.properties = properties;
         this.springMailSender = mailSender;
-        this.httpClient = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(8))
-                .build();
+        try {
+            this.httpClient = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(8))
+                    .build();
+        } catch (Throwable t) {
+            log.warn("Eager HttpClient initialization deferred: {}", t.getMessage());
+            this.httpClient = null;
+        }
+    }
+
+    private synchronized HttpClient getHttpClient() {
+        if (this.httpClient != null) {
+            return this.httpClient;
+        }
+        try {
+            this.httpClient = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(8))
+                    .build();
+            return this.httpClient;
+        } catch (Throwable t) {
+            log.error("Failed to create HttpClient: {}", t.getMessage());
+            return null;
+        }
     }
 
     public String getNotificationEmail() {
@@ -125,7 +145,12 @@ public class EmailNotificationService {
                     .POST(HttpRequest.BodyPublishers.ofString(json.toString(), StandardCharsets.UTF_8))
                     .build();
 
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpClient client = getHttpClient();
+            if (client == null) {
+                log.warn("[RESEND HTTPS] HttpClient unavailable in current environment");
+                return false;
+            }
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
                 log.info("[RESEND HTTPS] Real-time email delivered successfully to {}! Response: {}", to, response.body());
                 lastDeliverySuccess = "SUCCESS: Delivered to " + to + " (Response: " + response.body() + ")";
@@ -184,7 +209,12 @@ public class EmailNotificationService {
                     .POST(HttpRequest.BodyPublishers.ofString(json.toString(), StandardCharsets.UTF_8))
                     .build();
 
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpClient client = getHttpClient();
+            if (client == null) {
+                log.warn("[RESEND HTTPS] HttpClient unavailable in current environment");
+                return false;
+            }
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
                 log.info("[BREVO HTTPS] Real-time email delivered successfully to {}! Response: {}", to, response.body());
                 return true;
@@ -470,8 +500,11 @@ public class EmailNotificationService {
                     .timeout(Duration.ofSeconds(5))
                     .build();
 
-            httpClient.sendAsync(req, HttpResponse.BodyHandlers.discarding());
-            log.info("[PHONE PUSH] Instant mobile notification dispatched to https://ntfy.sh/{}", topic);
+            HttpClient client = getHttpClient();
+            if (client != null) {
+                client.sendAsync(req, HttpResponse.BodyHandlers.discarding());
+                log.info("[PHONE PUSH] Instant mobile notification dispatched to https://ntfy.sh/{}", topic);
+            }
         } catch (Exception e) {
             log.warn("[PHONE PUSH] Mobile push dispatch error: {}", e.getMessage());
         }

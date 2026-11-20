@@ -15,7 +15,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
+import java.util.Date;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -38,6 +41,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
                 String username = tokenProvider.getUsernameFromJwt(jwt);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                // Emergency session revocation check
+                if (userDetails instanceof AdminUserDetails adminDetails) {
+                    LocalDateTime invalidBefore = adminDetails.getAdmin().getTokensInvalidBefore();
+                    Date issuedAt = tokenProvider.getIssuedAtFromJwt(jwt);
+                    if (invalidBefore != null && issuedAt != null) {
+                        Date invalidBeforeDate = Date.from(invalidBefore.atZone(ZoneId.systemDefault()).toInstant());
+                        if (issuedAt.before(invalidBeforeDate)) {
+                            filterChain.doFilter(request, response);
+                            return;
+                        }
+                    }
+                }
 
                 UsernamePasswordAuthenticationToken authentication;
 

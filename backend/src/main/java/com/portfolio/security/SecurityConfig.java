@@ -71,8 +71,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public APIs
                         .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/public/contact").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/public/testimonials/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/public/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/auth/status").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/setup-first-admin").permitAll()

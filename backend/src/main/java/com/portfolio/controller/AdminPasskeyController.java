@@ -7,6 +7,7 @@ import com.portfolio.exception.UnauthorizedException;
 import com.portfolio.repository.AdminPasskeyCredentialRepository;
 import com.portfolio.repository.AdminRepository;
 import com.portfolio.entity.AdminPasskeyCredential;
+import com.portfolio.security.IpAddressExtractor;
 import com.portfolio.security.JwtTokenProvider;
 import com.portfolio.security.WebAuthnService;
 import com.portfolio.service.AuthService;
@@ -35,17 +36,20 @@ public class AdminPasskeyController {
     private final AdminRepository adminRepository;
     private final AdminPasskeyCredentialRepository credentialRepository;
     private final JwtTokenProvider tokenProvider;
+    private final IpAddressExtractor ipAddressExtractor;
 
     public AdminPasskeyController(AuthService authService,
                                   WebAuthnService webAuthnService,
                                   AdminRepository adminRepository,
                                   AdminPasskeyCredentialRepository credentialRepository,
-                                  JwtTokenProvider tokenProvider) {
+                                  JwtTokenProvider tokenProvider,
+                                  IpAddressExtractor ipAddressExtractor) {
         this.authService = authService;
         this.webAuthnService = webAuthnService;
         this.adminRepository = adminRepository;
         this.credentialRepository = credentialRepository;
         this.tokenProvider = tokenProvider;
+        this.ipAddressExtractor = ipAddressExtractor;
     }
 
     /**
@@ -57,7 +61,7 @@ public class AdminPasskeyController {
             @Valid @RequestBody AuthRequest request,
             HttpServletRequest httpRequest) {
 
-        String ip = getClientIp(httpRequest);
+        String ip = ipAddressExtractor.extract(httpRequest);
         String origin = getOrigin(httpRequest);
         AuthResponse response = authService.login(request, ip, origin);
         return ResponseEntity.ok(ApiResponse.ok("Login successful", response));
@@ -121,7 +125,7 @@ public class AdminPasskeyController {
             throw new BadRequestException("Username or pending authorization session required");
         }
 
-        String ip = getClientIp(httpRequest);
+        String ip = ipAddressExtractor.extract(httpRequest);
         String origin = getOrigin(httpRequest);
 
         AuthResponse authResponse = authService.completePasskeyLogin(username, request, origin, ip);
@@ -153,7 +157,7 @@ public class AdminPasskeyController {
             throw new BadRequestException("Username must be provided for recovery code verification");
         }
 
-        String ip = getClientIp(httpRequest);
+        String ip = ipAddressExtractor.extract(httpRequest);
         AuthResponse authResponse = authService.completeRecoveryCodeLogin(username, request.getRecoveryCode(), ip);
         return ResponseEntity.ok(ApiResponse.ok("Recovery authentication successful", authResponse));
     }
@@ -190,7 +194,7 @@ public class AdminPasskeyController {
         Admin admin = adminRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new UnauthorizedException("Admin not found"));
 
-        String ip = getClientIp(httpRequest);
+        String ip = ipAddressExtractor.extract(httpRequest);
         String origin = getOrigin(httpRequest);
 
         RecoveryCodesResponse response = webAuthnService.verifyRegistration(admin, request, origin, ip);
@@ -227,7 +231,7 @@ public class AdminPasskeyController {
         Admin admin = adminRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new UnauthorizedException("Admin not found"));
 
-        String ip = getClientIp(httpRequest);
+        String ip = ipAddressExtractor.extract(httpRequest);
         webAuthnService.revokePasskey(admin, credentialId, ip);
         return ResponseEntity.ok(ApiResponse.ok("Passkey revoked successfully", null));
     }
@@ -275,14 +279,6 @@ public class AdminPasskeyController {
             } catch (Exception ignored) {}
         }
         return null;
-    }
-
-    private String getClientIp(HttpServletRequest request) {
-        String xf = request.getHeader("X-Forwarded-For");
-        if (xf != null && !xf.isBlank()) {
-            return xf.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
     }
 
     private String getOrigin(HttpServletRequest request) {

@@ -4,8 +4,9 @@ import com.portfolio.config.PortfolioProperties;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class LoginRateLimiterService {
@@ -21,7 +22,19 @@ public class LoginRateLimiterService {
         }
     }
 
-    private final Map<String, Attempt> attempts = new ConcurrentHashMap<>();
+    // Maximum number of distinct IP/username keys to track in memory.
+    // Older entries are evicted (LRU order) when the cap is reached,
+    // preventing unbounded memory growth under a distributed brute-force attack.
+    private static final int MAX_TRACKED_KEYS = 10_000;
+
+    private final Map<String, Attempt> attempts = Collections.synchronizedMap(
+            new LinkedHashMap<>(256, 0.75f, true) {
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<String, Attempt> eldest) {
+                    return size() > MAX_TRACKED_KEYS;
+                }
+            }
+    );
 
     public LoginRateLimiterService(PortfolioProperties properties) {
         this.properties = properties;
@@ -51,16 +64,18 @@ public class LoginRateLimiterService {
         int maxAttempts = properties.getSecurity().getRateLimit().getMaxAttempts();
         int lockoutMinutes = properties.getSecurity().getRateLimit().getLockoutDurationMinutes();
 
-        attempts.compute(normalizedKey, (k, attempt) -> {
+        synchronized (attempts) {
+            Attempt attempt = attempts.get(normalizedKey);
             if (attempt == null) {
-                return new Attempt(1);
+                attempt = new Attempt(1);
+            } else {
+                attempt.count++;
+                if (attempt.count >= maxAttempts) {
+                    attempt.lockoutUntil = LocalDateTime.now().plusMinutes(lockoutMinutes);
+                }
             }
-            attempt.count++;
-            if (attempt.count >= maxAttempts) {
-                attempt.lockoutUntil = LocalDateTime.now().plusMinutes(lockoutMinutes);
-            }
-            return attempt;
-        });
+            attempts.put(normalizedKey, attempt);
+        }
     }
 
     public void resetAttempts(String key) {

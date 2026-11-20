@@ -31,34 +31,22 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(@NonNull CorsRegistry registry) {
-        String[] origins;
+        String[] patterns;
         if (allowedOriginsRaw == null || allowedOriginsRaw.isBlank() || "*".equals(allowedOriginsRaw.trim())) {
-            origins = new String[]{"*"};
+            patterns = new String[]{"https://*.vercel.app", "http://localhost:*", "http://127.0.0.1:*", "https://joash-portfolio-backend.onrender.com"};
         } else {
-            origins = allowedOriginsRaw.split(",");
-            // Trim whitespace
-            for (int i = 0; i < origins.length; i++) {
-                origins[i] = origins[i].trim();
+            patterns = allowedOriginsRaw.split(",");
+            for (int i = 0; i < patterns.length; i++) {
+                patterns[i] = patterns[i].trim();
             }
         }
 
-        boolean usePatterns = origins.length == 1 && "*".equals(origins[0]);
-
-        if (usePatterns) {
-            registry.addMapping("/**")
-                    .allowedOriginPatterns("https://*.vercel.app", "http://localhost:*", "http://127.0.0.1:*")
-                    .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-                    .allowedHeaders("*")
-                    .allowCredentials(true)
-                    .maxAge(3600);
-        } else {
-            registry.addMapping("/**")
-                    .allowedOrigins(origins)
-                    .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-                    .allowedHeaders("*")
-                    .allowCredentials(true)
-                    .maxAge(3600);
-        }
+        registry.addMapping("/**")
+                .allowedOriginPatterns(patterns)
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 
     @Override

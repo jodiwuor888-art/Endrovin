@@ -15,6 +15,7 @@ spring:
 
 portfolio:
   security:
+    trust-proxy-headers: false
     jwt:
       secret: 4c9b1397b98d4924a9d7249876fecba27931f82e5b7c8466e34458b688d0bcae
       expiration-ms: 3600000

@@ -9,9 +9,15 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 @Service
     // Public data cached in-memory for performance
@@ -32,6 +38,13 @@ public class PublicPortfolioService {
     private final ContactMessageRepository contactMessageRepository;
     private final SocialLinkRepository socialLinkRepository;
     private final EmailNotificationService emailNotificationService;
+
+    // Cryptographically secure RNG — never use java.util.Random for security-sensitive operations
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
+    // HMAC secret for CAPTCHA signing — derived from a fixed application-level secret
+    // In production this could be injected via @Value("${portfolio.security.captcha-secret:...}")
+    private static final byte[] CAPTCHA_SECRET = "JoashPortfolioCaptchaHmacKey2026XyZ!@#".getBytes(StandardCharsets.UTF_8);
 
     public PublicPortfolioService(PersonalProfileRepository personalProfileRepository,
                                   AboutInformationRepository aboutInformationRepository,
@@ -385,35 +398,66 @@ public class PublicPortfolioService {
     }
 
     public java.util.Map<String, String> generateCaptcha() {
-        java.util.Random rnd = new java.util.Random();
-        int a = rnd.nextInt(9) + 1;
-        int b = rnd.nextInt(9) + 1;
-        int ans = a + b;
-        long ts = System.currentTimeMillis();
-        String payload = ts + ":" + ans;
-        String token = java.util.Base64.getUrlEncoder().encodeToString(payload.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        // Use SecureRandom for numbers — NOT java.util.Random which is predictable
+        int a = SECURE_RANDOM.nextInt(9) + 1;
+        int b = SECURE_RANDOM.nextInt(9) + 1;
+        int answer = a + b;
+        long timestamp = System.currentTimeMillis();
+
+        // Build a signed token: Base64Url(timestamp:answer:HMAC-SHA256)
+        // This prevents clients from decoding the expected answer from the token
+        String data = timestamp + ":" + answer;
+        String hmac = computeHmac(data);
+        String token = Base64.getUrlEncoder().withoutPadding()
+                .encodeToString((data + ":" + hmac).getBytes(StandardCharsets.UTF_8));
+
         return java.util.Map.of("token", token, "question", "What is " + a + " + " + b + "?");
+    }
+
+    private String computeHmac(String data) {
+        try {
+            Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(new SecretKeySpec(CAPTCHA_SECRET, "HmacSHA256"));
+            byte[] raw = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(raw).substring(0, 16);
+        } catch (Exception e) {
+            throw new RuntimeException("CAPTCHA HMAC generation failed", e);
+        }
     }
 
     private void verifyCaptcha(String token, String answer) {
         try {
-            byte[] bytes = java.util.Base64.getUrlDecoder().decode(token);
-            String payload = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
+            byte[] bytes = Base64.getUrlDecoder().decode(token);
+            String payload = new String(bytes, StandardCharsets.UTF_8);
+            // Expected format: timestamp:answer:hmac
             String[] parts = payload.split(":");
+            if (parts.length != 3) {
+                throw new BadRequestException("Invalid CAPTCHA token format");
+            }
             long ts = Long.parseLong(parts[0]);
             int expected = Integer.parseInt(parts[1]);
+            String receivedHmac = parts[2];
 
-            // Expiry 10 minutes
+            // 1. Verify HMAC integrity — prevents token forgery
+            String dataToSign = parts[0] + ":" + parts[1];
+            String expectedHmac = computeHmac(dataToSign);
+            if (!expectedHmac.equals(receivedHmac)) {
+                throw new BadRequestException("CAPTCHA token has been tampered with or is invalid.");
+            }
+
+            // 2. Check expiry (10 minutes)
             if (System.currentTimeMillis() - ts > 600000) {
                 throw new BadRequestException("CAPTCHA has expired. Please refresh the verification challenge.");
             }
+
+            // 3. Verify the answer
             if (answer == null || Integer.parseInt(answer.trim()) != expected) {
                 throw new BadRequestException("Incorrect CAPTCHA answer. Please verify you are human.");
             }
         } catch (BadRequestException e) {
             throw e;
         } catch (Exception e) {
-            throw new BadRequestException("Invalid CAPTCHA challenge format");
+            throw new BadRequestException("Invalid CAPTCHA challenge — please refresh and try again");
         }
     }
 

@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSidebarNavigation();
     loadDashboardStats();
     loadAuditLogs();
+    loadNotifications();
     initDragDropPhotoUpload();
     initCvDragDrop();
 });
@@ -170,6 +171,10 @@ function switchView(viewName) {
     if (activeView) {
         activeView.classList.add('active');
     }
+    const breadcrumbEl = document.getElementById('viewBreadcrumb');
+    if (breadcrumbEl) {
+        breadcrumbEl.textContent = `Control Centre / ${formatViewTitle(viewName)}`;
+    }
 
     // Set page title
     const titleEl = document.getElementById('viewTitle');
@@ -194,6 +199,12 @@ function switchView(viewName) {
         case 'settings': loadSettings(); loadPasskeyDevicesTable(); break;
         case 'social': loadSocialTable(); break;
         case 'cv': loadCvManagement(); break;
+        case 'analytics': loadExecutiveAnalytics(); break;
+        case 'leads': loadCrmLeads(); break;
+        case 'legal': loadLegalDocuments(); break;
+        case 'privacy': loadPrivacyAndCompliance(); break;
+        case 'security': loadSecurityCenter(); break;
+        case 'ai-tools': loadAiTools(); break;
     }
 }
 
@@ -216,7 +227,13 @@ function formatViewTitle(view) {
         'messages': 'Contact Inquiries',
         'settings': 'Website Settings & Meta',
         'social': 'Professional Social Links',
-        'cv': 'Curriculum Vitae (CV) Management'
+        'cv': 'Curriculum Vitae (CV) Management',
+        'analytics': 'Executive Analytics & Traffic',
+        'leads': 'Client Leads & CRM Pipeline',
+        'legal': 'Legal Documents & Terms Governance',
+        'privacy': 'Privacy & Consent Compliance',
+        'security': 'Security Control Centre & Threat Defense',
+        'ai-tools': 'AI Assistant & Content Tools'
     };
     return map[view] || 'Dashboard';
 }
@@ -2279,4 +2296,553 @@ function escapeHtml(str) {
         "'": '&#39;',
         '"': '&quot;'
     }[tag] || tag));
+}
+
+/* ==========================================================================
+   EXECUTIVE ANALYTICS & VISITOR TRACKING
+   ========================================================================== */
+let currentAnalyticsPeriod = 'today';
+async function loadExecutiveAnalytics(period = currentAnalyticsPeriod) {
+    currentAnalyticsPeriod = period;
+    const res = await adminFetch(`/api/admin/analytics/summary?period=${period}`);
+    if (!res || !res.success || !res.data) return;
+    const d = res.data;
+    const pv = document.getElementById('anaPageViews');
+    if (pv) pv.textContent = d.pageViews || 0;
+    const uv = document.getElementById('anaUniqueVisitors');
+    if (uv) uv.textContent = d.uniqueVisitors || 0;
+    const prj = document.getElementById('anaProjectViews');
+    if (prj) prj.textContent = d.projectViews || 0;
+    const cv = document.getElementById('anaCvDownloads');
+    if (cv) cv.textContent = d.resumeDownloads || 0;
+
+    const topPagesBody = document.getElementById('anaTopPagesTable');
+    if (topPagesBody) {
+        if (d.topPages && Object.keys(d.topPages).length > 0) {
+            topPagesBody.innerHTML = Object.entries(d.topPages)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10)
+                .map(([url, count]) => `<tr><td style="font-family:monospace; font-size:0.82rem; color:#e2e8f0;">${escapeHtml(url)}</td><td style="text-align:right; font-weight:600; color:#38bdf8;">${count}</td></tr>`)
+                .join('');
+        } else {
+            topPagesBody.innerHTML = '<tr><td colspan="2" style="text-align:center; color:#94a3b8;">No visitor traffic in this period</td></tr>';
+        }
+    }
+
+    const topRefBody = document.getElementById('anaTopReferrersTable');
+    if (topRefBody) {
+        if (d.topReferrers && Object.keys(d.topReferrers).length > 0) {
+            topRefBody.innerHTML = Object.entries(d.topReferrers)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10)
+                .map(([ref, count]) => `<tr><td style="font-size:0.82rem; color:#e2e8f0;">${escapeHtml(ref)}</td><td style="text-align:right; font-weight:600; color:#38bdf8;">${count}</td></tr>`)
+                .join('');
+        } else {
+            topRefBody.innerHTML = '<tr><td colspan="2" style="text-align:center; color:#94a3b8;">Direct / Internal Traffic</td></tr>';
+        }
+    }
+}
+
+function switchAnalyticsPeriod(period, btn) {
+    if (btn && btn.parentElement) {
+        btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+    loadExecutiveAnalytics(period);
+}
+
+/* ==========================================================================
+   CLIENT LEADS & CRM PIPELINE
+   ========================================================================== */
+let allLeads = [];
+let currentLeadFilter = 'ALL';
+
+async function loadCrmLeads() {
+    const res = await adminFetch('/api/admin/leads');
+    if (!res || !res.success || !Array.isArray(res.data)) {
+        const tbody = document.getElementById('crmLeadsTableBody');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#94a3b8;">No client leads recorded yet.</td></tr>';
+        return;
+    }
+    allLeads = res.data;
+    renderLeadsTable();
+}
+
+function filterLeadsByStatus(status, btn) {
+    currentLeadFilter = status;
+    const filterContainer = document.getElementById('leadStatusFilters');
+    if (filterContainer && btn) {
+        filterContainer.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+    renderLeadsTable();
+}
+
+function renderLeadsTable() {
+    const tbody = document.getElementById('crmLeadsTableBody');
+    if (!tbody) return;
+    const filtered = currentLeadFilter === 'ALL' ? allLeads : allLeads.filter(l => (l.leadStatus || 'NEW') === currentLeadFilter);
+    if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#94a3b8;">No client opportunities matching filter.</td></tr>';
+        return;
+    }
+    const stageBadges = {
+        'NEW': '<span style="background:#0284c7; color:#fff; padding:2px 8px; border-radius:12px; font-size:0.75rem;">New</span>',
+        'CONTACTED': '<span style="background:#eab308; color:#000; padding:2px 8px; border-radius:12px; font-size:0.75rem;">Contacted</span>',
+        'IN_DISCUSSION': '<span style="background:#f97316; color:#fff; padding:2px 8px; border-radius:12px; font-size:0.75rem;">In Discussion</span>',
+        'QUOTATION_SENT': '<span style="background:#8b5cf6; color:#fff; padding:2px 8px; border-radius:12px; font-size:0.75rem;">Quotation Sent</span>',
+        'NEGOTIATING': '<span style="background:#a855f7; color:#fff; padding:2px 8px; border-radius:12px; font-size:0.75rem;">Negotiating</span>',
+        'WON': '<span style="background:#10b981; color:#fff; padding:2px 8px; border-radius:12px; font-size:0.75rem;">Won</span>',
+        'LOST': '<span style="background:#64748b; color:#fff; padding:2px 8px; border-radius:12px; font-size:0.75rem;">Lost</span>'
+    };
+    tbody.innerHTML = filtered.map(lead => `
+        <tr>
+            <td style="font-weight:600; color:#fff;">${escapeHtml(lead.name || 'Anonymous')}</td>
+            <td><a href="mailto:${escapeHtml(lead.email)}" style="color:#38bdf8;">${escapeHtml(lead.email)}</a><br><small style="color:#94a3b8;">${escapeHtml(lead.phone || 'No phone')}</small></td>
+            <td>${escapeHtml(lead.company || '-')}</td>
+            <td><span style="font-size:0.8rem; background:rgba(56,189,248,0.1); padding:2px 6px; border-radius:4px; color:#38bdf8;">${escapeHtml(lead.serviceInterest || 'General Inquiry')}</span></td>
+            <td style="color:#10b981; font-weight:600;">${escapeHtml(lead.estimatedBudget || '-')}</td>
+            <td>${stageBadges[lead.leadStatus || 'NEW'] || lead.leadStatus}</td>
+            <td style="font-size:0.78rem; color:#94a3b8;">${lead.createdAt ? new Date(lead.createdAt).toLocaleDateString() : '-'}</td>
+            <td>
+                <button type="button" class="btn-admin btn-admin-secondary" style="font-size:0.75rem; padding:3px 8px;" onclick="openLeadModal(${lead.id})">Manage</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function openLeadModal(leadId) {
+    const lead = allLeads.find(l => l.id === leadId);
+    if (!lead) return;
+    setVal('leadId', lead.id);
+    setVal('leadName', lead.name + ' (' + lead.email + ')');
+    setVal('leadStatusSelect', lead.leadStatus || 'NEW');
+    setVal('leadBudget', lead.estimatedBudget || '');
+    setVal('leadNotes', lead.internalNotes || '');
+    openModal('leadModal');
+}
+
+async function handleSaveLead(e) {
+    e.preventDefault();
+    const id = document.getElementById('leadId').value;
+    const payload = {
+        leadStatus: document.getElementById('leadStatusSelect').value,
+        estimatedBudget: document.getElementById('leadBudget').value,
+        internalNotes: document.getElementById('leadNotes').value
+    };
+    const res = await adminFetch(`/api/admin/leads/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    if (res && res.success) {
+        showAdminToast('Client lead details updated successfully');
+        closeModal('leadModal');
+        loadCrmLeads();
+    } else {
+        showAdminToast(res ? res.message : 'Failed to update lead', 'error');
+    }
+}
+
+/* ==========================================================================
+   LEGAL DOCUMENTS & POLICIES
+   ========================================================================== */
+let legalDocuments = [];
+async function loadLegalDocuments() {
+    const res = await adminFetch('/api/admin/legal/documents');
+    if (!res || !res.success || !Array.isArray(res.data)) {
+        const tbody = document.getElementById('legalDocsTableBody');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#94a3b8;">No legal documents found.</td></tr>';
+        return;
+    }
+    legalDocuments = res.data;
+    const tbody = document.getElementById('legalDocsTableBody');
+    if (!tbody) return;
+    if (legalDocuments.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#94a3b8;">No legal documents created. Click "+ New Policy Document" to create one.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = legalDocuments.map(doc => `
+        <tr>
+            <td><code style="color:#38bdf8;">${escapeHtml(doc.documentType)}</code></td>
+            <td style="font-weight:600; color:#fff;">${escapeHtml(doc.title)}</td>
+            <td>v${escapeHtml(doc.version)}</td>
+            <td><span style="background:${doc.status === 'PUBLISHED' ? '#059669' : '#d97706'}; color:#fff; padding:2px 8px; border-radius:12px; font-size:0.75rem;">${doc.status}</span></td>
+            <td>${doc.effectiveDate || '-'}</td>
+            <td style="font-size:0.78rem; color:#94a3b8;">${doc.updatedAt ? new Date(doc.updatedAt).toLocaleDateString() : '-'}</td>
+            <td>
+                <button type="button" class="btn-admin btn-admin-secondary" style="font-size:0.75rem; padding:3px 8px;" onclick="openEditLegalDocModal(${doc.id})">Edit</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function openLegalDocModal() {
+    setVal('legalDocId', '');
+    setVal('legalDocType', 'PRIVACY_POLICY');
+    setVal('legalDocTitle', 'Privacy Policy');
+    setVal('legalDocVersion', '1.0');
+    setVal('legalDocStatus', 'PUBLISHED');
+    setVal('legalDocContent', '# Privacy Policy\n\nThis privacy policy governs data handling across this website.');
+    document.getElementById('legalModalTitle').textContent = 'Create Legal Document';
+    openModal('legalModal');
+}
+
+function openEditLegalDocModal(id) {
+    const doc = legalDocuments.find(d => d.id === id);
+    if (!doc) return;
+    setVal('legalDocId', doc.id);
+    setVal('legalDocType', doc.documentType);
+    setVal('legalDocTitle', doc.title);
+    setVal('legalDocVersion', doc.version);
+    setVal('legalDocStatus', doc.status);
+    setVal('legalDocContent', doc.content);
+    document.getElementById('legalModalTitle').textContent = 'Edit Legal Document';
+    openModal('legalModal');
+}
+
+async function handleSaveLegalDoc(e) {
+    e.preventDefault();
+    const id = document.getElementById('legalDocId').value;
+    const payload = {
+        documentType: document.getElementById('legalDocType').value,
+        title: document.getElementById('legalDocTitle').value,
+        version: document.getElementById('legalDocVersion').value,
+        status: document.getElementById('legalDocStatus').value,
+        content: document.getElementById('legalDocContent').value,
+        effectiveDate: new Date().toISOString().split('T')[0]
+    };
+    const url = id ? `/api/admin/legal/documents/${id}` : '/api/admin/legal/documents';
+    const method = id ? 'PUT' : 'POST';
+    const res = await adminFetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    if (res && res.success) {
+        showAdminToast('Legal document saved successfully');
+        closeModal('legalModal');
+        loadLegalDocuments();
+    } else {
+        showAdminToast(res ? res.message : 'Failed to save document', 'error');
+    }
+}
+
+/* ==========================================================================
+   PRIVACY & CONSENT COMPLIANCE
+   ========================================================================== */
+async function loadPrivacyAndCompliance() {
+    const consentRes = await adminFetch('/api/admin/privacy/consent-stats');
+    if (consentRes && consentRes.success && consentRes.data) {
+        const d = consentRes.data;
+        const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || 0; };
+        setEl('statConsentTotal', d.totalRecords || d.totalConsents || 0);
+        setEl('statConsentAccepted', d.acceptedAll || 0);
+        setEl('statConsentRejected', d.rejectedOptional || 0);
+        setEl('statConsentCustom', d.customPreferences || 0);
+    }
+    loadDsarRequests();
+    loadProcessors();
+    loadBreaches();
+}
+
+async function loadDsarRequests() {
+    const res = await adminFetch('/api/admin/privacy/requests');
+    const tbody = document.getElementById('dsarTableBody');
+    if (!tbody) return;
+    if (!res || !res.success || !Array.isArray(res.data) || res.data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#94a3b8;">No pending data subject requests</td></tr>';
+        return;
+    }
+    tbody.innerHTML = res.data.map(req => `
+        <tr>
+            <td style="font-family:monospace; color:#38bdf8;">${escapeHtml(req.ticketNumber)}</td>
+            <td style="color:#fff; font-weight:600;">${escapeHtml(req.requesterName)}</td>
+            <td><a href="mailto:${escapeHtml(req.requesterEmail)}" style="color:#94a3b8;">${escapeHtml(req.requesterEmail)}</a></td>
+            <td><span style="background:rgba(56,189,248,0.1); color:#38bdf8; padding:2px 6px; border-radius:4px; font-size:0.78rem;">${escapeHtml(req.requestType)}</span></td>
+            <td><span style="background:#0284c7; color:#fff; padding:2px 8px; border-radius:12px; font-size:0.75rem;">${escapeHtml(req.status)}</span></td>
+            <td style="color:#f59e0b; font-size:0.8rem;">${req.statutoryDeadline || '-'}</td>
+            <td>
+                <button type="button" class="btn-admin btn-admin-secondary" style="font-size:0.75rem; padding:3px 8px;" onclick="updateDsarStatus(${req.id})">Update Status</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+async function updateDsarStatus(id) {
+    const newStatus = prompt('Enter new status (RECEIVED, IDENTITY_VERIFIED, IN_PROGRESS, COMPLETED, REJECTED):', 'COMPLETED');
+    if (!newStatus) return;
+    const res = await adminFetch(`/api/admin/privacy/requests/${id}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus.trim().toUpperCase() })
+    });
+    if (res && res.success) {
+        showAdminToast('DSAR ticket updated');
+        loadDsarRequests();
+    } else {
+        showAdminToast(res ? res.message : 'Update failed', 'error');
+    }
+}
+
+async function loadProcessors() {
+    const res = await adminFetch('/api/admin/privacy/processors');
+    const tbody = document.getElementById('processorsTableBody');
+    if (!tbody) return;
+    if (!res || !res.success || !Array.isArray(res.data) || res.data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#94a3b8;">No third-party processors registered</td></tr>';
+        return;
+    }
+    tbody.innerHTML = res.data.map(p => `
+        <tr>
+            <td style="color:#fff; font-weight:600;">${escapeHtml(p.providerName)}</td>
+            <td style="color:#94a3b8; font-size:0.82rem;">${escapeHtml(p.servicePurpose)}</td>
+            <td><span style="color:${p.enabled ? '#10b981' : '#64748b'}; font-weight:600; font-size:0.78rem;">${p.enabled ? 'Active' : 'Disabled'}</span></td>
+        </tr>
+    `).join('');
+}
+
+async function loadBreaches() {
+    const res = await adminFetch('/api/admin/privacy/breaches');
+    const tbody = document.getElementById('breachesTableBody');
+    if (!tbody) return;
+    if (!res || !res.success || !Array.isArray(res.data) || res.data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94a3b8;">No security breaches on record</td></tr>';
+        return;
+    }
+    tbody.innerHTML = res.data.map(b => `
+        <tr>
+            <td style="color:#fff; font-weight:600;">${escapeHtml(b.incidentDescription)}</td>
+            <td style="color:#94a3b8; font-size:0.8rem;">${b.discoveryDate ? new Date(b.discoveryDate).toLocaleDateString() : '-'}</td>
+            <td><span style="color:#ef4444; font-weight:600; font-size:0.78rem;">${escapeHtml(b.riskAssessment || 'LOW')}</span></td>
+            <td><span style="background:#0284c7; color:#fff; padding:2px 8px; border-radius:12px; font-size:0.75rem;">${escapeHtml(b.resolutionStatus || 'RESOLVED')}</span></td>
+        </tr>
+    `).join('');
+}
+
+async function openProcessorModal() {
+    const name = prompt('Enter Processor Name (e.g. AWS, Render, Vercel):');
+    if (!name) return;
+    const purpose = prompt('Enter Processing Purpose (e.g. Database Hosting, Web Hosting):');
+    const res = await adminFetch('/api/admin/privacy/processors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            providerName: name,
+            servicePurpose: purpose || 'Infrastructure hosting',
+            dataCategories: 'Technical telemetry, request IP',
+            dpaStatus: 'EXECUTED',
+            enabled: true
+        })
+    });
+    if (res && res.success) {
+        showAdminToast('Processor registered');
+        loadProcessors();
+    } else {
+        showAdminToast(res ? res.message : 'Error registering processor', 'error');
+    }
+}
+
+async function openBreachModal() {
+    const desc = prompt('Enter Incident Summary:');
+    if (!desc) return;
+    const res = await adminFetch('/api/admin/privacy/breaches', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            incidentDescription: desc,
+            discoveryDate: new Date().toISOString(),
+            riskAssessment: 'LOW',
+            affectedSystems: 'None identified',
+            resolutionStatus: 'UNDER_INVESTIGATION'
+        })
+    });
+    if (res && res.success) {
+        showAdminToast('Incident recorded');
+        loadBreaches();
+    } else {
+        showAdminToast(res ? res.message : 'Error recording incident', 'error');
+    }
+}
+
+/* ==========================================================================
+   SECURITY CONTROL CENTRE & EMERGENCY REVOCATION
+   ========================================================================== */
+async function loadSecurityCenter() {
+    const res = await adminFetch('/api/admin/security-center/summary');
+    if (!res || !res.success || !res.data) return;
+    const d = res.data;
+    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    setEl('secScore', (d.securityScore || 95) + '%');
+    setEl('secMfaStatus', d.mfaEnforced ? 'Enforced' : 'Optional');
+    setEl('secActiveDevices', d.activeDevicesCount || 1);
+    setEl('secFailedLogins', d.recentFailedLogins || 0);
+
+    const devTable = document.getElementById('secDevicesTableBody');
+    if (devTable) {
+        if (d.authorizedDevices && d.authorizedDevices.length > 0) {
+            devTable.innerHTML = d.authorizedDevices.map(dev => `
+                <tr>
+                    <td style="color:#fff; font-weight:600;">${escapeHtml(dev.deviceName || 'Admin Browser')}</td>
+                    <td><span style="background:rgba(56,189,248,0.1); color:#38bdf8; padding:2px 8px; border-radius:4px; font-size:0.78rem;">${escapeHtml(dev.deviceType || 'Desktop')}</span></td>
+                    <td style="font-size:0.8rem; color:#94a3b8;">${dev.createdAt ? new Date(dev.createdAt).toLocaleDateString() : '-'}</td>
+                    <td style="font-size:0.8rem; color:#94a3b8;">${dev.lastActiveAt ? new Date(dev.lastActiveAt).toLocaleString() : 'Active now'}</td>
+                    <td><span style="color:#10b981; font-size:0.8rem;">Authorized</span></td>
+                </tr>
+            `).join('');
+        } else {
+            devTable.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8;">Current authenticated session is active.</td></tr>';
+        }
+    }
+
+    const logTable = document.getElementById('secAuthLogsTableBody');
+    if (logTable) {
+        if (d.recentAuthLogs && d.recentAuthLogs.length > 0) {
+            logTable.innerHTML = d.recentAuthLogs.map(log => `
+                <tr>
+                    <td style="font-size:0.8rem; color:#94a3b8;">${log.createdAt ? new Date(log.createdAt).toLocaleString() : '-'}</td>
+                    <td><code style="color:#38bdf8;">${escapeHtml(log.authMethod || 'PASSWORD')}</code></td>
+                    <td style="color:#e2e8f0; font-size:0.8rem;">${escapeHtml(log.deviceInfo || 'Browser Session')}</td>
+                    <td style="font-family:monospace; font-size:0.8rem; color:#94a3b8;">${escapeHtml(log.ipAddress || '-')}</td>
+                    <td><span style="color:${log.success ? '#10b981' : '#ef4444'}; font-weight:600; font-size:0.8rem;">${log.success ? '✅ Success' : '❌ Failed'}</span></td>
+                </tr>
+            `).join('');
+        } else {
+            logTable.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8;">No recent login logs.</td></tr>';
+        }
+    }
+}
+
+async function triggerEmergencyRevocation() {
+    if (!confirm('EMERGENCY REVOCATION:\nThis will immediately invalidate ALL active administrator JWT tokens across all browsers and devices. You will be required to re-authenticate immediately.\n\nAre you sure you want to proceed?')) {
+        return;
+    }
+    const res = await adminFetch('/api/admin/security-center/emergency-revoke-all', {
+        method: 'POST'
+    });
+    if (res && res.success) {
+        showAdminToast('Emergency revocation executed. All sessions invalidated.', 'warning');
+        setTimeout(() => {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
+            window.location.href = '/admin/login.html';
+        }, 1500);
+    } else {
+        showAdminToast(res ? res.message : 'Emergency revocation failed', 'error');
+    }
+}
+
+/* ==========================================================================
+   AI ASSISTANT TOOLS
+   ========================================================================== */
+function loadAiTools() {}
+
+async function runAiProjectEnhance() {
+    const title = document.getElementById('aiProjectTitle').value;
+    const tech = document.getElementById('aiProjectTech').value;
+    const notes = document.getElementById('aiProjectNotes').value;
+    if (!title && !notes) {
+        showAdminToast('Please provide a project title or notes', 'warning');
+        return;
+    }
+    const res = await adminFetch('/api/admin/ai/assist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            taskType: 'ENHANCE_PROJECT_DESCRIPTION',
+            contextTitle: title,
+            technologies: tech,
+            inputContent: notes
+        })
+    });
+    if (res && res.success && res.data) {
+        const box = document.getElementById('aiProjectResult');
+        const text = document.getElementById('aiProjectResultText');
+        if (box && text) {
+            text.textContent = res.data.suggestedContent;
+            box.style.display = 'block';
+        }
+        showAdminToast('Description enhanced');
+    } else {
+        showAdminToast(res ? res.message : 'Enhancement failed', 'error');
+    }
+}
+
+async function runAiSeoGenerate() {
+    const title = document.getElementById('aiSeoTitle').value;
+    const category = document.getElementById('aiSeoCategory').value;
+    if (!title) {
+        showAdminToast('Please enter a content title or topic', 'warning');
+        return;
+    }
+    const res = await adminFetch('/api/admin/ai/assist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            taskType: 'GENERATE_SEO_METADATA',
+            contextTitle: title,
+            technologies: category
+        })
+    });
+    if (res && res.success && res.data) {
+        const box = document.getElementById('aiSeoResult');
+        const t = document.getElementById('aiSeoResultTitle');
+        const d = document.getElementById('aiSeoResultDesc');
+        if (box && t && d) {
+            t.textContent = res.data.seoTitle || '';
+            d.textContent = res.data.seoDescription || '';
+            box.style.display = 'block';
+        }
+        showAdminToast('SEO metadata generated');
+    } else {
+        showAdminToast(res ? res.message : 'Generation failed', 'error');
+    }
+}
+
+/* ==========================================================================
+   SYSTEM NOTIFICATIONS & BELL
+   ========================================================================== */
+let notificationsDrawerOpen = false;
+async function loadNotifications() {
+    const res = await adminFetch('/api/admin/notifications');
+    if (!res || !res.success || !Array.isArray(res.data)) return;
+    const notifs = res.data;
+    const unread = notifs.filter(n => !n.read).length;
+    const badge = document.getElementById('topbarNotifBadge');
+    if (badge) {
+        badge.textContent = unread;
+        badge.style.display = unread > 0 ? 'inline-block' : 'none';
+    }
+    const list = document.getElementById('notificationList');
+    if (list) {
+        if (notifs.length === 0) {
+            list.innerHTML = '<p style="color:#94a3b8; font-size:0.82rem; text-align:center; margin:10px 0;">No new notifications</p>';
+        } else {
+            list.innerHTML = notifs.slice(0, 8).map(n => `
+                <div style="background:${n.read ? 'rgba(255,255,255,0.03)' : 'rgba(56,189,248,0.1)'}; padding:8px 10px; border-radius:6px; border-left:3px solid ${n.read ? '#64748b' : '#38bdf8'}; font-size:0.8rem;">
+                    <div style="font-weight:600; color:#fff; margin-bottom:2px;">${escapeHtml(n.title)}</div>
+                    <div style="color:#cbd5e1; font-size:0.78rem;">${escapeHtml(n.message)}</div>
+                    <div style="color:#64748b; font-size:0.72rem; margin-top:4px;">${n.createdAt ? new Date(n.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''}</div>
+                </div>
+            `).join('');
+        }
+    }
+}
+
+function toggleNotificationDrawer() {
+    const dd = document.getElementById('notificationDropdown');
+    if (!dd) return;
+    notificationsDrawerOpen = !notificationsDrawerOpen;
+    dd.style.display = notificationsDrawerOpen ? 'block' : 'none';
+    if (notificationsDrawerOpen) {
+        loadNotifications();
+    }
+}
+
+async function markAllNotificationsRead() {
+    const res = await adminFetch('/api/admin/notifications/mark-all-read', { method: 'POST' });
+    if (res && res.success) {
+        loadNotifications();
+        showAdminToast('All notifications marked as read');
+    }
 }

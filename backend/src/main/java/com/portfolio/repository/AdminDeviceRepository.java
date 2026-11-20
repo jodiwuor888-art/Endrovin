@@ -15,4 +15,6 @@ public interface AdminDeviceRepository extends JpaRepository<AdminDevice, Long> 
     Optional<AdminDevice> findByCredential_CredentialId(String credentialId);
     Optional<AdminDevice> findByIdAndAdmin(Long id, Admin admin);
     long countByAdminAndRevokedAtIsNull(Admin admin);
+    long countByRevokedAtIsNull();
+    List<AdminDevice> findByRevokedAtIsNullOrderByLastUsedAtDesc();
 }
