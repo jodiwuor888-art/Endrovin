@@ -28,7 +28,9 @@ import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -244,6 +246,9 @@ public class AuthService {
 
             auditLogService.logAction(username, "LOGIN_SUCCESS", "Admins", String.valueOf(admin.getId()), "Successful administrator authentication via password", ipAddress);
 
+            // Dispatch instant admin login security email & phone notification
+            emailNotificationService.sendAdminLoginNotification(admin, "Password Authentication", ipAddress, null);
+
             return new AuthResponse(
                     jwt,
                     admin.getId(),
@@ -282,6 +287,77 @@ public class AuthService {
 
         auditLogService.logAction(username, "LOGIN_SUCCESS_MFA", "Admins", String.valueOf(admin.getId()), "Successful biometric WebAuthn authentication", ipAddress);
 
+        // Dispatch instant admin login security email & phone notification
+        emailNotificationService.sendAdminLoginNotification(admin, "Biometric / WebAuthn Passkey (Fingerprint)", ipAddress, null);
+
+        return new AuthResponse(
+                jwt,
+                admin.getAdminId(),
+                admin.getUsername(),
+                admin.getEmail(),
+                admin.getFullName(),
+                roles
+        );
+    }
+
+    // In-memory store for emergency 6-digit access codes (expires in 10 minutes)
+    private final Map<String, EmergencyOtpEntry> emergencyOtpStore = new ConcurrentHashMap<>();
+
+    public record EmergencyOtpEntry(String code, LocalDateTime expiresAt, String username) {}
+
+    public void requestEmergencyEmailOtp(String username, String ipAddress) {
+        if (username == null || username.isBlank()) {
+            throw new BadRequestException("Username or email is required to request an emergency access passcode");
+        }
+        Admin admin = adminRepository.findByUsername(username.trim())
+                .or(() -> adminRepository.findByEmailIgnoreCase(username.trim()))
+                .orElseThrow(() -> new UnauthorizedException("Administrator account not found"));
+
+        int randomPin = 100000 + secureRandom.nextInt(900000);
+        String otpCode = String.valueOf(randomPin);
+
+        emergencyOtpStore.put(admin.getUsername().toLowerCase(),
+                new EmergencyOtpEntry(otpCode, LocalDateTime.now().plusMinutes(10), admin.getUsername()));
+
+        emailNotificationService.sendEmergencyEmailOtp(admin, otpCode, ipAddress);
+        auditLogService.logAction(admin.getUsername(), "EMERGENCY_OTP_REQUESTED", "Admins",
+                String.valueOf(admin.getId()), "Emergency one-time access passcode dispatched to email", ipAddress);
+    }
+
+    @Transactional
+    public AuthResponse completeEmergencyEmailOtpLogin(String username, String otpCode, String ipAddress, String userAgent) {
+        if (username == null || username.isBlank() || otpCode == null || otpCode.isBlank()) {
+            throw new BadRequestException("Username and emergency access passcode are required");
+        }
+        Admin admin = adminRepository.findByUsername(username.trim())
+                .or(() -> adminRepository.findByEmailIgnoreCase(username.trim()))
+                .orElseThrow(() -> new UnauthorizedException("Administrator account not found"));
+
+        EmergencyOtpEntry entry = emergencyOtpStore.get(admin.getUsername().toLowerCase());
+        if (entry == null || entry.expiresAt().isBefore(LocalDateTime.now()) || !entry.code().equals(otpCode.trim())) {
+            auditLogService.logAction(admin.getUsername(), "EMERGENCY_OTP_FAILED", "Admins",
+                    String.valueOf(admin.getId()), "Invalid or expired emergency OTP attempt", ipAddress);
+            throw new UnauthorizedException("Invalid or expired emergency access passcode. Please request a new one.");
+        }
+
+        // Single-use: consume immediately
+        emergencyOtpStore.remove(admin.getUsername().toLowerCase());
+
+        admin.setLastLoginAt(LocalDateTime.now());
+        admin.setFailedLoginAttempts(0);
+        admin.setLockoutUntil(null);
+        adminRepository.save(admin);
+
+        String jwt = tokenProvider.generateTokenForAdmin(admin);
+        Set<String> roles = admin.getRoles().stream()
+                .map(r -> "ROLE_" + r.getRoleName())
+                .collect(Collectors.toSet());
+
+        auditLogService.logAction(admin.getUsername(), "LOGIN_SUCCESS_EMERGENCY_OTP", "Admins",
+                String.valueOf(admin.getId()), "Successful emergency email OTP login", ipAddress);
+
+        emailNotificationService.sendAdminLoginNotification(admin, "Emergency Email One-Time Passcode", ipAddress, userAgent);
+
         return new AuthResponse(
                 jwt,
                 admin.getAdminId(),
@@ -311,6 +387,9 @@ public class AuthService {
                 .collect(Collectors.toSet());
 
         auditLogService.logAction(username, "LOGIN_SUCCESS_RECOVERY", "Admins", String.valueOf(admin.getId()), "Successful emergency recovery authentication", ipAddress);
+
+        // Dispatch instant admin login security email & phone notification
+        emailNotificationService.sendAdminLoginNotification(admin, "Emergency Single-Use Recovery Code", ipAddress, null);
 
         return new AuthResponse(
                 jwt,

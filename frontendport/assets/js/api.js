@@ -189,6 +189,24 @@ const API = {
             body: JSON.stringify(payload)
         });
         return await res.json();
+    },
+
+    async requestEmergencyEmailOtp(username) {
+        const res = await fetch(`${API_BASE}/api/admin/passkey/emergency-email-otp/request`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ username: username })
+        });
+        return await res.json();
+    },
+
+    async verifyEmergencyEmailOtp(payload) {
+        const res = await fetch(`${API_BASE}/api/admin/passkey/emergency-email-otp/verify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        return await res.json();
     }
 };
 

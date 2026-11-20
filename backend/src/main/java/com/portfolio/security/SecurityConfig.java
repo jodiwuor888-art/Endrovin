@@ -82,6 +82,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/admin/login").permitAll()
                         .requestMatchers("/api/admin/passkey/authentication/**").permitAll()
                         .requestMatchers("/api/admin/passkey/recovery-verify").permitAll()
+                        .requestMatchers("/api/admin/passkey/emergency-email-otp/**").permitAll()
 
                         // Static resources and uploads
                         .requestMatchers("/", "/index.html", "/*.html", "/*.css", "/*.js", "/*.ico", "/*.png", "/*.jpg", "/*.svg").permitAll()

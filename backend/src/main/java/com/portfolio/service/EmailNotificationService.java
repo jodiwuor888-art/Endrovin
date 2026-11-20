@@ -20,6 +20,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -422,6 +423,115 @@ public class EmailNotificationService {
         sendInstantPhonePush("⚡ New Portfolio Inquiry: " + message.getFullName(),
                 String.format("Email: %s\nSubject: %s\n\n%s", message.getEmail(), message.getSubject(), message.getMessage()),
                 "envelope,sparkles");
+    }
+
+    /**
+     * Dispatches an immediate security alert email and instant push notification whenever an administrator
+     * signs into the portfolio management system (via password, biometric passkey, recovery code, or emergency OTP).
+     */
+    @Async
+    public void sendAdminLoginNotification(Admin admin, String authMethod, String ipAddress, String userAgent) {
+        String recipient = getNotificationEmail();
+        String adminEmail = admin != null ? admin.getEmail() : null;
+        if (adminEmail != null && !adminEmail.isBlank() && adminEmail.contains("@")) {
+            recipient = adminEmail;
+        }
+
+        String from = getSmtpUsername();
+        if (from == null || from.isBlank()) {
+            from = properties.getSecurity().getPasswordResetFrom();
+        }
+        if (from == null || from.isBlank()) {
+            from = recipient;
+        }
+
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " (EAT / UTC+3)";
+        String safeIp = (ipAddress != null && !ipAddress.isBlank()) ? ipAddress : "Unknown IP";
+        String safeUserAgent = (userAgent != null && !userAgent.isBlank()) ? userAgent : "Unknown Device / Browser";
+        String adminName = admin != null ? admin.getUsername() : "joash";
+
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setTo(recipient);
+        mail.setFrom(from);
+        mail.setSubject("🔐 Security Notice: Administrator Sign-In Detected (" + adminName + ")");
+        mail.setText(String.format(
+                "Hello %s,\n\n" +
+                "An administrator sign-in to your Portfolio Control Centre was just completed:\n\n" +
+                "==================================================\n" +
+                "SESSION AUTHENTICATION DETAILS\n" +
+                "==================================================\n" +
+                "Administrator:  %s\n" +
+                "Method:         %s\n" +
+                "Timestamp:      %s\n" +
+                "IP Address:     %s\n" +
+                "Device/Browser: %s\n\n" +
+                "==================================================\n" +
+                "SECURITY ADVICE\n" +
+                "==================================================\n" +
+                "• If this was you, you can safely disregard this message.\n" +
+                "• If you DID NOT initiate this login, immediately revoke all active sessions:\n" +
+                "  https://endrovin-frontendport.vercel.app/admin/dashboard.html#security\n" +
+                "  or trigger Emergency Revocation in your Security Control Centre.\n",
+                (admin != null && admin.getFullName() != null) ? admin.getFullName() : adminName,
+                adminName,
+                authMethod,
+                timestamp,
+                safeIp,
+                safeUserAgent
+        ));
+
+        sendWithFallback(mail, recipient, "ADMIN LOGIN NOTIFICATION");
+        sendInstantPhonePush("🔐 Admin Sign-In: " + adminName,
+                String.format("Method: %s\nIP: %s\nTime: %s", authMethod, safeIp, timestamp),
+                "lock,shield");
+    }
+
+    /**
+     * Sends a 6-digit emergency access passcode when laptop sensor or phone is unavailable.
+     */
+    @Async
+    public void sendEmergencyEmailOtp(Admin admin, String otpCode, String ipAddress) {
+        String recipient = getNotificationEmail();
+        String adminEmail = admin != null ? admin.getEmail() : null;
+        if (adminEmail != null && !adminEmail.isBlank() && adminEmail.contains("@")) {
+            recipient = adminEmail;
+        }
+
+        String from = getSmtpUsername();
+        if (from == null || from.isBlank()) {
+            from = properties.getSecurity().getPasswordResetFrom();
+        }
+        if (from == null || from.isBlank()) {
+            from = recipient;
+        }
+
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setTo(recipient);
+        mail.setFrom(from);
+        mail.setSubject("🔑 Emergency One-Time Admin Passcode: " + otpCode);
+        mail.setText(String.format(
+                "Hello %s,\n\n" +
+                "An emergency one-time access passcode was requested for your Portfolio Control Centre:\n\n" +
+                "  ┌──────────────────────────────┐\n" +
+                "  │   PASSCODE:  %s          │\n" +
+                "  └──────────────────────────────┘\n\n" +
+                "This code expires in 10 minutes and can only be used once.\n\n" +
+                "Request Details:\n" +
+                "• Target Account: %s\n" +
+                "• Request IP:     %s\n\n" +
+                "Once you sign in, remember to enroll your laptop's fingerprint sensor via:\n" +
+                "Dashboard → Fingerprint ('👆 Fingerprint' in the top bar) to enable seamless touch login from this device.\n\n" +
+                "If you did not request this emergency code, please disregard this email.\n",
+                (admin != null && admin.getFullName() != null) ? admin.getFullName() : admin.getUsername(),
+                otpCode,
+                admin.getUsername(),
+                ipAddress != null ? ipAddress : "Unknown"
+        ));
+
+        sendWithFallback(mail, recipient, "EMERGENCY EMAIL OTP");
+        sendInstantPhonePush("🔑 Emergency Login Passcode: " + otpCode,
+                "One-time admin access requested from IP: " + (ipAddress != null ? ipAddress : "Unknown"),
+                "key,warning");
     }
 
     public boolean sendPasswordResetEmail(Admin admin, String resetCode, String resetUrl) {

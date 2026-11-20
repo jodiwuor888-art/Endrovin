@@ -1138,6 +1138,13 @@
                         </button>
                     </form>
 
+                    <div class="laptop-sensor-hint" style="margin-top:1.25rem; padding:0.85rem 1rem; border-radius:10px; background:rgba(56, 189, 248, 0.06); border:1px solid rgba(56, 189, 248, 0.2); font-size:0.8rem; line-height:1.45; color:#94a3b8; text-align:left;">
+                        <div style="display:flex; align-items:center; gap:0.5rem; color:#38bdf8; font-weight:600; margin-bottom:0.35rem;">
+                            <span>💻 Lenovo ThinkPad &amp; Device Setup</span>
+                        </div>
+                        <span>Laptop sensor not yet enrolled or phone unavailable? Sign in with your password first, then touch <strong>'👆 Fingerprint'</strong> in the top bar to enroll this laptop's built-in reader for instant touch login!</span>
+                    </div>
+
                 </div>
 
                 <!-- ==============================================================
@@ -1204,16 +1211,38 @@
                             </button>
                         </div>
 
-                        <!-- Single-Use Emergency Recovery Code Input for Laptop Access -->
-                        <div id="recoveryCodeSection" style="margin-top:1.4rem; padding-top:1rem; border-top:1px dashed rgba(56, 189, 248, 0.25); text-align:center;">
-                            <p style="font-size:0.78rem; color:#94a3b8; margin-bottom:0.5rem;">
-                                Laptop sensor not yet enrolled or phone unavailable?
-                            </p>
-                            <div style="display:flex; gap:0.4rem; justify-content:center;">
-                                <input type="text" id="emergencyRecoveryCodeInput" class="form-control" placeholder="Recovery Code (ABCD-EFGH)" style="max-width:240px; text-transform:uppercase; font-family:monospace; font-size:0.82rem; text-align:center; padding:0.4rem 0.6rem;" onkeydown="if(event.key==='Enter'){ event.preventDefault(); handleEmergencyRecoveryCodeSubmit(); }">
-                                <button type="button" class="btn-submit" id="btnVerifyRecoveryCode" style="width:auto; padding:0 0.9rem; font-size:0.78rem;" onclick="handleEmergencyRecoveryCodeSubmit()">
-                                    <span>Verify</span>
-                                </button>
+                        <!-- Single-Use Emergency Recovery Code or Instant Email Passcode for Laptop Access -->
+                        <div id="recoveryCodeSection" style="margin-top:1.4rem; padding-top:1.1rem; border-top:1px dashed rgba(56, 189, 248, 0.25); text-align:center;">
+                            <div style="background:rgba(56, 189, 248, 0.05); border:1px solid rgba(56, 189, 248, 0.18); border-radius:10px; padding:0.85rem 1rem; margin-bottom:0.9rem;">
+                                <p style="font-size:0.82rem; font-weight:600; color:#38bdf8; margin-bottom:0.3rem;">
+                                    Laptop sensor not yet enrolled or phone unavailable?
+                                </p>
+                                <p style="font-size:0.75rem; color:#94a3b8; line-height:1.4; margin-bottom:0.75rem;">
+                                    If this Lenovo ThinkPad's fingerprint reader isn't enrolled yet, or your phone isn't handy, enter your <strong>Recovery Code</strong> or receive an <strong>Instant One-Time Email Passcode</strong>.
+                                </p>
+                                <div style="display:flex; gap:0.4rem; justify-content:center; flex-wrap:wrap; margin-bottom:0.6rem;">
+                                    <input type="text" id="emergencyRecoveryCodeInput" class="form-control" placeholder="Recovery Code (ABCD-EFGH)" style="max-width:210px; text-transform:uppercase; font-family:monospace; font-size:0.82rem; text-align:center; padding:0.4rem 0.6rem;" onkeydown="if(event.key==='Enter'){ event.preventDefault(); handleEmergencyRecoveryCodeSubmit(); }">
+                                    <button type="button" class="btn-submit" id="btnVerifyRecoveryCode" style="width:auto; padding:0 0.85rem; font-size:0.78rem;" onclick="handleEmergencyRecoveryCodeSubmit()">
+                                        <span>Verify Code</span>
+                                    </button>
+                                </div>
+                                <div style="display:flex; justify-content:center; gap:0.5rem; align-items:center;">
+                                    <span style="font-size:0.72rem; color:#64748b;">— OR —</span>
+                                    <button type="button" class="btn-subtle" id="btnRequestEmailOtp" style="width:auto; padding:0.35rem 0.85rem; font-size:0.75rem; color:#38bdf8; border:1px solid rgba(56,189,248,0.25); border-radius:6px; background:rgba(56,189,248,0.08); cursor:pointer;" onclick="handleRequestEmailOtp()">
+                                        <span>📩 Email Me a 6-Digit Passcode</span>
+                                    </button>
+                                </div>
+                                <div id="emailOtpInputWrap" style="display:none; margin-top:0.75rem; padding-top:0.6rem; border-top:1px solid rgba(255,255,255,0.06);">
+                                    <p style="font-size:0.74rem; color:#34d399; margin-bottom:0.4rem;">
+                                        Passcode sent! Check your inbox for the 6-digit code:
+                                    </p>
+                                    <div style="display:flex; gap:0.4rem; justify-content:center;">
+                                        <input type="text" id="emergencyEmailOtpInput" class="form-control" placeholder="6-digit code (e.g. 123456)" maxlength="6" style="max-width:180px; font-family:monospace; font-size:0.85rem; text-align:center; padding:0.4rem 0.6rem;" onkeydown="if(event.key==='Enter'){ event.preventDefault(); handleVerifyEmailOtp(); }">
+                                        <button type="button" class="btn-submit" id="btnVerifyEmailOtp" style="width:auto; padding:0 0.85rem; font-size:0.78rem;" onclick="handleVerifyEmailOtp()">
+                                            <span>Submit</span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1809,6 +1838,66 @@
             }
         } catch (err) {
             showAlert('Error verifying recovery code: ' + (err.message || 'Network error'), 'error');
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    }
+
+    // Emergency Email OTP Request handler for laptop access
+    async function handleRequestEmailOtp() {
+        const fpInput = document.getElementById('fpUsernameInput');
+        const un = (fpInput && fpInput.value.trim()) || currentUsername || localStorage.getItem('lastAdminUsername') || 'joash';
+        const btn = document.getElementById('btnRequestEmailOtp');
+        if (btn) btn.disabled = true;
+
+        try {
+            showAlert('Requesting emergency access passcode...', 'info');
+            const res = await API.requestEmergencyEmailOtp(un);
+            if (res && res.success) {
+                showAlert('Passcode dispatched! Please check your email inbox.', 'success');
+                const wrap = document.getElementById('emailOtpInputWrap');
+                if (wrap) wrap.style.display = 'block';
+                const input = document.getElementById('emergencyEmailOtpInput');
+                if (input) input.focus();
+            } else {
+                showAlert(res ? res.message : 'Failed to send emergency passcode.', 'error');
+            }
+        } catch (err) {
+            showAlert('Error sending passcode: ' + (err.message || 'Network error'), 'error');
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    }
+
+    // Emergency Email OTP Verification handler
+    async function handleVerifyEmailOtp() {
+        const input = document.getElementById('emergencyEmailOtpInput');
+        const code = input ? input.value.trim() : '';
+        if (!code || code.length < 6) {
+            showAlert('Please enter the 6-digit passcode sent to your email.', 'error');
+            return;
+        }
+
+        const btn = document.getElementById('btnVerifyEmailOtp');
+        if (btn) btn.disabled = true;
+
+        const fpInput = document.getElementById('fpUsernameInput');
+        const un = (fpInput && fpInput.value.trim()) || currentUsername || localStorage.getItem('lastAdminUsername') || 'joash';
+
+        try {
+            showAlert('Verifying emergency passcode...', 'info');
+            const payload = { username: un, otpCode: code };
+            const res = await API.verifyEmergencyEmailOtp(payload);
+            if (res && res.success && res.data && res.data.token) {
+                localStorage.setItem('adminToken', res.data.token);
+                localStorage.setItem('adminUser', JSON.stringify(res.data));
+                showAlert('Access granted! Entering dashboard to enroll laptop...', 'success');
+                setTimeout(() => { window.location.href = 'dashboard.html'; }, 700);
+            } else {
+                showAlert(res ? (res.message || 'Invalid or expired passcode.') : 'Verification failed.', 'error');
+            }
+        } catch (err) {
+            showAlert('Error verifying passcode: ' + (err.message || 'Network error'), 'error');
         } finally {
             if (btn) btn.disabled = false;
         }

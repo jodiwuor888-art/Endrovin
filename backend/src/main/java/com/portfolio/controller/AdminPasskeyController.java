@@ -163,6 +163,56 @@ public class AdminPasskeyController {
     }
 
     /**
+     * Emergency Email OTP Request: Dispatches a 6-digit one-time access passcode to registered admin email
+     */
+    @PostMapping("/passkey/emergency-email-otp/request")
+    @Operation(summary = "Emergency access fallback: request 6-digit one-time passcode to registered email")
+    public ResponseEntity<ApiResponse<String>> requestEmergencyEmailOtp(
+            @RequestBody(required = false) Map<String, String> body,
+            HttpServletRequest httpRequest) {
+
+        String username = body != null ? body.get("username") : null;
+        if (username == null || username.isBlank()) {
+            username = resolveUsernameFromToken(httpRequest);
+        }
+        if (username == null || username.isBlank()) {
+            username = "joash";
+        }
+
+        String ip = ipAddressExtractor.extract(httpRequest);
+        authService.requestEmergencyEmailOtp(username, ip);
+        return ResponseEntity.ok(ApiResponse.ok("A one-time 6-digit access passcode has been sent to your registered email.", null));
+    }
+
+    /**
+     * Emergency Email OTP Verification: Verifies 6-digit passcode and issues full JWT
+     */
+    @PostMapping("/passkey/emergency-email-otp/verify")
+    @Operation(summary = "Emergency access fallback: verify 6-digit email passcode and authenticate")
+    public ResponseEntity<ApiResponse<AuthResponse>> verifyEmergencyEmailOtp(
+            @RequestBody Map<String, String> body,
+            HttpServletRequest httpRequest) {
+
+        String username = body != null ? body.get("username") : null;
+        String otpCode = body != null ? body.get("otpCode") : null;
+        if (otpCode == null || otpCode.isBlank()) {
+            otpCode = body != null ? body.get("code") : null;
+        }
+
+        if (username == null || username.isBlank()) {
+            username = resolveUsernameFromToken(httpRequest);
+        }
+        if (username == null || username.isBlank()) {
+            username = "joash";
+        }
+
+        String ip = ipAddressExtractor.extract(httpRequest);
+        String userAgent = httpRequest.getHeader("User-Agent");
+        AuthResponse authResponse = authService.completeEmergencyEmailOtpLogin(username, otpCode, ip, userAgent);
+        return ResponseEntity.ok(ApiResponse.ok("Emergency email authentication successful", authResponse));
+    }
+
+    /**
      * WebAuthn Registration: Request registration challenge and options
      */
     @RequestMapping(value = "/passkey/registration/options", method = {RequestMethod.POST, RequestMethod.GET})
