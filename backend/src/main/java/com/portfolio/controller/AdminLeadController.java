@@ -2,6 +2,7 @@ package com.portfolio.controller;
 
 import com.portfolio.dto.ApiResponse;
 import com.portfolio.dto.ContactMessageResponse;
+import com.portfolio.security.IpAddressExtractor;
 import com.portfolio.service.AdminManagementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,9 +22,11 @@ import java.util.List;
 public class AdminLeadController {
 
     private final AdminManagementService managementService;
+    private final IpAddressExtractor ipAddressExtractor;
 
-    public AdminLeadController(AdminManagementService managementService) {
+    public AdminLeadController(AdminManagementService managementService, IpAddressExtractor ipAddressExtractor) {
         this.managementService = managementService;
+        this.ipAddressExtractor = ipAddressExtractor;
     }
 
     @GetMapping
@@ -40,16 +43,8 @@ public class AdminLeadController {
             @AuthenticationPrincipal UserDetails userDetails,
             HttpServletRequest request) {
         String username = userDetails != null ? userDetails.getUsername() : "admin";
-        String ip = getClientIp(request);
+        String ip = ipAddressExtractor.extract(request);
         return ResponseEntity.ok(ApiResponse.ok("Lead updated successfully",
                 managementService.updateLeadDetails(id, payload, username, ip)));
-    }
-
-    private String getClientIp(HttpServletRequest request) {
-        String xf = request.getHeader("X-Forwarded-For");
-        if (xf != null && !xf.isBlank()) {
-            return xf.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
     }
 }

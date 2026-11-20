@@ -3,6 +3,7 @@ package com.portfolio.controller;
 import com.portfolio.dto.ApiResponse;
 import com.portfolio.dto.AuditLogDto;
 import com.portfolio.dto.DashboardStatsResponse;
+import com.portfolio.security.IpAddressExtractor;
 import com.portfolio.service.AdminManagementService;
 import com.portfolio.service.DashboardStatsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,10 +25,14 @@ public class AdminDashboardController {
 
     private final DashboardStatsService statsService;
     private final AdminManagementService managementService;
+    private final IpAddressExtractor ipAddressExtractor;
 
-    public AdminDashboardController(DashboardStatsService statsService, AdminManagementService managementService) {
+    public AdminDashboardController(DashboardStatsService statsService,
+                                    AdminManagementService managementService,
+                                    IpAddressExtractor ipAddressExtractor) {
         this.statsService = statsService;
         this.managementService = managementService;
+        this.ipAddressExtractor = ipAddressExtractor;
     }
 
     @GetMapping("/stats")
@@ -52,7 +57,7 @@ public class AdminDashboardController {
             HttpServletRequest request) {
 
         String username = userDetails != null ? userDetails.getUsername() : "admin";
-        String ip = getClientIp(request);
+        String ip = ipAddressExtractor.extract(request);
         managementService.deleteAuditLog(id, username, ip);
         return ResponseEntity.ok(ApiResponse.ok("Audit log entry deleted successfully", null));
     }
@@ -64,16 +69,8 @@ public class AdminDashboardController {
             HttpServletRequest request) {
 
         String username = userDetails != null ? userDetails.getUsername() : "admin";
-        String ip = getClientIp(request);
+        String ip = ipAddressExtractor.extract(request);
         managementService.clearAllAuditLogs(username, ip);
         return ResponseEntity.ok(ApiResponse.ok("All audit logs cleared successfully", null));
-    }
-
-    private String getClientIp(HttpServletRequest request) {
-        String xf = request.getHeader("X-Forwarded-For");
-        if (xf != null && !xf.isBlank()) {
-            return xf.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
     }
 }

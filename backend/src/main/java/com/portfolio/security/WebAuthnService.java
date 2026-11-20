@@ -133,6 +133,9 @@ public class WebAuthnService {
                 throw new BadRequestException("Invalid WebAuthn clientData type: " + type);
             }
 
+            String clientOrigin = clientDataJson.path("origin").asText();
+            verifyClientDataOrigin(clientOrigin, origin);
+
             String challenge = clientDataJson.path("challenge").asText();
             verifyChallenge(challenge, "REGISTRATION", admin.getAdminId());
 
@@ -257,6 +260,9 @@ public class WebAuthnService {
             if (!"webauthn.get".equals(type)) {
                 throw new BadRequestException("Invalid clientData type for authentication: " + type);
             }
+
+            String clientOrigin = clientDataJson.path("origin").asText();
+            verifyClientDataOrigin(clientOrigin, origin);
 
             String challenge = clientDataJson.path("challenge").asText();
             verifyChallenge(challenge, "AUTHENTICATION", admin.getAdminId());
@@ -396,6 +402,31 @@ public class WebAuthnService {
 
         challenge.setUsedAt(LocalDateTime.now());
         challengeRepository.save(challenge);
+    }
+
+    private void verifyClientDataOrigin(String clientDataOrigin, String requestOrigin) {
+        if (clientDataOrigin == null || clientDataOrigin.isBlank()) {
+            throw new BadRequestException("Missing origin in WebAuthn clientData");
+        }
+        String normalizedClient = clientDataOrigin.trim().toLowerCase();
+
+        // Local development environments
+        if (normalizedClient.startsWith("http://localhost") || normalizedClient.startsWith("https://localhost")
+                || normalizedClient.startsWith("http://127.0.0.1") || normalizedClient.startsWith("https://127.0.0.1")) {
+            return;
+        }
+
+        // Production deployment domains (Vercel & Render)
+        if (normalizedClient.endsWith(".vercel.app") || normalizedClient.contains("onrender.com")) {
+            return;
+        }
+
+        // Exact match with HTTP request origin header
+        if (requestOrigin != null && !requestOrigin.isBlank() && normalizedClient.equalsIgnoreCase(requestOrigin.trim())) {
+            return;
+        }
+
+        throw new UnauthorizedException("WebAuthn origin unauthorized: " + clientDataOrigin);
     }
 
     /* ==========================================================================

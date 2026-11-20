@@ -2,6 +2,7 @@ package com.portfolio.controller;
 
 import com.portfolio.dto.ApiResponse;
 import com.portfolio.dto.LegalDocumentDto;
+import com.portfolio.security.IpAddressExtractor;
 import com.portfolio.service.LegalAndPrivacyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,9 +22,11 @@ import java.util.List;
 public class AdminLegalDocumentController {
 
     private final LegalAndPrivacyService legalService;
+    private final IpAddressExtractor ipAddressExtractor;
 
-    public AdminLegalDocumentController(LegalAndPrivacyService legalService) {
+    public AdminLegalDocumentController(LegalAndPrivacyService legalService, IpAddressExtractor ipAddressExtractor) {
         this.legalService = legalService;
+        this.ipAddressExtractor = ipAddressExtractor;
     }
 
     @GetMapping("/documents")
@@ -39,15 +42,7 @@ public class AdminLegalDocumentController {
             @AuthenticationPrincipal UserDetails userDetails,
             HttpServletRequest request) {
         String username = userDetails != null ? userDetails.getUsername() : "admin";
-        String ip = getClientIp(request);
+        String ip = ipAddressExtractor.extract(request);
         return ResponseEntity.ok(ApiResponse.ok("Legal document saved successfully", legalService.saveLegalDocument(dto, username, ip)));
-    }
-
-    private String getClientIp(HttpServletRequest request) {
-        String xf = request.getHeader("X-Forwarded-For");
-        if (xf != null && !xf.isBlank()) {
-            return xf.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
     }
 }

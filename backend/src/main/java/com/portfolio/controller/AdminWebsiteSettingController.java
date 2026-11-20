@@ -4,6 +4,7 @@ import com.portfolio.dto.ApiResponse;
 import com.portfolio.dto.BatchSettingsUpdateRequest;
 import com.portfolio.dto.SettingsAuditTrailDto;
 import com.portfolio.dto.WebsiteSettingDto;
+import com.portfolio.security.IpAddressExtractor;
 import com.portfolio.service.AdminManagementService;
 import com.portfolio.service.WebsiteSettingsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,11 +32,14 @@ public class AdminWebsiteSettingController {
 
     private final WebsiteSettingsService settingsService;
     private final AdminManagementService managementService;
+    private final IpAddressExtractor ipAddressExtractor;
 
     public AdminWebsiteSettingController(WebsiteSettingsService settingsService,
-                                         AdminManagementService managementService) {
+                                         AdminManagementService managementService,
+                                         IpAddressExtractor ipAddressExtractor) {
         this.settingsService = settingsService;
         this.managementService = managementService;
+        this.ipAddressExtractor = ipAddressExtractor;
     }
 
     @GetMapping
@@ -51,7 +55,7 @@ public class AdminWebsiteSettingController {
             @AuthenticationPrincipal UserDetails userDetails,
             HttpServletRequest httpRequest) {
 
-        String ip = getClientIp(httpRequest);
+        String ip = ipAddressExtractor.extract(httpRequest);
         if (request != null && request.getSettings() != null) {
             settingsService.batchSaveSettings(request.getSettings(), userDetails.getUsername(), ip);
         }
@@ -66,7 +70,7 @@ public class AdminWebsiteSettingController {
             @AuthenticationPrincipal UserDetails userDetails,
             HttpServletRequest httpRequest) {
 
-        String ip = getClientIp(httpRequest);
+        String ip = ipAddressExtractor.extract(httpRequest);
         settingsService.publishSettings(userDetails.getUsername(), ip);
         return ResponseEntity.ok(ApiResponse.ok("Settings published and active on public portfolio", null));
     }
@@ -77,7 +81,7 @@ public class AdminWebsiteSettingController {
             @AuthenticationPrincipal UserDetails userDetails,
             HttpServletRequest httpRequest) {
 
-        String ip = getClientIp(httpRequest);
+        String ip = ipAddressExtractor.extract(httpRequest);
         settingsService.resetToDefaults(userDetails.getUsername(), ip);
         return ResponseEntity.ok(ApiResponse.ok("All website settings have been reset to system defaults", null));
     }
@@ -104,7 +108,7 @@ public class AdminWebsiteSettingController {
             @AuthenticationPrincipal UserDetails userDetails,
             HttpServletRequest httpRequest) {
 
-        String ip = getClientIp(httpRequest);
+        String ip = ipAddressExtractor.extract(httpRequest);
         int count = settingsService.importSettingsJson(jsonContent, userDetails.getUsername(), ip);
         return ResponseEntity.ok(ApiResponse.ok("Imported and applied " + count + " settings successfully",
                 Map.of("importedCount", count)));
@@ -124,7 +128,7 @@ public class AdminWebsiteSettingController {
             HttpServletRequest request) {
 
         String username = userDetails != null ? userDetails.getUsername() : "admin";
-        managementService.deleteAuditLog(id, username, getClientIp(request));
+        managementService.deleteAuditLog(id, username, ipAddressExtractor.extract(request));
         return ResponseEntity.ok(ApiResponse.ok("Settings audit entry deleted successfully", null));
     }
 
@@ -135,15 +139,7 @@ public class AdminWebsiteSettingController {
             @AuthenticationPrincipal UserDetails userDetails,
             HttpServletRequest request) {
 
-        WebsiteSettingDto saved = managementService.saveSetting(dto, userDetails.getUsername(), request.getRemoteAddr());
+        WebsiteSettingDto saved = managementService.saveSetting(dto, userDetails.getUsername(), ipAddressExtractor.extract(request));
         return ResponseEntity.ok(ApiResponse.ok("Setting saved successfully", saved));
-    }
-
-    private String getClientIp(HttpServletRequest request) {
-        String xf = request.getHeader("X-Forwarded-For");
-        if (xf != null && !xf.isBlank()) {
-            return xf.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
     }
 }

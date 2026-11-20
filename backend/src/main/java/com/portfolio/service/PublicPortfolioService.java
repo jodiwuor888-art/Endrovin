@@ -4,6 +4,7 @@ import com.portfolio.dto.*;
 import com.portfolio.entity.*;
 import com.portfolio.exception.BadRequestException;
 import com.portfolio.repository.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
@@ -42,9 +43,14 @@ public class PublicPortfolioService {
     // Cryptographically secure RNG — never use java.util.Random for security-sensitive operations
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    // HMAC secret for CAPTCHA signing — derived from a fixed application-level secret
-    // In production this could be injected via @Value("${portfolio.security.captcha-secret:...}")
-    private static final byte[] CAPTCHA_SECRET = "JoashPortfolioCaptchaHmacKey2026XyZ!@#".getBytes(StandardCharsets.UTF_8);
+    @Value("${portfolio.security.captcha-secret:JoashPortfolioCaptchaHmacKey2026XyZ!@#}")
+    private String captchaSecretRaw;
+
+    private byte[] getCaptchaSecret() {
+        return (captchaSecretRaw != null && !captchaSecretRaw.isBlank())
+                ? captchaSecretRaw.getBytes(StandardCharsets.UTF_8)
+                : "JoashPortfolioCaptchaHmacKey2026XyZ!@#".getBytes(StandardCharsets.UTF_8);
+    }
 
     public PublicPortfolioService(PersonalProfileRepository personalProfileRepository,
                                   AboutInformationRepository aboutInformationRepository,
@@ -417,7 +423,7 @@ public class PublicPortfolioService {
     private String computeHmac(String data) {
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(CAPTCHA_SECRET, "HmacSHA256"));
+            mac.init(new SecretKeySpec(getCaptchaSecret(), "HmacSHA256"));
             byte[] raw = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
             return HexFormat.of().formatHex(raw).substring(0, 16);
         } catch (Exception e) {
