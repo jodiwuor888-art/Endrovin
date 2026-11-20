@@ -58,8 +58,8 @@ function getPlatformDeviceInfo() {
     }
     if (/Windows/.test(ua)) {
         return {
-            name: 'Windows Hello / Fingerprint Reader',
-            type: 'Windows Platform Authenticator'
+            name: 'Lenovo ThinkPad Fingerprint Reader',
+            type: 'Laptop / Windows Hello'
         };
     }
     return {
@@ -230,25 +230,32 @@ async function triggerPasskeyAuthentication(options, pendingAuthToken, username)
         options = Object.assign({}, optJson.data, { username: un });
     }
 
-    // Prepare credential request options targeted strictly for local device platform sensor
+    // Prepare credential request options targeted for local platform sensor (Lenovo ThinkPad / Windows Hello)
+    // while preserving hybrid fallback (phone QR code) if laptop sensor is not yet registered
     const publicKey = {
         challenge: base64urlToUint8Array(options.challenge),
         rpId: normalizeRpId(options.rpId),
         timeout: options.timeout || 60000,
-        // 'required' forces physical biometric verification on this local device
-        userVerification: 'required',
-        // 'client-device' hint instructs browser to prioritize this device's own sensor
-        // and NOT prompt cross-device hybrid (QR code / phone connect)
-        hints: ['client-device']
+        // 'preferred' allows Windows Hello to verify via Fingerprint or PIN fallback smoothly on ThinkPad
+        userVerification: options.userVerification || 'preferred'
     };
 
     if (options.allowCredentials && options.allowCredentials.length > 0) {
-        publicKey.allowCredentials = options.allowCredentials.map(c => ({
-            id: base64urlToUint8Array(c.id),
-            type: c.type || 'public-key',
-            // Enforce ['internal'] only — prevents Windows/Chrome from asking to connect an Android phone or tablet
-            transports: ['internal']
-        }));
+        publicKey.allowCredentials = options.allowCredentials.map(c => {
+            const item = {
+                id: base64urlToUint8Array(c.id),
+                type: c.type || 'public-key'
+            };
+            // Preserve transports from server (supports both internal Windows Hello and hybrid phone QR code)
+            if (c.transports && Array.isArray(c.transports) && c.transports.length > 0) {
+                item.transports = c.transports;
+            } else if (c.transports && typeof c.transports === 'string') {
+                item.transports = c.transports.split(',').map(t => t.trim());
+            } else {
+                item.transports = ['internal', 'hybrid'];
+            }
+            return item;
+        });
     }
 
     let assertion;
@@ -260,7 +267,7 @@ async function triggerPasskeyAuthentication(options, pendingAuthToken, username)
         }
         if (authErr.name === 'NotAllowedError') {
             const devInfo = getPlatformDeviceInfo();
-            throw new Error(`Biometric verification was cancelled or timed out. Please verify on your ${devInfo.name} sensor to try again.`);
+            throw new Error(`Biometric verification was cancelled or timed out. If this ${devInfo.name} is not registered yet, use your phone QR prompt or emergency recovery code below.`);
         }
         throw authErr;
     }
@@ -363,11 +370,10 @@ async function triggerPasskeyRegistration(deviceName, deviceType, authTokenOverr
         timeout: options.timeout || 60000,
         attestation: options.attestation || 'none',
         authenticatorSelection: {
-            authenticatorAttachment: 'platform', // Strictly uses this device's own internal sensor (laptop or phone)
-            userVerification: 'required',        // Requires physical biometric touch on this device
+            authenticatorAttachment: 'platform', // Strictly uses Lenovo ThinkPad internal fingerprint sensor / Windows Hello
+            userVerification: 'preferred',       // Accepts fingerprint or Windows Hello PIN
             residentKey: 'preferred'
-        },
-        hints: ['client-device']
+        }
     };
 
     // 3. Call browser WebAuthn creation (triggers local platform biometric prompt)
@@ -393,12 +399,14 @@ async function triggerPasskeyRegistration(deviceName, deviceType, authTokenOverr
         id: credential.id,
         rawId: uint8ArrayToBase64url(credential.rawId),
         type: credential.type,
-        deviceName: deviceName || getPlatformDeviceInfo().name,
-        deviceType: deviceType || getPlatformDeviceInfo().type,
+        deviceName: deviceName || 'Lenovo ThinkPad Fingerprint Reader',
+        deviceType: deviceType || 'Laptop / Windows Hello',
         response: {
             clientDataJSON: uint8ArrayToBase64url(credential.response.clientDataJSON),
             attestationObject: uint8ArrayToBase64url(credential.response.attestationObject),
-            transports: credential.response.getTransports ? credential.response.getTransports() : ['internal']
+            transports: (credential.response.getTransports && credential.response.getTransports().length > 0)
+                ? credential.response.getTransports()
+                : ['internal']
         }
     };
 

@@ -1203,6 +1203,19 @@
                                 <span>← Back to Password Login</span>
                             </button>
                         </div>
+
+                        <!-- Single-Use Emergency Recovery Code Input for Laptop Access -->
+                        <div id="recoveryCodeSection" style="margin-top:1.4rem; padding-top:1rem; border-top:1px dashed rgba(56, 189, 248, 0.25); text-align:center;">
+                            <p style="font-size:0.78rem; color:#94a3b8; margin-bottom:0.5rem;">
+                                Laptop sensor not yet enrolled or phone unavailable?
+                            </p>
+                            <div style="display:flex; gap:0.4rem; justify-content:center;">
+                                <input type="text" id="emergencyRecoveryCodeInput" class="form-control" placeholder="Recovery Code (ABCD-EFGH)" style="max-width:240px; text-transform:uppercase; font-family:monospace; font-size:0.82rem; text-align:center; padding:0.4rem 0.6rem;" onkeydown="if(event.key==='Enter'){ event.preventDefault(); handleEmergencyRecoveryCodeSubmit(); }">
+                                <button type="button" class="btn-submit" id="btnVerifyRecoveryCode" style="width:auto; padding:0 0.9rem; font-size:0.78rem;" onclick="handleEmergencyRecoveryCodeSubmit()">
+                                    <span>Verify</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1344,7 +1357,7 @@
     }
 
     let mfaState = null;
-    let currentUsername = '';
+    let currentUsername = localStorage.getItem('lastAdminUsername') || 'joash';
     let isEnrollmentMode = false;
     let pendingLoginToken = null;
 
@@ -1359,12 +1372,12 @@
         if (isWindows) {
             return {
                 platform: 'windows',
-                name: 'Windows Hello / Fingerprint Sensor',
+                name: 'Lenovo ThinkPad Fingerprint Reader',
                 tabLabel: 'Fingerprint Login',
-                prompt: 'Touch Your Fingerprint Sensor',
-                sub: 'Windows Hello is active on this PC. Touch your device sensor to authenticate.',
-                btnText: 'Verify with Sensor',
-                registerPrompt: 'Touch Sensor to Register This PC'
+                prompt: 'Touch Lenovo ThinkPad Sensor',
+                sub: 'Windows Hello is active on this ThinkPad. Touch your fingerprint reader to authenticate, or verify on your phone.',
+                btnText: 'Verify with ThinkPad Sensor',
+                registerPrompt: 'Touch Sensor to Register This ThinkPad'
             };
         } else if (isIOS) {
             return {
@@ -1763,6 +1776,44 @@
         directPasskeyBtn.addEventListener('click', () => switchLoginMethod('passkey'));
     }
 
+    // Emergency Recovery Code handler for laptop access
+    async function handleEmergencyRecoveryCodeSubmit() {
+        const codeInput = document.getElementById('emergencyRecoveryCodeInput');
+        const code = codeInput ? codeInput.value.trim().toUpperCase() : '';
+        if (!code) {
+            showAlert('Please enter your 8-character single-use recovery code.', 'error');
+            return;
+        }
+
+        const btn = document.getElementById('btnVerifyRecoveryCode');
+        if (btn) btn.disabled = true;
+
+        const fpInput = document.getElementById('fpUsernameInput');
+        const un = (fpInput && fpInput.value.trim()) || currentUsername || localStorage.getItem('lastAdminUsername') || 'joash';
+        const pendingAuthToken = mfaState ? mfaState.pendingAuthToken : null;
+
+        try {
+            const payload = {
+                username: un,
+                recoveryCode: code,
+                pendingAuthToken: pendingAuthToken
+            };
+            const res = await API.verifyRecoveryCode(payload);
+            if (res && res.success && res.data && res.data.token) {
+                localStorage.setItem('adminToken', res.data.token);
+                localStorage.setItem('adminUser', JSON.stringify(res.data));
+                showAlert('Recovery code verified! Entering dashboard...', 'success');
+                setTimeout(() => { window.location.href = 'dashboard.html'; }, 700);
+            } else {
+                showAlert(res ? (res.message || 'Invalid or already used recovery code.') : 'Recovery verification failed.', 'error');
+            }
+        } catch (err) {
+            showAlert('Error verifying recovery code: ' + (err.message || 'Network error'), 'error');
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    }
+
     // ==========================================================================
     // RECOVERY & PASSWORD RESET CONTROLLERS
     // ==========================================================================
@@ -1886,7 +1937,17 @@
     }
 
     window.addEventListener('hashchange', checkForResetToken);
-    document.addEventListener('DOMContentLoaded', checkForResetToken);
+    document.addEventListener('DOMContentLoaded', () => {
+        checkForResetToken();
+        const unInput = document.getElementById('username');
+        if (unInput && !unInput.value) {
+            unInput.value = localStorage.getItem('lastAdminUsername') || 'joash';
+        }
+        const fpInput = document.getElementById('fpUsernameInput');
+        if (fpInput && !fpInput.value) {
+            fpInput.value = localStorage.getItem('lastAdminUsername') || 'joash';
+        }
+    });
     </script>
 </body>
 </html>
