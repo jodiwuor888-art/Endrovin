@@ -175,43 +175,29 @@ body {
 
     background-color: var(--bg-primary);
 
-    /* Luxury Multi-Layered Luminous Aurora Background */
+    /* Atmospheric Cyber Architecture & Neural Tech Wallpaper Backdrop */
     background-image:
         radial-gradient(
             circle at 50% -8%,
-            rgba(99, 102, 241, 0.22) 0%,
+            rgba(99, 102, 241, 0.20) 0%,
             transparent 50%
         ),
         radial-gradient(
-            circle at 92% 16%,
-            rgba(56, 189, 248, 0.16) 0%,
-            transparent 42%
-        ),
-        radial-gradient(
-            circle at 8% 48%,
-            rgba(16, 185, 129, 0.10) 0%,
+            circle at 90% 20%,
+            rgba(56, 189, 248, 0.18) 0%,
             transparent 45%
         ),
-        radial-gradient(
-            circle at 88% 75%,
-            rgba(139, 92, 246, 0.14) 0%,
-            transparent 48%
-        ),
-        radial-gradient(
-            circle at 20% 95%,
-            rgba(56, 189, 248, 0.08) 0%,
-            transparent 40%
-        ),
         linear-gradient(
-            175deg,
-            #06090F 0%,
-            #0A0E17 38%,
-            #0D1424 100%
-        );
+            180deg,
+            rgba(6, 10, 18, 0.76) 0%,
+            rgba(10, 14, 23, 0.88) 50%,
+            rgba(7, 11, 19, 0.94) 100%
+        ),
+        url('../img/cyber-architecture-bg.jpg');
 
     background-repeat: no-repeat;
     background-position: center top;
-    background-size: 100% 100%;
+    background-size: cover;
     background-attachment: fixed;
 
     color: var(--text-primary);
