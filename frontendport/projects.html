@@ -19,7 +19,7 @@
     <title>Projects Portfolio | Joash Odiwuor</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
     <meta name="api-base-url" content="https://joash-portfolio-backend.onrender.com">
@@ -230,7 +230,17 @@
         <div class="section-title">
             <p>PORTFOLIO SHOWCASE</p>
             <h2>My Projects</h2>
+        <p class="section-lead">Explore full-stack applications, RESTful APIs, database architectures, and open-source software repositories.</p>
         </div>
+
+        <!-- Project Category Filters -->
+        <div class="project-filters" id="projectFilterBar">
+            <button type="button" class="filter-btn active" data-filter="all">All Projects</button>
+            <button type="button" class="filter-btn" data-filter="full-stack">Full-Stack &amp; Web Apps</button>
+            <button type="button" class="filter-btn" data-filter="backend">Backend &amp; APIs</button>
+            <button type="button" class="filter-btn" data-filter="database">Database &amp; Systems</button>
+        </div>
+
         <div id="projectsContainer" class="projects-container">
             <!-- Dynamically populated from REST API -->
         </div>
