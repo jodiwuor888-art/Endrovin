@@ -445,137 +445,48 @@ function renderSkills(categories, skills) {
     if (!container) return;
 
     if ((!categories || categories.length === 0) && (!skills || skills.length === 0)) {
-        const defaultCategories = [
-            {
-                categoryName: 'Backend Development',
-                iconClass: '⚙️',
-                description: 'Server-side architecture, RESTful API endpoints, and scalable business logic.',
-                skills: [
-                    { skillName: 'Java', proficiencyPercentage: 88 },
-                    { skillName: 'Spring Boot', proficiencyPercentage: 84 },
-                    { skillName: 'RESTful API Design', proficiencyPercentage: 88 },
-                    { skillName: 'Object-Oriented Programming (OOP)', proficiencyPercentage: 90 }
-                ]
-            },
-            {
-                categoryName: 'Database Management',
-                iconClass: '🗄️',
-                description: 'Relational data modeling, schema normalization, and query optimization.',
-                skills: [
-                    { skillName: 'Microsoft SQL Server', proficiencyPercentage: 86 },
-                    { skillName: 'Complex SQL Queries & Joins', proficiencyPercentage: 85 },
-                    { skillName: 'Database Normalization', proficiencyPercentage: 88 },
-                    { skillName: 'Data Integrity & Transactions', proficiencyPercentage: 82 }
-                ]
-            },
-            {
-                categoryName: 'Frontend Development',
-                iconClass: '🎨',
-                description: 'Semantic markup, modern responsive CSS layouts, and client-side interactivity.',
-                skills: [
-                    { skillName: 'HTML5 Semantic Elements', proficiencyPercentage: 92 },
-                    { skillName: 'Modern CSS3 & Flexbox/Grid', proficiencyPercentage: 88 },
-                    { skillName: 'JavaScript (ES6+)', proficiencyPercentage: 82 },
-                    { skillName: 'Mobile-First Responsive Design', proficiencyPercentage: 90 }
-                ]
-            },
-            {
-                categoryName: 'Programming Languages',
-                iconClass: '</>',
-                description: 'Core software development languages and algorithmic problem solving.',
-                skills: [
-                    { skillName: 'Java', proficiencyPercentage: 88 },
-                    { skillName: 'SQL', proficiencyPercentage: 86 },
-                    { skillName: 'JavaScript', proficiencyPercentage: 82 },
-                    { skillName: 'C / C++ Fundamentals', proficiencyPercentage: 76 }
-                ]
-            },
-            {
-                categoryName: 'UI/UX & Web Standards',
-                iconClass: '✨',
-                description: 'User-centered design, accessibility guidelines, and clean design systems.',
-                skills: [
-                    { skillName: 'Responsive Typography & Layouts', proficiencyPercentage: 90 },
-                    { skillName: 'Web Accessibility (WCAG 2.2 AA)', proficiencyPercentage: 82 },
-                    { skillName: 'Cross-Browser Compatibility', proficiencyPercentage: 86 },
-                    { skillName: 'Modern Glassmorphism UI', proficiencyPercentage: 88 }
-                ]
-            },
-            {
-                categoryName: 'Cybersecurity & Authentication',
-                iconClass: '🔒',
-                description: 'Defensive engineering, credential security, and robust access controls.',
-                skills: [
-                    { skillName: 'Authentication & Session Control', proficiencyPercentage: 84 },
-                    { skillName: 'Input Sanitization & CSRF/XSS', proficiencyPercentage: 86 },
-                    { skillName: 'WebAuthn Passkey Biometrics', proficiencyPercentage: 80 },
-                    { skillName: 'Defensive Coding Standards', proficiencyPercentage: 85 }
-                ]
-            },
-            {
-                categoryName: 'Development Tools & DevOps',
-                iconClass: '🛠️',
-                description: 'Version control workflows, build tooling, and API inspection utilities.',
-                skills: [
-                    { skillName: 'Git & GitHub Version Control', proficiencyPercentage: 86 },
-                    { skillName: 'IntelliJ IDEA & VS Code', proficiencyPercentage: 88 },
-                    { skillName: 'Maven Build Tooling', proficiencyPercentage: 82 },
-                    { skillName: 'Postman REST API Testing', proficiencyPercentage: 84 }
-                ]
-            },
-            {
-                categoryName: 'IT & Networking',
-                iconClass: '📡',
-                description: 'Hardware diagnostics, operating systems configuration, and networking basics.',
-                skills: [
-                    { skillName: 'Computer Hardware Diagnostics', proficiencyPercentage: 86 },
-                    { skillName: 'TCP/IP & Local Area Networking', proficiencyPercentage: 82 },
-                    { skillName: 'Operating Systems (Windows/Linux)', proficiencyPercentage: 86 },
-                    { skillName: 'System Troubleshooting & Support', proficiencyPercentage: 88 }
-                ]
-            }
-        ];
-        renderSkillCardsList(defaultCategories, container);
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">&lt;/&gt;</div>
+                <h4>No technical skills available</h4>
+                <p>Technical skills and proficiency ratings will appear once configured by the portfolio owner.</p>
+            </div>`;
         return;
     }
 
     container.innerHTML = '';
-    renderSkillCardsList(categories, container);
-}
 
-function renderSkillCardsList(categories, container) {
-    if (!categories || categories.length === 0) return;
-    container.innerHTML = '';
+    if (categories && categories.length > 0) {
+        categories.forEach(cat => {
+            const card = document.createElement('div');
+            card.className = 'skill-card';
 
-    categories.forEach(cat => {
-        const card = document.createElement('div');
-        card.className = 'skill-card';
-
-        let skillsHtml = '';
-        if (cat.skills && cat.skills.length > 0) {
-            skillsHtml = cat.skills.map(s => `
-                <div style="margin-bottom: 0.85rem;">
-                    <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.25rem;">
-                        <span style="color:var(--text-primary); font-weight:500;">${escapeHtml(s.skillName)}</span>
-                        <span style="color:var(--accent-electric); font-weight:600;">${s.proficiencyPercentage}%</span>
+            let skillsHtml = '';
+            if (cat.skills && cat.skills.length > 0) {
+                skillsHtml = cat.skills.map(s => `
+                    <div style="margin-bottom: 0.85rem;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.25rem;">
+                            <span>${escapeHtml(s.skillName)}</span>
+                            <span>${s.proficiencyPercentage}%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: ${s.proficiencyPercentage}%"></div>
+                        </div>
                     </div>
-                    <div class="skill-bar">
-                        <div class="skill-progress" style="width: ${s.proficiencyPercentage}%"></div>
-                    </div>
-                </div>
-            `).join('');
-        } else {
-            skillsHtml = '<p style="color:var(--text-muted); font-size:0.85rem;">Skills configured by portfolio owner.</p>';
-        }
+                `).join('');
+            } else {
+                skillsHtml = '<p style="color:var(--text-muted); font-size:0.85rem;">No skills added in this category yet.</p>';
+            }
 
-        card.innerHTML = `
-            <div class="skill-icon">${escapeHtml(cat.iconClass || '⚡')}</div>
-            <h3>${escapeHtml(cat.categoryName)}</h3>
-            <p>${escapeHtml(cat.description || '')}</p>
-            <div class="skills-list">${skillsHtml}</div>
-        `;
-        container.appendChild(card);
-    });
+            card.innerHTML = `
+                <div class="skill-icon">${escapeHtml(cat.iconClass || '{ }')}</div>
+                <h3>${escapeHtml(cat.categoryName)}</h3>
+                <p>${escapeHtml(cat.description || '')}</p>
+                <div class="skills-list">${skillsHtml}</div>
+            `;
+            container.appendChild(card);
+        });
+    }
 }
 
 function renderServices(services) {
@@ -583,48 +494,12 @@ function renderServices(services) {
     if (!container) return;
 
     if (!services || services.length === 0) {
-        const defaultServices = [
-            {
-                iconClass: '🌐',
-                title: 'Website Design & Development',
-                shortDescription: 'Modern, high-performance responsive websites crafted with clean semantic HTML5, modern CSS3, and JavaScript.'
-            },
-            {
-                iconClass: '⚙️',
-                title: 'Web Application Development',
-                shortDescription: 'Robust full-stack web applications and secure RESTful backend APIs engineered using Java Spring Boot.'
-            },
-            {
-                iconClass: '🗄️',
-                title: 'Database Design & Management',
-                shortDescription: 'Normalized relational database schemas, table structures, and optimized queries utilizing Microsoft SQL Server.'
-            },
-            {
-                iconClass: '📱',
-                title: 'Responsive Website Development',
-                shortDescription: 'Mobile-first user interfaces engineered to adapt smoothly to smartphones, tablets, laptops, and wide desktop screens.'
-            },
-            {
-                iconClass: '🛠️',
-                title: 'Website Maintenance & Optimization',
-                shortDescription: 'Performance auditing, bug troubleshooting, security hardening, and regular updates to keep digital systems running reliably.'
-            },
-            {
-                iconClass: '💻',
-                title: 'IT Support & Technical Consultation',
-                shortDescription: 'Computer hardware troubleshooting, OS configuration, local network setup, and actionable technology consultation.'
-            }
-        ];
-        container.innerHTML = defaultServices.map(s => `
-            <div class="service-card">
-                <div class="service-icon">${s.iconClass}</div>
-                <h3>${escapeHtml(s.title)}</h3>
-                <p>${escapeHtml(s.shortDescription)}</p>
-                <div class="service-action">
-                    <a href="#contact" class="service-cta-link">Inquire Service →</a>
-                </div>
-            </div>
-        `).join('');
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">💼</div>
+                <h4>No professional services added yet</h4>
+                <p>Freelance and professional services will be listed here once published.</p>
+            </div>`;
         return;
     }
 
@@ -633,9 +508,6 @@ function renderServices(services) {
             <div class="service-icon">${escapeHtml(s.iconClass || '⚡')}</div>
             <h3>${escapeHtml(s.title)}</h3>
             <p>${escapeHtml(s.shortDescription)}</p>
-            <div class="service-action">
-                <a href="#contact" class="service-cta-link">Inquire Service →</a>
-            </div>
         </div>
     `).join('');
 }
@@ -645,86 +517,42 @@ function renderProjects(projects) {
     if (!container) return;
 
     if (!projects || projects.length === 0) {
-        const defaultProjects = [
-            {
-                title: 'Enterprise Portfolio & Admin Management System',
-                category: 'Full-Stack & Web Apps',
-                shortDescription: 'A production-grade full-stack portfolio architecture powered by Java Spring Boot, Microsoft SQL Server, biometric WebAuthn passkey authentication, and an administrative control panel.',
-                technologies: 'Java, Spring Boot, SQL Server, WebAuthn, JavaScript ES6+, Modern CSS3',
-                featuredImageUrl: 'assets/img/profile.png',
-                projectLink: 'https://endrovin-frontendport.vercel.app',
-                githubUrl: 'https://github.com/jodiwuor888-art/Endrovin'
-            }
-        ];
-        container.innerHTML = defaultProjects.map(p => renderProjectCardHtml(p)).join('');
-        initProjectFiltering();
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🚀</div>
+                <h4>No projects have been added yet</h4>
+                <p>Projects, source code repositories, and live demonstration links will appear here once published.</p>
+            </div>`;
         return;
     }
 
-    container.innerHTML = projects.map(p => renderProjectCardHtml(p)).join('');
-    initProjectFiltering();
-}
+    container.innerHTML = projects.map(p => {
+        const techBadges = p.technologies
+            ? p.technologies.split(',').map(t => `<span>${escapeHtml(t.trim())}</span>`).join('')
+            : '';
 
-function renderProjectCardHtml(p) {
-    const techBadges = p.technologies
-        ? p.technologies.split(',').map(t => `<span class="tech-tag">${escapeHtml(t.trim())}</span>`).join('')
-        : '';
+        const imageHtml = p.featuredImageUrl
+            ? `<img src="${p.featuredImageUrl}" alt="${escapeHtml(p.title)}" loading="lazy">`
+            : `<div style="font-size:2.5rem; color:var(--accent-electric); opacity:0.6;">&lt;/&gt;</div>`;
 
-    const categorySlug = (p.category || 'general').toLowerCase().replace(/[^a-z0-9]+/g, '-');
-
-    const imageHtml = p.featuredImageUrl
-        ? `<img src="${p.featuredImageUrl}" alt="${escapeHtml(p.title)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'project-placeholder\'><span class=\'code-icon\'>&lt;/&gt;</span></div>'">`
-        : `<div class="project-placeholder"><span class="code-icon">&lt;/&gt;</span></div>`;
-
-    return `
-        <div class="project-card" data-category="${categorySlug}">
-            <div class="project-image">
-                <span class="badge-cat">${escapeHtml(p.category || 'Software Project')}</span>
-                ${imageHtml}
-            </div>
-            <div class="project-content">
-                <h3>${escapeHtml(p.title)}</h3>
-                <p>${escapeHtml(p.shortDescription)}</p>
-                <div class="project-technologies">${techBadges}</div>
-                <div class="project-links">
-                    ${p.projectLink ? `<a href="${p.projectLink}" target="_blank" rel="noopener noreferrer" class="project-link primary-link">Live Demo ↗</a>` : ''}
-                    ${p.githubUrl ? `<a href="${p.githubUrl}" target="_blank" rel="noopener noreferrer" class="project-link secondary-link">GitHub Code ↗</a>` : ''}
+        return `
+            <div class="project-card">
+                <div class="project-image">
+                    <span class="badge-cat">${escapeHtml(p.category)}</span>
+                    ${imageHtml}
+                </div>
+                <div class="project-content">
+                    <h3>${escapeHtml(p.title)}</h3>
+                    <p>${escapeHtml(p.shortDescription)}</p>
+                    <div class="project-technologies">${techBadges}</div>
+                    <div class="project-links">
+                        ${p.projectLink ? `<a href="${p.projectLink}" target="_blank" class="project-link">Live Demo →</a>` : ''}
+                        ${p.githubUrl ? `<a href="${p.githubUrl}" target="_blank" class="project-link">GitHub Code ↗</a>` : ''}
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
-}
-
-function initProjectFiltering() {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    if (!filterButtons || filterButtons.length === 0) return;
-
-    filterButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            const filterValue = (btn.getAttribute('data-filter') || 'all').toLowerCase();
-            const cards = document.querySelectorAll('.project-card');
-
-            cards.forEach(card => {
-                const cardCat = (card.getAttribute('data-category') || '').toLowerCase();
-                if (filterValue === 'all') {
-                    card.style.display = 'flex';
-                } else if (filterValue === 'full-stack' && (cardCat.includes('full-stack') || cardCat.includes('web'))) {
-                    card.style.display = 'flex';
-                } else if (filterValue === 'backend' && (cardCat.includes('backend') || cardCat.includes('api'))) {
-                    card.style.display = 'flex';
-                } else if (filterValue === 'database' && (cardCat.includes('database') || cardCat.includes('system') || cardCat.includes('sql'))) {
-                    card.style.display = 'flex';
-                } else if (cardCat.includes(filterValue)) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
-    });
+        `;
+    }).join('');
 }
 
 function renderEducation(educationList) {
@@ -732,29 +560,12 @@ function renderEducation(educationList) {
     if (!container) return;
 
     if (!educationList || educationList.length === 0) {
-        const defaultEdu = [
-            {
-                startDate: '2023',
-                endDate: 'Present',
-                current: true,
-                degreeOrDiploma: 'Diploma in Computer Science',
-                institutionName: 'Kisii National Polytechnic',
-                location: 'Kenya',
-                description: 'Comprehensive curriculum covering Software Engineering, Object-Oriented Programming (Java), Relational Database Management Systems (SQL Server), Data Structures & Algorithms, Operating Systems, Computer Networks, and System Analysis & Design.'
-            }
-        ];
-        container.innerHTML = defaultEdu.map(e => `
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <div class="timeline-badge">${e.current ? 'Current Degree' : 'Completed'}</div>
-                    <span class="date">${escapeHtml(e.startDate)} – ${e.current ? 'Present' : escapeHtml(e.endDate || '')}</span>
-                    <h3>${escapeHtml(e.degreeOrDiploma)}</h3>
-                    <h4>${escapeHtml(e.institutionName)} • ${escapeHtml(e.location)}</h4>
-                    <p>${escapeHtml(e.description || e.fieldOfStudy)}</p>
-                </div>
-            </div>
-        `).join('');
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🎓</div>
+                <h4>No education records added yet</h4>
+                <p>Academic milestones, diplomas, and institutions will be presented here.</p>
+            </div>`;
         return;
     }
 
@@ -762,10 +573,9 @@ function renderEducation(educationList) {
         <div class="timeline-item">
             <div class="timeline-dot"></div>
             <div class="timeline-content">
-                <div class="timeline-badge">${e.current ? 'Current Degree' : 'Completed'}</div>
                 <span class="date">${escapeHtml(e.startDate)} – ${e.current ? 'Present' : escapeHtml(e.endDate || '')}</span>
                 <h3>${escapeHtml(e.degreeOrDiploma)}</h3>
-                <h4>${escapeHtml(e.institutionName)} • ${escapeHtml(e.location)}</h4>
+                <h4>${escapeHtml(e.institutionName)}, ${escapeHtml(e.location)}</h4>
                 <p>${escapeHtml(e.description || e.fieldOfStudy)}</p>
             </div>
         </div>
@@ -777,30 +587,12 @@ function renderExperience(experienceList) {
     if (!container) return;
 
     if (!experienceList || experienceList.length === 0) {
-        const defaultExp = [
-            {
-                startDate: '2024',
-                currentRole: true,
-                jobTitle: 'Independent Software Developer & Web Developer',
-                companyName: 'Freelance & Academic Projects',
-                location: 'Kenya',
-                responsibilities: 'Developing full-stack web applications, architecting relational SQL databases, implementing RESTful APIs with Java Spring Boot, and creating responsive user interfaces for local clients and academic initiatives.',
-                technologiesUsed: 'Java, Spring Boot, Microsoft SQL Server, HTML5, CSS3, JavaScript, Git'
-            }
-        ];
-        container.innerHTML = defaultExp.map(exp => `
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <div class="timeline-badge">Active</div>
-                    <span class="date">${escapeHtml(exp.startDate)} – ${exp.currentRole ? 'Present' : escapeHtml(exp.endDate || '')}</span>
-                    <h3>${escapeHtml(exp.jobTitle)}</h3>
-                    <h4>${escapeHtml(exp.companyName)} • ${escapeHtml(exp.location)}</h4>
-                    <p>${escapeHtml(exp.responsibilities)}</p>
-                    ${exp.technologiesUsed ? `<p class="timeline-stack"><strong>Tech Stack:</strong> ${escapeHtml(exp.technologiesUsed)}</p>` : ''}
-                </div>
-            </div>
-        `).join('');
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">💼</div>
+                <h4>No professional experience records added yet</h4>
+                <p>Work history and internships will be shown here once updated.</p>
+            </div>`;
         return;
     }
 
@@ -808,12 +600,11 @@ function renderExperience(experienceList) {
         <div class="timeline-item">
             <div class="timeline-dot"></div>
             <div class="timeline-content">
-                <div class="timeline-badge">${exp.currentRole ? 'Active' : 'Completed'}</div>
                 <span class="date">${escapeHtml(exp.startDate)} – ${exp.currentRole ? 'Present' : escapeHtml(exp.endDate || '')}</span>
                 <h3>${escapeHtml(exp.jobTitle)}</h3>
                 <h4>${escapeHtml(exp.companyName)} • ${escapeHtml(exp.location)}</h4>
                 <p>${escapeHtml(exp.responsibilities)}</p>
-                ${exp.technologiesUsed ? `<p class="timeline-stack"><strong>Tech Stack:</strong> ${escapeHtml(exp.technologiesUsed)}</p>` : ''}
+                ${exp.technologiesUsed ? `<p style="margin-top:0.5rem; font-size:0.85rem; color:var(--accent-electric);"><strong>Stack:</strong> ${escapeHtml(exp.technologiesUsed)}</p>` : ''}
             </div>
         </div>
     `).join('');

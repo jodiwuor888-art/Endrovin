@@ -29,7 +29,7 @@
     <!-- Google Font: Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="assets/css/style.css">
@@ -241,30 +241,19 @@
     <!-- ================= HERO SECTION ================= -->
     <section id="home" class="hero">
         <div class="hero-content">
-            <div class="hero-badge">
-                <span class="status-pulse-dot"></span>
-                <span>Available for Opportunities · Full-Stack &amp; IT</span>
-            </div>
             <p class="intro">HELLO, I'M</p>
             <h1 id="heroName">Joash Odiwuor</h1>
             <h2 id="typingHeadline">Diploma in Computer Science</h2>
             <p id="heroBio" class="hero-description">
-                Diploma in Computer Science student and software developer passionate about building resilient backend APIs, robust relational databases, and clean, responsive user interfaces with Java Spring Boot and modern web standards.
+                I am a passionate Computer Science graduate and software developer interested in
+                Java Spring Boot, modern web development, relational database architecture,
+                and secure scalable systems.
             </p>
 
             <div class="hero-buttons">
-                <a href="#projects" class="btn primary-btn"><span>View My Projects</span> <span>↓</span></a>
-                <a href="#contact" class="btn secondary-btn"><span>Let's Work Together</span> <span>✉️</span></a>
-                <a href="javascript:void(0)" class="btn outline-btn cv-download-btn" style="display:none;">Download CV 📄</a>
-            </div>
-
-            <!-- Tech Highlights Strip -->
-            <div class="hero-tech-strip">
-                <span class="tech-chip">Java Spring Boot</span>
-                <span class="tech-chip">SQL Server</span>
-                <span class="tech-chip">RESTful APIs</span>
-                <span class="tech-chip">JavaScript ES6+</span>
-                <span class="tech-chip">Responsive Web</span>
+                <a href="#projects" class="btn primary-btn">View My Projects</a>
+                <a href="#contact" class="btn secondary-btn">Contact Me</a>
+                <a href="javascript:void(0)"  class="btn outline-btn cv-download-btn" style="display:none;">Download CV 📄</a>
             </div>
 
             <div class="social-links dynamic-social-links"></div>
@@ -272,16 +261,7 @@
 
         <div class="hero-image">
             <div class="image-circle">
-                <img id="profilePhoto" src="assets/img/profile.png" alt="Joash Odiwuor - Professional Profile Photo" onerror="this.src='assets/img/profile.png'" loading="eager" decoding="async">
-            </div>
-            <div class="hero-portrait-card">
-                <div class="hero-portrait-badge">
-                    <span class="code-bracket">&lt;/&gt;</span>
-                    <div>
-                        <strong>Full-Stack Developer</strong>
-                        <span>Diploma in Computer Science</span>
-                    </div>
-                </div>
+                <img id="profilePhoto" src="assets/img/profile.png" alt="Joash Odiwuor - Professional Profile Photo" onerror="this.src='assets/img/profile.png'" loading="lazy" decoding="async">
             </div>
         </div>
     </section>
@@ -291,87 +271,44 @@
         <div class="section-title">
             <p id="aboutSubtitle">GET TO KNOW ME</p>
             <h2 id="aboutSectionTitle">About Me</h2>
-            <p class="section-lead">Dedicated Computer Science student and developer building resilient, scalable, and user-centered digital solutions.</p>
         </div>
 
         <div class="about-container">
-            <div class="about-image-wrap">
-                <div class="about-image">
-                    <img id="aboutProfilePhoto" src="assets/img/profile.png" alt="Joash Odiwuor - Computer Science Student" onerror="this.src='assets/img/profile.png'" loading="lazy" decoding="async">
-                </div>
-                <div class="about-quick-specs">
-                    <h4>Quick Overview</h4>
-                    <div class="specs-grid">
-                        <div class="spec-item">
-                            <span class="spec-label">Education</span>
-                            <span class="spec-val" id="aboutCourse">Diploma in Computer Science</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Institution</span>
-                            <span class="spec-val">Kisii National Polytechnic</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Specialization</span>
-                            <span class="spec-val">Java &amp; SQL Server</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Location</span>
-                            <span class="spec-val" id="aboutLocation">Kenya</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="about-image">
+                <img id="aboutProfilePhoto" src="assets/img/profile.png" alt="Joash Odiwuor - Computer Science Student" onerror="this.src='assets/img/profile.png'" loading="lazy" decoding="async">
             </div>
 
             <div class="about-content">
-                <div class="about-headline-badge">Software Engineering &amp; IT Specialization</div>
-                <h3 id="aboutSectionHeading">Aspiring Software Developer &amp; Problem Solver</h3>
+                <h3>Aspiring Software Developer & Problem Solver</h3>
                 <p id="aboutParagraph1">
                     I am pursuing a Diploma in Computer Science at Kisii National Polytechnic, developing strong competencies in software engineering, backend architecture, database normalization, and secure system design.
                 </p>
                 <p id="aboutParagraph2" style="display:none;"></p>
                 <p id="aboutParagraph3" style="display:none;"></p>
 
-                <!-- 4 Value Pillars -->
-                <div class="about-pillars">
-                    <div class="pillar-card">
-                        <div class="pillar-icon">⚙️</div>
-                        <div>
-                            <h4>Full-Stack Development</h4>
-                            <p>End-to-end applications powered by Java Spring Boot REST controllers and responsive web clients.</p>
-                        </div>
+                <div class="about-info">
+                    <div>
+                        <strong>Name:</strong>
+                        <span id="aboutName">Joash Odiwuor</span>
                     </div>
-                    <div class="pillar-card">
-                        <div class="pillar-icon">🗄️</div>
-                        <div>
-                            <h4>Database Management</h4>
-                            <p>Relational database architecture, normalized schemas, and performant SQL queries.</p>
-                        </div>
+                    <div>
+                        <strong>Course:</strong>
+                        <span id="aboutCourse">Diploma in Computer Science</span>
                     </div>
-                    <div class="pillar-card">
-                        <div class="pillar-icon">🔒</div>
-                        <div>
-                            <h4>Security &amp; Best Practices</h4>
-                            <p>Authentication, password hashing, WebAuthn integration, and input validation.</p>
-                        </div>
+                    <div>
+                        <strong>Location:</strong>
+                        <span id="aboutLocation">Kenya</span>
                     </div>
-                    <div class="pillar-card">
-                        <div class="pillar-icon">💡</div>
-                        <div>
-                            <h4>Problem Solving Mindset</h4>
-                            <p>Analytical thinking, structured debugging, and disciplined continuous learning.</p>
-                        </div>
+                    <div>
+                        <strong>Email:</strong>
+                        <span id="aboutEmail">jodiwuor888@gmail.com</span>
                     </div>
                 </div>
 
-                <div class="about-info-chips">
-                    <div class="info-chip"><strong>Name:</strong> <span id="aboutName">Joash Odiwuor</span></div>
-                    <div class="info-chip"><strong>Email:</strong> <span id="aboutEmail">jodiwuor888@gmail.com</span></div>
-                </div>
-
-                <div class="about-actions">
-                    <a href="#contact" class="btn primary-btn">Let's Work Together ✉️</a>
+                <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                    <a href="#contact" class="btn primary-btn">Let's Work Together</a>
                     <a href="about.html" class="btn secondary-btn">Full Biography ↗</a>
-                    <a href="javascript:void(0)" class="btn outline-btn cv-download-btn" style="display:none;">Download Resume 📄</a>
+                    <a href="javascript:void(0)"  class="btn outline-btn cv-download-btn" style="display:none;">Download Resume</a>
                 </div>
             </div>
         </div>
@@ -382,7 +319,6 @@
         <div class="section-title">
             <p>MY EXPERTISE</p>
             <h2>Technical Skills</h2>
-            <p class="section-lead">A comprehensive technical foundation built through academic coursework, practical application development, and continuous self-study.</p>
         </div>
 
         <div id="skillsContainer" class="skills-container">
@@ -395,15 +331,6 @@
         <div class="section-title">
             <p>MY WORK</p>
             <h2>Featured Projects</h2>
-            <p class="section-lead">Explore software applications, database systems, and full-stack solutions engineered with modern software standards.</p>
-        </div>
-
-        <!-- Category Filter Tabs -->
-        <div class="project-filters" id="projectFilterBar">
-            <button type="button" class="filter-btn active" data-filter="all">All Projects</button>
-            <button type="button" class="filter-btn" data-filter="full-stack">Full-Stack &amp; Web Apps</button>
-            <button type="button" class="filter-btn" data-filter="backend">Backend &amp; APIs</button>
-            <button type="button" class="filter-btn" data-filter="database">Database &amp; Systems</button>
         </div>
 
         <div id="projectsContainer" class="projects-container">
@@ -420,7 +347,6 @@
         <div class="section-title">
             <p>WHAT I CAN DO</p>
             <h2>Professional Services</h2>
-            <p class="section-lead">High-quality development and technical solutions tailored to clients, businesses, and project collaborators.</p>
         </div>
 
         <div id="servicesContainer" class="services-container">
@@ -524,13 +450,6 @@
                     <div>
                         <strong>Location</strong>
                         <p id="contactLocation">Kenya</p>
-                    </div>
-                </div>
-                <div class="contact-availability-card">
-                    <span class="status-pulse-dot"></span>
-                    <div>
-                        <strong>Prompt Response Guarantee</strong>
-                        <span>Available for freelance, project collaboration &amp; technical inquiries. Typical response within 24 hours.</span>
                     </div>
                 </div>
             </div>
