@@ -91,9 +91,9 @@ img {
    ========================================================================== */
 
 :root {
-    --bg-primary: #070F1E;
-    --bg-secondary: #0C1733;
-    --bg-deep: #040914;
+    --bg-primary: #060B14;
+    --bg-secondary: #0A1326;
+    --bg-deep: #03070E;
 
     --blue-primary: #2563EB;
     --blue-bright: #3B82F6;
@@ -109,12 +109,12 @@ img {
     --accent-cyan: #38BDF8;
     --accent-indigo: #2563EB;
 
-    --bg-tertiary: rgba(12, 23, 49, 0.90);
-    --bg-card: rgba(12, 23, 49, 0.84);
-    --bg-card-hover: rgba(18, 35, 72, 0.94);
+    --bg-tertiary: rgba(10, 19, 40, 0.90);
+    --bg-card: rgba(10, 19, 40, 0.82);
+    --bg-card-hover: rgba(16, 30, 62, 0.94);
 
-    --border-color: rgba(56, 189, 248, 0.16);
-    --border-accent: rgba(56, 189, 248, 0.48);
+    --border-color: rgba(56, 189, 248, 0.18);
+    --border-accent: rgba(56, 189, 248, 0.50);
 
     --success: #10B981;
     --warning: #F59E0B;
@@ -162,33 +162,29 @@ body {
 
     background-color: var(--bg-primary);
 
+    /* Cybernetic Concept Car Wallpaper with High-Contrast Navy/Cyan Depth Overlay */
     background-image:
         radial-gradient(
-            ellipse at 85% 10%,
-            rgba(37, 99, 235, 0.18) 0%,
-            transparent 50%
+            circle at 50% 12%,
+            rgba(56, 189, 248, 0.20) 0%,
+            transparent 65%
         ),
         radial-gradient(
-            ellipse at 12% 45%,
-            rgba(56, 189, 248, 0.12) 0%,
-            transparent 45%
-        ),
-        radial-gradient(
-            ellipse at 75% 85%,
-            rgba(99, 102, 241, 0.14) 0%,
+            circle at 85% 75%,
+            rgba(37, 99, 235, 0.16) 0%,
             transparent 50%
         ),
         linear-gradient(
             180deg,
-            #050A14 0%,
-            #07101F 35%,
-            #09152B 75%,
-            #0B1832 100%
-        );
+            rgba(6, 11, 20, 0.52) 0%,
+            rgba(7, 16, 31, 0.74) 40%,
+            rgba(6, 11, 20, 0.92) 100%
+        ),
+        url('../img/cyber-car-bg.jpg');
 
     background-repeat: no-repeat;
     background-position: center top;
-    background-size: 100% 100%;
+    background-size: cover;
     background-attachment: fixed;
 
     color: var(--text-secondary);
@@ -212,12 +208,12 @@ body::before {
 
     background-image:
         linear-gradient(
-            rgba(59, 130, 246, 0.035) 1px,
+            rgba(56, 189, 248, 0.035) 1px,
             transparent 1px
         ),
         linear-gradient(
             90deg,
-            rgba(59, 130, 246, 0.035) 1px,
+            rgba(56, 189, 248, 0.035) 1px,
             transparent 1px
         );
 
@@ -230,18 +226,18 @@ body::before {
 body::after {
     content: "";
     position: fixed;
-    top: 12%;
-    right: -140px;
+    top: 15%;
+    right: -100px;
 
-    width: 380px;
-    height: 380px;
+    width: 420px;
+    height: 420px;
 
     z-index: -1;
     pointer-events: none;
 
-    background: rgba(37, 99, 235, 0.10);
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(37, 99, 235, 0.08) 50%, transparent 70%);
 
-    filter: blur(100px);
+    filter: blur(80px);
     border-radius: 50%;
 }
 
