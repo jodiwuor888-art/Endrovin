@@ -66,7 +66,7 @@ public class SecurityConfig {
                             .includeSubDomains(true)
                             .preload(true))
                     .xssProtection(xss -> xss.disable()) // Modern browsers use CSP
-                    .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' http://localhost:* https:;"))
+                    .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' http://localhost:* https:; object-src 'none'; base-uri 'self'; form-action 'self' https:;"))
                 )
                 .authorizeHttpRequests(auth -> auth
                         // Public APIs

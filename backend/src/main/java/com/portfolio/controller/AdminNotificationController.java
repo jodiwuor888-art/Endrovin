@@ -20,9 +20,18 @@ import java.util.Map;
 public class AdminNotificationController {
 
     private final NotificationService notificationService;
+    private final com.portfolio.service.EmailNotificationService emailNotificationService;
 
-    public AdminNotificationController(NotificationService notificationService) {
+    public AdminNotificationController(NotificationService notificationService,
+                                       com.portfolio.service.EmailNotificationService emailNotificationService) {
         this.notificationService = notificationService;
+        this.emailNotificationService = emailNotificationService;
+    }
+
+    @GetMapping("/smtp-diagnostics")
+    @Operation(summary = "Check live SMTP connectivity, port accessibility, and test real-time notification delivery (Admin only)")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> checkSmtpStatus() {
+        return ResponseEntity.ok(ApiResponse.ok(emailNotificationService.runDiagnostics()));
     }
 
     @GetMapping

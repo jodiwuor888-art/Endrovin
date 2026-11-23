@@ -176,7 +176,7 @@ public class AdminPasskeyController {
             username = resolveUsernameFromToken(httpRequest);
         }
         if (username == null || username.isBlank()) {
-            username = "joash";
+            throw new BadRequestException("Username or email is required to request emergency OTP");
         }
 
         String ip = ipAddressExtractor.extract(httpRequest);
@@ -203,7 +203,7 @@ public class AdminPasskeyController {
             username = resolveUsernameFromToken(httpRequest);
         }
         if (username == null || username.isBlank()) {
-            username = "joash";
+            throw new BadRequestException("Username or email is required to verify emergency OTP");
         }
 
         String ip = ipAddressExtractor.extract(httpRequest);

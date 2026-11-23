@@ -4,6 +4,7 @@ import com.portfolio.dto.*;
 import com.portfolio.entity.*;
 import com.portfolio.exception.BadRequestException;
 import com.portfolio.repository.*;
+import com.portfolio.security.LoginRateLimiterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +43,7 @@ public class PublicPortfolioService {
     private final ContactMessageRepository contactMessageRepository;
     private final SocialLinkRepository socialLinkRepository;
     private final EmailNotificationService emailNotificationService;
+    private final LoginRateLimiterService rateLimiterService;
 
     // Cryptographically secure RNG — never use java.util.Random for security-sensitive operations
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
@@ -84,7 +86,8 @@ public class PublicPortfolioService {
                                   TestimonialRepository testimonialRepository,
                                   ContactMessageRepository contactMessageRepository,
                                   SocialLinkRepository socialLinkRepository,
-                                  EmailNotificationService emailNotificationService) {
+                                  EmailNotificationService emailNotificationService,
+                                  LoginRateLimiterService rateLimiterService) {
         this.personalProfileRepository = personalProfileRepository;
         this.aboutInformationRepository = aboutInformationRepository;
         this.skillCategoryRepository = skillCategoryRepository;
@@ -99,6 +102,7 @@ public class PublicPortfolioService {
         this.contactMessageRepository = contactMessageRepository;
         this.socialLinkRepository = socialLinkRepository;
         this.emailNotificationService = emailNotificationService;
+        this.rateLimiterService = rateLimiterService;
     }
 
     @Cacheable(value = "publicPortfolio", unless = "#result == null")
@@ -331,6 +335,13 @@ public class PublicPortfolioService {
             throw new BadRequestException("Spam detected");
         }
 
+        // IP rate limiting against spam flooding
+        String rateLimitKey = "public-contact-ip:" + (clientIp == null ? "unknown" : clientIp);
+        if (rateLimiterService.isBlocked(rateLimitKey)) {
+            throw new BadRequestException("Too many contact submissions from your network. Please wait a few minutes before trying again.");
+        }
+        rateLimiterService.recordFailedAttempt(rateLimitKey);
+
         ContactMessage msg = new ContactMessage(
                 request.getFullName().trim(),
                 request.getEmail().trim(),
@@ -387,6 +398,13 @@ public class PublicPortfolioService {
         if (request.getWebsite() != null && !request.getWebsite().isBlank()) {
             throw new BadRequestException("Spam detected");
         }
+
+        // IP rate limiting against recommendation spam
+        String rateLimitKey = "public-rec-ip:" + (clientIp == null ? "unknown" : clientIp);
+        if (rateLimiterService.isBlocked(rateLimitKey)) {
+            throw new BadRequestException("Too many recommendation submissions from your network. Please wait a few minutes before trying again.");
+        }
+        rateLimiterService.recordFailedAttempt(rateLimitKey);
 
         // 2. Consent check
         if (!request.isConsentToPublish()) {

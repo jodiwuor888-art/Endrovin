@@ -2,6 +2,7 @@ package com.portfolio.service;
 
 import com.portfolio.dto.*;
 import com.portfolio.entity.*;
+import com.portfolio.exception.BadRequestException;
 import com.portfolio.exception.ResourceNotFoundException;
 import com.portfolio.repository.*;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,6 +25,7 @@ public class LegalAndPrivacyService {
     private final DataBreachIncidentRepository dataBreachIncidentRepository;
     private final AuditLogService auditLogService;
     private final NotificationService notificationService;
+    private final SecureRandom secureRandom = new SecureRandom();
 
     public LegalAndPrivacyService(LegalDocumentRepository legalDocumentRepository,
                                   CookieConsentRecordRepository cookieConsentRepository,
@@ -128,13 +131,31 @@ public class LegalAndPrivacyService {
     // ==========================================
     @Transactional
     public DataSubjectRequest submitPublicDataRequest(DataSubjectRequestDto dto, String ip) {
-        String ticket = "DSAR-" + System.currentTimeMillis() % 100000;
+        if (dto == null || dto.getRequesterName() == null || dto.getRequesterName().isBlank()
+                || dto.getRequesterEmail() == null || dto.getRequesterEmail().isBlank()
+                || dto.getDetails() == null || dto.getDetails().isBlank()) {
+            throw new BadRequestException("Name, email address, and request details are required to submit a privacy request.");
+        }
+
+        String name = dto.getRequesterName().trim();
+        if (name.length() > 100) name = name.substring(0, 100);
+
+        String email = dto.getRequesterEmail().trim().toLowerCase();
+        if (email.length() > 120) email = email.substring(0, 120);
+
+        String type = dto.getRequestType() != null ? dto.getRequestType().trim().toUpperCase() : "ACCESS";
+        if (type.length() > 50) type = type.substring(0, 50);
+
+        String details = dto.getDetails().trim();
+        if (details.length() > 5000) details = details.substring(0, 5000);
+
+        String ticket = "DSAR-" + System.currentTimeMillis() + "-" + (1000 + secureRandom.nextInt(9000));
         DataSubjectRequest req = new DataSubjectRequest(
                 ticket,
-                dto.getRequesterName(),
-                dto.getRequesterEmail(),
-                dto.getRequestType() != null ? dto.getRequestType() : "ACCESS",
-                dto.getDetails(),
+                name,
+                email,
+                type,
+                details,
                 ip
         );
         DataSubjectRequest saved = dataSubjectRequestRepository.save(req);

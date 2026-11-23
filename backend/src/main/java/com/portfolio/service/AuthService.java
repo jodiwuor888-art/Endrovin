@@ -303,21 +303,54 @@ public class AuthService {
     // In-memory store for emergency 6-digit access codes (expires in 10 minutes)
     private final Map<String, EmergencyOtpEntry> emergencyOtpStore = new ConcurrentHashMap<>();
 
-    public record EmergencyOtpEntry(String code, LocalDateTime expiresAt, String username) {}
+    public record EmergencyOtpEntry(String code, LocalDateTime expiresAt, String username, int failedAttempts, LocalDateTime createdAt) {}
 
     public void requestEmergencyEmailOtp(String username, String ipAddress) {
         if (username == null || username.isBlank()) {
             throw new BadRequestException("Username or email is required to request an emergency access passcode");
         }
+
+        String ipKey = "emergency-otp-ip:" + (ipAddress == null ? "unknown" : ipAddress);
+        if (rateLimiterService.isBlocked(ipKey)) {
+            auditLogService.logAction("anonymous", "EMERGENCY_OTP_THROTTLED", "Admins", null,
+                    "Emergency OTP request throttled by IP", ipAddress);
+            throw new BadRequestException("Too many emergency passcode requests from this network. Please wait before trying again.");
+        }
+
+        String userKey = "emergency-otp-user:" + username.trim().toLowerCase(Locale.ROOT);
+        if (rateLimiterService.isBlocked(userKey)) {
+            auditLogService.logAction(username, "EMERGENCY_OTP_THROTTLED", "Admins", null,
+                    "Emergency OTP request throttled for user", ipAddress);
+            throw new BadRequestException("Too many emergency passcode requests for this account. Please wait before trying again.");
+        }
+
         Admin admin = adminRepository.findByUsername(username.trim())
                 .or(() -> adminRepository.findByEmailIgnoreCase(username.trim()))
-                .orElseThrow(() -> new UnauthorizedException("Administrator account not found"));
+                .orElse(null);
+
+        if (admin == null || !admin.isActive()) {
+            rateLimiterService.recordFailedAttempt(ipKey);
+            rateLimiterService.recordFailedAttempt(userKey);
+            auditLogService.logAction("anonymous", "EMERGENCY_OTP_UNKNOWN_USER", "Admins", null,
+                    "Emergency OTP requested for non-existent admin: " + username.trim(), ipAddress);
+            return;
+        }
+
+        // 60-second cooldown per admin account to prevent inbox flooding
+        EmergencyOtpEntry existing = emergencyOtpStore.get(admin.getUsername().toLowerCase(Locale.ROOT));
+        if (existing != null && existing.createdAt() != null &&
+                existing.createdAt().plusSeconds(60).isAfter(LocalDateTime.now())) {
+            throw new BadRequestException("A passcode was recently sent. Please check your email or wait 60 seconds before requesting another.");
+        }
+
+        rateLimiterService.recordFailedAttempt(ipKey);
+        rateLimiterService.recordFailedAttempt(userKey);
 
         int randomPin = 100000 + secureRandom.nextInt(900000);
         String otpCode = String.valueOf(randomPin);
 
-        emergencyOtpStore.put(admin.getUsername().toLowerCase(),
-                new EmergencyOtpEntry(otpCode, LocalDateTime.now().plusMinutes(10), admin.getUsername()));
+        emergencyOtpStore.put(admin.getUsername().toLowerCase(Locale.ROOT),
+                new EmergencyOtpEntry(otpCode, LocalDateTime.now().plusMinutes(10), admin.getUsername(), 0, LocalDateTime.now()));
 
         emailNotificationService.sendEmergencyEmailOtp(admin, otpCode, ipAddress);
         auditLogService.logAction(admin.getUsername(), "EMERGENCY_OTP_REQUESTED", "Admins",
@@ -329,19 +362,50 @@ public class AuthService {
         if (username == null || username.isBlank() || otpCode == null || otpCode.isBlank()) {
             throw new BadRequestException("Username and emergency access passcode are required");
         }
+
+        String verifyUserKey = "emergency-otp-verify-user:" + username.trim().toLowerCase(Locale.ROOT);
+        if (rateLimiterService.isBlocked(verifyUserKey)) {
+            int remaining = rateLimiterService.getRemainingLockoutMinutes(verifyUserKey);
+            auditLogService.logAction(username, "EMERGENCY_OTP_LOCKED", "Admins", null,
+                    "Emergency OTP verification locked out", ipAddress);
+            throw new UnauthorizedException("Too many failed passcode attempts. Account verification locked for " + remaining + " minute(s).");
+        }
+
+        String verifyIpKey = "emergency-otp-verify-ip:" + (ipAddress == null ? "unknown" : ipAddress);
+        if (rateLimiterService.isBlocked(verifyIpKey)) {
+            int remaining = rateLimiterService.getRemainingLockoutMinutes(verifyIpKey);
+            throw new UnauthorizedException("Too many failed attempts from your IP. Please try again in " + remaining + " minute(s).");
+        }
+
         Admin admin = adminRepository.findByUsername(username.trim())
                 .or(() -> adminRepository.findByEmailIgnoreCase(username.trim()))
                 .orElseThrow(() -> new UnauthorizedException("Administrator account not found"));
 
-        EmergencyOtpEntry entry = emergencyOtpStore.get(admin.getUsername().toLowerCase());
+        EmergencyOtpEntry entry = emergencyOtpStore.get(admin.getUsername().toLowerCase(Locale.ROOT));
         if (entry == null || entry.expiresAt().isBefore(LocalDateTime.now()) || !entry.code().equals(otpCode.trim())) {
+            rateLimiterService.recordFailedAttempt(verifyUserKey);
+            rateLimiterService.recordFailedAttempt(verifyIpKey);
+
+            if (entry != null) {
+                int nextAttempts = entry.failedAttempts() + 1;
+                if (nextAttempts >= 5) {
+                    emergencyOtpStore.remove(admin.getUsername().toLowerCase(Locale.ROOT));
+                    auditLogService.logAction(admin.getUsername(), "EMERGENCY_OTP_REVOKED", "Admins",
+                            String.valueOf(admin.getId()), "Emergency OTP invalidated after 5 failed verification attempts", ipAddress);
+                } else {
+                    emergencyOtpStore.put(admin.getUsername().toLowerCase(Locale.ROOT),
+                            new EmergencyOtpEntry(entry.code(), entry.expiresAt(), entry.username(), nextAttempts, entry.createdAt()));
+                }
+            }
+
             auditLogService.logAction(admin.getUsername(), "EMERGENCY_OTP_FAILED", "Admins",
                     String.valueOf(admin.getId()), "Invalid or expired emergency OTP attempt", ipAddress);
             throw new UnauthorizedException("Invalid or expired emergency access passcode. Please request a new one.");
         }
 
         // Single-use: consume immediately
-        emergencyOtpStore.remove(admin.getUsername().toLowerCase());
+        emergencyOtpStore.remove(admin.getUsername().toLowerCase(Locale.ROOT));
+        rateLimiterService.resetAttempts(verifyUserKey);
 
         admin.setLastLoginAt(LocalDateTime.now());
         admin.setFailedLoginAttempts(0);

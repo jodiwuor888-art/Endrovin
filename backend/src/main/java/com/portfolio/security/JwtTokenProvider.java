@@ -24,7 +24,21 @@ public class JwtTokenProvider {
     }
 
     private SecretKey getSigningKey() {
-        byte[] keyBytes = properties.getSecurity().getJwt().getSecret().getBytes(StandardCharsets.UTF_8);
+        String rawSecret = properties.getSecurity().getJwt().getSecret();
+        byte[] keyBytes;
+        if (rawSecret == null || rawSecret.isBlank()) {
+            rawSecret = "PortfolioDefaultDevJwtSigningKeyEnsureChangedInProd2026!";
+        }
+        byte[] rawBytes = rawSecret.getBytes(StandardCharsets.UTF_8);
+        if (rawBytes.length < 32) {
+            try {
+                keyBytes = java.security.MessageDigest.getInstance("SHA-256").digest(rawBytes);
+            } catch (java.security.NoSuchAlgorithmException e) {
+                throw new IllegalStateException("SHA-256 unavailable", e);
+            }
+        } else {
+            keyBytes = rawBytes;
+        }
         return Keys.hmacShaKeyFor(keyBytes);
     }
 

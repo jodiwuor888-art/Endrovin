@@ -20,23 +20,14 @@ public class PublicPortfolioController {
 
     private final PublicPortfolioService publicPortfolioService;
     private final com.portfolio.service.WebsiteSettingsService settingsService;
-    private final com.portfolio.service.EmailNotificationService emailNotificationService;
     private final IpAddressExtractor ipExtractor;
 
     public PublicPortfolioController(PublicPortfolioService publicPortfolioService,
                                    com.portfolio.service.WebsiteSettingsService settingsService,
-                                   com.portfolio.service.EmailNotificationService emailNotificationService,
                                    IpAddressExtractor ipExtractor) {
         this.publicPortfolioService = publicPortfolioService;
         this.settingsService = settingsService;
-        this.emailNotificationService = emailNotificationService;
         this.ipExtractor = ipExtractor;
-    }
-
-    @GetMapping("/smtp-status")
-    @Operation(summary = "Check live SMTP connectivity, port accessibility, and test real-time notification delivery")
-    public ResponseEntity<ApiResponse<java.util.Map<String, Object>>> checkSmtpStatus() {
-        return ResponseEntity.ok(ApiResponse.ok(emailNotificationService.runDiagnostics()));
     }
 
     @GetMapping("/settings")

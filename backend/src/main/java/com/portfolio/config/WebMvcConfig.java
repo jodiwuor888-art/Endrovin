@@ -33,7 +33,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addCorsMappings(@NonNull CorsRegistry registry) {
         String[] patterns;
         if (allowedOriginsRaw == null || allowedOriginsRaw.isBlank() || "*".equals(allowedOriginsRaw.trim())) {
-            patterns = new String[]{"https://*.vercel.app", "http://localhost:*", "http://127.0.0.1:*", "https://joash-portfolio-backend.onrender.com"};
+            patterns = new String[]{"https://endrovin-frontendport.vercel.app", "https://*.vercel.app", "http://localhost:*", "http://127.0.0.1:*", "https://joash-portfolio-backend.onrender.com"};
         } else {
             patterns = allowedOriginsRaw.split(",");
             for (int i = 0; i < patterns.length; i++) {
